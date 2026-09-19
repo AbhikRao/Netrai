@@ -30,7 +30,7 @@
 - [x] Activate a working MATLAB R2026a Update 5 license on the desktop host.
 - [x] Install MATLAB, Simulink, Image Processing Toolbox, Deep Learning Toolbox, Statistics and Machine Learning Toolbox, Computer Vision Toolbox, Medical Imaging Toolbox, Optimization Toolbox, and SimEvents.
 - [x] Install the free **Deep Learning Toolbox Converter for ONNX Model Format** support package.
-- [x] Save `ver`, Simulink license, ONNX-import, and SimEvents path evidence in `matlab/results/environment_2026-09-18.json`; it correctly records the missing ONNX converter.
+- [x] Refresh `ver`, Simulink license, ONNX-import, and SimEvents path evidence in `matlab/results/environment_2026-09-18.json`; it records `onnx_converter_ready: true`.
 - [x] Run `verifyMatlabPackage` in desktop MATLAB; the six-output fixture and end-to-end grade pass, with the preprocessing-logit warning recorded below.
 - [ ] Run a small `validatePipeline(..., Mode='full')` smoke test in desktop MATLAB.
 - [ ] Run or chunk the fixed 733-image Fold-0 validation in MATLAB and compare it with the Python evidence.

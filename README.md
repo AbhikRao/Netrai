@@ -286,9 +286,10 @@ python3 build_validation_passport.py
 The current 25-image, grade-stratified Grad-CAM audit completed with zero execution errors and flagged 13/25 maps. Flag rate rises from 20% for true Grade 0 to 100% for true Grade 4. Thirteen visual overlays are saved in `results/verification_2026-09-18/gradcam_qc_25/flagged_maps/`. A flag is a heuristic review signal, not proof that a prediction is wrong. Removing the shortcut risk itself requires retraining with suitable FOV/background masking and border/camera augmentation, followed by repeat accuracy, calibration and attention audits.
 
 Current verification gates: **27/27 Python tests pass**; MATLAB M2 and the
-SimEvents `.slx` execute under R2026a, and **41/41 MATLAB files pass MISS_HIT
-structural lint**. Full ONNX parity and the 733-image
-MATLAB holdout remain blocked by the missing ONNX converter support package.
+SimEvents `.slx` execute under R2026a, **41/41 MATLAB files pass MISS_HIT
+structural lint**, and native six-output ONNX parity passes with maximum error
+`7.63e-06`. The small full-pipeline smoke and fixed 733-image MATLAB holdout
+remain pending; preprocessing parity retains the documented `1.0163` warning.
 
 > M2 lesion outputs are explainability candidates from classical computer vision, not pixel-level clinically validated segmentations. Grad-CAM shows model attention and should not be interpreted as a lesion boundary.
 

@@ -191,6 +191,8 @@ segmentation claims.
    - The 0.75 confidence row is illustrative only: 70.94% coverage, 29.06% workload, 94.21% retained sensitivity and 98.50% specificity. It is post-hoc internal evidence, not a deployment threshold.
 12. **Workspace cleanup (2026-09-18)**:
    - Dataset ZIPs/split archives were removed by the user after verified extraction; legacy result/smoke duplicates remain under `/home/ovoabhik/Downloads/Netrai_project_archive/legacy_results_2026-09-18/`; EyeQ IDE, Python bytecode and Simulink build caches were trashed.
+13. **Public source release (2026-09-19)**:
+   - Published <https://github.com/AbhikRao/Netrai> as a public, source-only repository. Datasets, credentials, the local virtual environment, presentation drafts, generated patient-image derivatives, and MATLAB import caches are excluded; the checkpoint and ONNX model are included for reproducibility.
 
 ---
 
