@@ -3,6 +3,8 @@
 > **SIH 2026 | Problem Statement 26038 | Team Biscuit | MathWorks Sponsored**  
 > *Automated, explainable, validated DR screening for rural India*
 
+Public repository: <https://github.com/AbhikRao/Netrai>
+
 ---
 
 ## 📌 Problem

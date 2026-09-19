@@ -4,6 +4,7 @@
 > **Topic**: Explainable AI for Diabetic Retinopathy Screening in Rural India  
 > **Submission Deadline**: September 30, 2026  
 > **Workspace**: `/home/ovoabhik/Downloads/Larp/Netrai/`
+> **Public repository**: <https://github.com/AbhikRao/Netrai>
 
 ---
 

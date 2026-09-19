@@ -18,6 +18,7 @@
 - [x] Expand Grad-CAM QC to 25 grade-stratified images and save all 13 flagged overlays; flag rate is `52%` and remains an open shortcut-risk finding.
 - [x] Generate Validation Passport v2: hash eight release artifacts plus evidence/data indexes and bind internal/external grading, M2, calibration, selective prediction, MATLAB environment, M5 cross-check, intended use, and limitations.
 - [x] Normalize and checksum IDRiD, DRIVE, Messidor-2, and EyeQ metadata; archive redundant downloads outside the project and save a machine-readable dataset audit.
+- [x] Publish a source-only public repository at <https://github.com/AbhikRao/Netrai>; datasets, credentials, local environments, presentation drafts, and generated patient-image derivatives are excluded.
 - [x] Run the official 103-image IDRiD test split as an independent grading check: QWK `0.6652`, referable sensitivity `79.69%` (95% CI `68.75–89.06%`), specificity `82.05%` (`69.23–92.31%`), and AUC `0.8746` (`0.7985–0.9387`). This does **not** meet the target and is the current generalization blocker.
 - [x] Measure M2 on IDRiD/DRIVE. Optic-disc Dice is `0.8042`; the improved vessel baseline reaches Dice `0.4405` (from `0.1736`), while MA, haemorrhage, and exudate results remain inadequate.
 - [ ] Treat the system as clinically validated. This remains prohibited until the external, lesion-level, calibration, and reviewer studies below are complete.
