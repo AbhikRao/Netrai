@@ -1,0 +1,47 @@
+# Research datasets and medical images are local-only.
+/data/**
+!/data/README.md
+
+# Local Python environments and caches.
+/python/.venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Credentials and machine-local configuration.
+.env
+.env.*
+!.env.example
+kaggle.json
+*.pem
+*.key
+*.p12
+
+# Generated patient-image derivatives and bulky report outputs.
+/results/**/ClinicalReport.*
+/results/**/gradcam_heatmap.*
+/results/**/lesion_overlay.*
+/results/**/vessel_segmentation.*
+/results/**/flagged_maps/
+/matlab/results/full_smoke/
+/matlab/results/fold0_chunks/
+/matlab/results/fold0_combined/
+/matlab/results/demo/
+
+# Presentation drafts are deferred and are not source artifacts.
+/presentation/
+
+# MATLAB/Simulink generated caches.
+/matlab/+netrai_fold0/
+slprj/
+*.slxc
+*.asv
+*.autosave
+
+# Editors and operating systems.
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

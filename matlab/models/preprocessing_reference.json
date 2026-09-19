@@ -1,0 +1,15 @@
+{
+  "image_relative_to_project": "data/patient_sample.jpg",
+  "expected_grade": 0,
+  "expected_continuous_score": 0.01719341240823269,
+  "expected_logits": [
+    5.212315559387207,
+    0.279889851808548,
+    -2.750718355178833,
+    -1.6074169874191284,
+    -1.2592051029205322
+  ],
+  "expected_referable_logit": -8.382553100585938,
+  "expected_referable_head_probability": 0.00022877265291754156,
+  "note": "End-to-end cross-language preprocessing check; small resize/blur differences may change logits."
+}

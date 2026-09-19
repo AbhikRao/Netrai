@@ -1,0 +1,23 @@
+{
+  "images": 20,
+  "sensitivity": 0.46048202627447665,
+  "sensitivity_ci95_low": 0.4289895469560827,
+  "sensitivity_ci95_high": 0.4881641982253178,
+  "specificity": 0.9095753173473144,
+  "specificity_ci95_low": 0.9054766623177435,
+  "specificity_ci95_high": 0.9137918214974213,
+  "precision": 0.4221684970020489,
+  "precision_ci95_low": 0.3957663340329562,
+  "precision_ci95_high": 0.4491485349845142,
+  "dice": 0.4404937170537425,
+  "dice_ci95_low": 0.4168001862818998,
+  "dice_ci95_high": 0.4628717536183669,
+  "iou": 0.282457160878859,
+  "iou_ci95_low": 0.26326442417986967,
+  "iou_ci95_high": 0.3011276097683293,
+  "accuracy": 0.853228293448798,
+  "accuracy_ci95_low": 0.8444762652533097,
+  "accuracy_ci95_high": 0.8609128154710575,
+  "dataset": "DRIVE annotated training split",
+  "limitation": "The downloaded official test package has no 1st_manual masks; evaluation is limited to the 20 public annotated training cases."
+}

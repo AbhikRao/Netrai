@@ -1,0 +1,40 @@
+{
+  "counts": {
+    "requested": 733,
+    "successful": 733,
+    "quality_rejected": 0,
+    "errors": 0,
+    "evaluated": 733
+  },
+  "coverage": 1.0,
+  "metrics": {
+    "qwk": 0.9330310655544621,
+    "accuracy": 0.8308321964529332,
+    "mean_absolute_error": 0.1882673942701228,
+    "within_one_grade_accuracy": 0.9809004092769441,
+    "macro_f1": 0.6988263454022918,
+    "referable_sensitivity": 0.9463087245146614,
+    "referable_specificity": 0.9402298848413264,
+    "referable_precision": 0.9155844152871478,
+    "referable_accuracy": 0.9427012277022236,
+    "referable_f1": 0.9306930190133891,
+    "referable_auc": 0.9841703309419115
+  },
+  "runtime": {
+    "total_seconds": 704.1910643279989,
+    "images_per_second": 1.040910680540221
+  },
+  "configuration": {
+    "csv": "/home/ovoabhik/Downloads/Larp/Netrai/data/aptos2019/train.csv",
+    "image_dir": "/home/ovoabhik/Downloads/Larp/Netrai/data/aptos2019/train_images",
+    "quality_threshold": 0.0,
+    "enhancement_threshold": 0.7,
+    "enhancement_enabled": false,
+    "segmentation_enabled": false,
+    "batch_size": 16,
+    "fold": 0,
+    "n_folds": 5,
+    "sample_per_grade": null,
+    "seed": 42
+  }
+}

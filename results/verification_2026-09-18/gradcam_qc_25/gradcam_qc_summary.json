@@ -1,0 +1,19 @@
+{
+  "requested": 25,
+  "successful": 25,
+  "errors": 0,
+  "flagged": 13,
+  "flag_rate": 0.52,
+  "median_border_enrichment": 0.5207704682105619,
+  "maximum_corner_enrichment": 4.260247563772638,
+  "maximum_top5_border_fraction": 0.5856728715288374,
+  "median_outside_fov_attention_fraction": 0.07648724234646372,
+  "flag_rate_by_true_grade": {
+    "0": 0.2,
+    "1": 0.4,
+    "2": 0.4,
+    "3": 0.6,
+    "4": 1.0
+  },
+  "interpretation": "Heuristic QC only. A flag indicates possible shortcut attention and requires visual/clinical review; it is not evidence that a model prediction is incorrect."
+}

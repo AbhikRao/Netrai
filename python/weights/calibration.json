@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "method": "scalar_temperature_scaling",
+  "temperature": 0.8390771170135317,
+  "applies_to": "five_class_grade_logits_for_confidence_only",
+  "changes_grade_decision": false,
+  "created_on": "2026-09-17",
+  "source": {
+    "file": "results/verification_2026-09-17/fold0_model/per_image_results.csv",
+    "sha256": "e62435a3a444d1ceabfff07960d44f17930ffa43c2f53e0b6881c1dbd8a3f3b8",
+    "dataset": "APTOS 2019 reproducible Fold 0",
+    "input_representation": "log_softmax_probabilities_equivalent_up_to_additive_constant",
+    "total_samples": 733
+  },
+  "split": {
+    "seed": 42,
+    "stratified_by": "true_grade",
+    "calibration_samples": 366,
+    "evaluation_samples": 367,
+    "evaluation_fraction": 0.5,
+    "calibration_class_counts": [
+      180,
+      37,
+      100,
+      20,
+      29
+    ],
+    "evaluation_class_counts": [
+      181,
+      37,
+      100,
+      19,
+      30
+    ]
+  },
+  "optimizer": {
+    "optimizer_objective_nll": 0.40326993125859534,
+    "optimizer_iterations": 16
+  },
+  "metrics": {
+    "calibration_split_argmax": {
+      "raw": {
+        "accuracy": 0.8442622950819673,
+        "mean_confidence": 0.8149318090717883,
+        "nll": 0.40944330088019276,
+        "brier": 0.2249742421138775,
+        "ece": 0.049178919897114974
+      },
+      "calibrated": {
+        "accuracy": 0.8442622950819673,
+        "mean_confidence": 0.8423229055288094,
+        "nll": 0.40326993125859534,
+        "brier": 0.22455169797138028,
+        "ece": 0.025612069264914335
+      }
+    },
+    "evaluation_split_argmax": {
+      "raw": {
+        "accuracy": 0.8446866485013624,
+        "mean_confidence": 0.8177413704362838,
+        "nll": 0.3931545732805178,
+        "brier": 0.21013716693199153,
+        "ece": 0.040806459879315665
+      },
+      "calibrated": {
+        "accuracy": 0.8446866485013624,
+        "mean_confidence": 0.8453822809580551,
+        "nll": 0.3837465294274991,
+        "brier": 0.20788231753825823,
+        "ece": 0.020361714220025057
+      }
+    },
+    "evaluation_split_deployed_ordinal_policy": {
+      "raw": {
+        "accuracy": 0.8365122615803815,
+        "mean_confidence": 0.7983156549523529,
+        "nll": 0.3931545732805178,
+        "brier": 0.21013716693199153,
+        "ece": 0.04588745102235006
+      },
+      "calibrated": {
+        "accuracy": 0.8365122615803815,
+        "mean_confidence": 0.8227875357699567,
+        "nll": 0.3837465294274991,
+        "brier": 0.20788231753825823,
+        "ece": 0.025787374368710855
+      }
+    }
+  },
+  "limitation": "Post-hoc calibration/evaluation halves come from Fold 0, which was also used for checkpoint selection and ordinal-threshold optimization. This is not independent external or prospective clinical validation."
+}

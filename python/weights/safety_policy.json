@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "referable_head_threshold": 0.5,
+  "head_disagreement_action": "uncertain_human_review",
+  "concordant_nonreferable_action": "auto_clear",
+  "concordant_referable_action": "refer",
+  "ungradeable_action": "recapture",
+  "status": "research_policy_pending_external_validation",
+  "notes": [
+    "The binary referable head is independent of the ordinal grade decision.",
+    "A disagreement is never silently resolved in favor of either model head.",
+    "The threshold and routing policy require external validation before clinical deployment."
+  ]
+}

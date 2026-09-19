@@ -1,0 +1,13 @@
+{
+  "matlab_source_files_checked": 36,
+  "parser": "MISS_HIT 0.9.44 with MATLAB 2022a grammar",
+  "syntax_and_lint_passed": true,
+  "findings": 0,
+  "onnx_checker_passed": true,
+  "onnx_input_shape": [1, 3, 512, 512],
+  "onnx_output_shape": [1, 5],
+  "onnxruntime_parity_samples": 5,
+  "onnxruntime_max_absolute_logit_error": 5.245208740234375e-06,
+  "matlab_runtime_executed_locally": false,
+  "matlab_runtime_note": "No MATLAB or Octave executable is installed on this host. Run matlab/verifyMatlabPackage.m in MATLAB Online."
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "sampling_unit": "image (one IDRiD eye image per row)",
+  "method": "true-grade-stratified percentile bootstrap",
+  "replicates": 2000,
+  "seed": 2026,
+  "images": 103,
+  "metrics": {
+    "qwk": {
+      "point_estimate": 0.6652417064386731,
+      "ci95_low": 0.5462847339626187,
+      "ci95_high": 0.7645173173715831
+    },
+    "accuracy": {
+      "point_estimate": 0.4174757281553398,
+      "ci95_low": 0.32038834951456313,
+      "ci95_high": 0.5145631067961165
+    },
+    "referable_sensitivity": {
+      "point_estimate": 0.796875,
+      "ci95_low": 0.6875,
+      "ci95_high": 0.890625
+    },
+    "referable_specificity": {
+      "point_estimate": 0.8205128205128205,
+      "ci95_low": 0.6923076923076923,
+      "ci95_high": 0.9230769230769231
+    },
+    "referable_auc": {
+      "point_estimate": 0.8745993589743589,
+      "ci95_low": 0.7984675480769231,
+      "ci95_high": 0.938701923076923
+    }
+  },
+  "per_grade": {
+    "0": {
+      "support": 34,
+      "recall": 0.29411764705882354,
+      "recall_ci95_low": 0.14705882352941177,
+      "recall_ci95_high": 0.4411764705882353
+    },
+    "1": {
+      "support": 5,
+      "recall": 0.4,
+      "recall_ci95_low": 0.0,
+      "recall_ci95_high": 0.8
+    },
+    "2": {
+      "support": 32,
+      "recall": 0.46875,
+      "recall_ci95_low": 0.28125,
+      "recall_ci95_high": 0.65625
+    },
+    "3": {
+      "support": 19,
+      "recall": 0.631578947368421,
+      "recall_ci95_low": 0.42105263157894735,
+      "recall_ci95_high": 0.8421052631578947
+    },
+    "4": {
+      "support": 13,
+      "recall": 0.3076923076923077,
+      "recall_ci95_low": 0.07692307692307693,
+      "recall_ci95_high": 0.6153846153846154
+    }
+  }
+}

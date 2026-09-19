@@ -1,0 +1,47 @@
+{
+  "schema_version": 2,
+  "model_file": "netrai_fold0.onnx",
+  "architecture": "EfficientNet-B4 dual-head (grade + referable heads exported)",
+  "input_name": "input",
+  "output_name": "model_outputs",
+  "output_schema": [
+    "grade_logit_0",
+    "grade_logit_1",
+    "grade_logit_2",
+    "grade_logit_3",
+    "grade_logit_4",
+    "referable_logit"
+  ],
+  "input_layout": "NCHW",
+  "input_size": 512,
+  "black_crop_threshold": 7,
+  "ben_graham_sigma": 10,
+  "imagenet_mean": [
+    0.48500001430511475,
+    0.4560000002384186,
+    0.4059999883174896
+  ],
+  "imagenet_std": [
+    0.2290000021457672,
+    0.2240000069141388,
+    0.22499999403953552
+  ],
+  "grade_thresholds": [
+    0.5421875,
+    1.4859374999999995,
+    2.5546875,
+    3.3031249999999996
+  ],
+  "fold": 0,
+  "checkpoint_epoch": 25,
+  "checkpoint_qwk": 0.9284568596708684,
+  "referable_grade_minimum": 2,
+  "referable_head_threshold": 0.5,
+  "head_disagreement_action": "uncertain_human_review",
+  "confidence_temperature": 0.8390771170135317,
+  "confidence_calibration": {
+    "method": "scalar_temperature_scaling",
+    "artifact": "python/weights/calibration.json",
+    "applies_to": "grade_logits_for_confidence_only"
+  }
+}
