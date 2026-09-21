@@ -1,0 +1,21 @@
+{
+  "image_relative_to_project": "data/eyeq/images/test/1_right.jpeg",
+  "expected_logits": [
+    -2.9817006587982178,
+    1.7205125093460083,
+    1.2611899375915527
+  ],
+  "expected_probabilities": [
+    0.0008436355274170637,
+    0.6565166711807251,
+    0.34263965487480164
+  ],
+  "expected_prediction": 1,
+  "class_names": [
+    "good",
+    "usable",
+    "reject"
+  ],
+  "reject_threshold": 0.375,
+  "pytorch_onnx_max_logit_error": 7.152557373046875e-06
+}

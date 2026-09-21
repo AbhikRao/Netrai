@@ -1,0 +1,6 @@
+grade,support,sensitivityGrade,specificityGrade,precisionGrade,f1Grade
+0,3,1,1,1,1
+1,0,NaN,1,NaN,NaN
+2,0,NaN,1,NaN,NaN
+3,0,NaN,1,NaN,NaN
+4,2,1,1,1,1

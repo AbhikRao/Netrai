@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "status": "feature_baseline_ablation_not_deployed",
+  "features": [
+    "iqs",
+    "focus",
+    "illumination",
+    "fov"
+  ],
+  "train_images": 12543,
+  "held_out_test_images": 16249,
+  "seed": 42,
+  "results": {
+    "balanced_logistic_regression": {
+      "accuracy": 0.5173856852729398,
+      "balanced_accuracy": 0.5044749656338255,
+      "macro_f1": 0.49455005984453043,
+      "per_class_recall": {
+        "good": 0.5561326879943336,
+        "usable": 0.4585344449319877,
+        "reject": 0.49875776397515525
+      },
+      "per_class_precision": {
+        "good": 0.7245462934481698,
+        "usable": 0.3538175046554935,
+        "reject": 0.41822916666666665
+      }
+    },
+    "balanced_random_forest": {
+      "accuracy": 0.6319773524524586,
+      "balanced_accuracy": 0.5829005144401571,
+      "macro_f1": 0.579472672818308,
+      "per_class_recall": {
+        "good": 0.77523314838862,
+        "usable": 0.4240895129442738,
+        "reject": 0.5493788819875777
+      },
+      "per_class_precision": {
+        "good": 0.7587521663778163,
+        "usable": 0.480487198608004,
+        "reject": 0.495379445533464
+      }
+    },
+    "balanced_extra_trees": {
+      "accuracy": 0.5546802880177242,
+      "balanced_accuracy": 0.5334856039472494,
+      "macro_f1": 0.5268950076586396,
+      "per_class_recall": {
+        "good": 0.6139770983354976,
+        "usable": 0.474989030276437,
+        "reject": 0.5114906832298136
+      },
+      "per_class_precision": {
+        "good": 0.743850114416476,
+        "usable": 0.38022479803301723,
+        "reject": 0.4622509121526803
+      }
+    },
+    "balanced_hist_gradient_boosting": {
+      "accuracy": 0.6330235706812727,
+      "balanced_accuracy": 0.5886768078741049,
+      "macro_f1": 0.5853065949849999,
+      "per_class_recall": {
+        "good": 0.7623657183331366,
+        "usable": 0.44559017112768756,
+        "reject": 0.5580745341614907
+      },
+      "per_class_precision": {
+        "good": 0.7658918406072106,
+        "usable": 0.4733162432999301,
+        "reject": 0.5096426545660806
+      }
+    }
+  },
+  "ranking_by_macro_f1": [
+    "balanced_hist_gradient_boosting",
+    "balanced_random_forest",
+    "balanced_extra_trees",
+    "balanced_logistic_regression"
+  ],
+  "best_candidate": "balanced_hist_gradient_boosting",
+  "deployment_decision": "Do not deploy automatically. A candidate must materially improve the held-out endpoint and have a reproducible MATLAB implementation.",
+  "limitations": [
+    "The candidates use only four handcrafted scores, not retinal image pixels.",
+    "EyeQ labels are image-level and no patient identifier is available for patient-grouped splitting.",
+    "This ablation does not validate portable rural camera domains."
+  ]
+}

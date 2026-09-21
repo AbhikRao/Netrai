@@ -25,16 +25,25 @@ kaggle.json
 /results/**/lesion_overlay.*
 /results/**/vessel_segmentation.*
 /results/**/flagged_maps/
+/results/**/preprocessing_fixtures/
+/results/**/eyeq_*_quality_features.csv
+/results/**/cache/
+/results/**/quality_parity_fixtures/
 /matlab/results/full_smoke/
 /matlab/results/fold0_chunks/
 /matlab/results/fold0_combined/
 /matlab/results/demo/
 
-# Presentation drafts are deferred and are not source artifacts.
+# Presentation source material and local submission binaries are not source artifacts.
 /presentation/
+
+# Local artifact-authoring scratch directories.
+/.codex-build/
+/.chart-data-*/
 
 # MATLAB/Simulink generated caches.
 /matlab/+netrai_fold0/
+/matlab/+quality_model_candidate/
 slprj/
 *.slxc
 *.asv

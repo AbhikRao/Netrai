@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "research_candidate_synthetic_stress_not_camera_validation",
+  "sample": {
+    "source": "EyeQ official test Good class",
+    "images": 250,
+    "seed": 42
+  },
+  "elapsed_seconds": 198.66886097600218,
+  "images_per_second": 7.550252176566259,
+  "corruptions": {
+    "baseline": {
+      "images": 250,
+      "prediction_counts": {
+        "good": 233,
+        "usable": 17,
+        "reject": 0
+      },
+      "reject_rate": 0.0,
+      "median_reject_probability": 0.00022060795163270086,
+      "median_reject_probability_change": 0.0,
+      "fraction_reject_probability_increased": 0.0
+    },
+    "defocus_blur": {
+      "images": 250,
+      "prediction_counts": {
+        "good": 210,
+        "usable": 39,
+        "reject": 1
+      },
+      "reject_rate": 0.004,
+      "median_reject_probability": 0.00147248461144045,
+      "median_reject_probability_change": 0.000834468228276819,
+      "fraction_reject_probability_increased": 0.924
+    },
+    "low_light": {
+      "images": 250,
+      "prediction_counts": {
+        "good": 200,
+        "usable": 31,
+        "reject": 19
+      },
+      "reject_rate": 0.076,
+      "median_reject_probability": 0.012495849281549454,
+      "median_reject_probability_change": 0.011972795415204018,
+      "fraction_reject_probability_increased": 1.0
+    },
+    "uneven_illumination": {
+      "images": 250,
+      "prediction_counts": {
+        "good": 204,
+        "usable": 30,
+        "reject": 16
+      },
+      "reject_rate": 0.064,
+      "median_reject_probability": 0.012522208970040083,
+      "median_reject_probability_change": 0.011372780267265625,
+      "fraction_reject_probability_increased": 1.0
+    },
+    "fov_misalignment": {
+      "images": 250,
+      "prediction_counts": {
+        "good": 211,
+        "usable": 35,
+        "reject": 4
+      },
+      "reject_rate": 0.016,
+      "median_reject_probability": 0.0024442714639008045,
+      "median_reject_probability_change": 0.001711773605848066,
+      "fraction_reject_probability_increased": 0.888
+    },
+    "jpeg_q25": {
+      "images": 250,
+      "prediction_counts": {
+        "good": 234,
+        "usable": 16,
+        "reject": 0
+      },
+      "reject_rate": 0.0,
+      "median_reject_probability": 0.00033480991260148585,
+      "median_reject_probability_change": 1.2820111805922352e-05,
+      "fraction_reject_probability_increased": 0.648
+    }
+  },
+  "limitations": [
+    "Synthetic corruptions are not portable-camera validation.",
+    "EyeQ labels are global quality labels, not defect-cause labels."
+  ]
+}

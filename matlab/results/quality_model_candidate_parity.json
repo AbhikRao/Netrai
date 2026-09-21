@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "raw_logit_error": 2.6464462280273438E-5,
+  "input_error": 0,
+  "end_to_end_logit_error": 2.6464462280273438E-5,
+  "quality_class": 1,
+  "probabilities": [
+    0.00084368431190685747,
+    0.65651537755670386,
+    0.34264093813138946
+  ],
+  "decision_match": true,
+  "scope": "fixed real-image Python/ONNX/MATLAB parity fixture"
+}

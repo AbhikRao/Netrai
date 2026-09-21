@@ -5,7 +5,7 @@ function [modelInput, modelFov] = preprocessModelInput(imageRGB, config)
     if isempty(imageRGB)
         error('NetrAI:EmptyImage', 'Input image cannot be empty.');
     end
-    if ndims(imageRGB) == 2
+    if ismatrix(imageRGB)
         imageRGB = repmat(imageRGB, 1, 1, 3);
     end
     if ndims(imageRGB) ~= 3 || size(imageRGB, 3) ~= 3
@@ -26,13 +26,16 @@ function [modelInput, modelFov] = preprocessModelInput(imageRGB, config)
     end
 
     targetSize = double(config.input_size);
-    % MATLAB's box kernel is the closest built-in equivalent to OpenCV's
-    % area resampling used during training.
-    resized = imresize(imageRGB, [targetSize targetSize], 'box');
+    % A measured cross-runtime audit found bicubic resampling plus uint8
+    % Gaussian/blend stages substantially closer to the deployed OpenCV path
+    % than the former box/float approximation. Keep uint8 rounding at the
+    % same two stages where OpenCV returns uint8 outputs.
+    resized = imresize(imageRGB, [targetSize targetSize], 'bicubic');
     sigma = double(config.ben_graham_sigma);
-    blurred = imgaussfilt(single(resized), sigma, 'FilterSize', 2*ceil(3*sigma)+1);
-    enhanced = 4 .* single(resized) - 4 .* blurred + 128;
-    enhanced = min(max(enhanced, 0), 255) ./ 255;
+    blurred = imgaussfilt(resized, sigma, ...
+        'FilterSize', 2*ceil(3*sigma)+1, 'Padding','replicate');
+    enhanced = imlincomb(4, resized, -4, blurred, 128, 'uint8');
+    enhanced = single(enhanced) ./ 255;
 
     means = reshape(single(config.imagenet_mean), 1, 1, 3);
     stds = reshape(single(config.imagenet_std), 1, 1, 3);

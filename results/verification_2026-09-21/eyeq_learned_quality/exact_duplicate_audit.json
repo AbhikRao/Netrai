@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "method": "SHA-256 of encoded source file bytes",
+  "train_files": 12543,
+  "test_files": 16249,
+  "cross_split_duplicate_hashes": 0,
+  "cross_split_duplicate_files": [],
+  "within_train_duplicate_hashes": 0,
+  "within_test_duplicate_hashes": 0,
+  "limitation": "Exact encoded-file duplicates only; perceptual near-duplicates are not detected."
+}

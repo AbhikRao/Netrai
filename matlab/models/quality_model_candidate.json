@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "architecture": "MobileNetV3-Small frozen ImageNet encoder + EyeQ linear head",
+  "pretrained_source": "https://download.pytorch.org/models/mobilenet_v3_small-047dcff4.pth",
+  "training_strategy": "patient-grouped fit/selection/calibration within official train",
+  "classes": [
+    "good",
+    "usable",
+    "reject"
+  ],
+  "input_size": 224,
+  "imagenet_mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "imagenet_std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "preprocessing": "rgb_half_pixel_bilinear_float32_224_v1",
+  "confidence_temperature": 0.706358021779812,
+  "reject_threshold": 0.375,
+  "deployment_status": "research_candidate_not_deployed",
+  "checkpoint_sha256": "0cddeade514f9eb50e3e7419b6b4216304c23c41dce47919db5e555dd7d0da75",
+  "head_conversion_max_probability_error": 2.980232238769531e-07,
+  "model_file": "quality_model_candidate.onnx",
+  "input_name": "quality_input",
+  "output_name": "quality_logits",
+  "input_layout": "NCHW",
+  "onnx_sha256": "f3976aa14e79206946f120b00eaf4c486878eb4bf8c0b45d7b94308bf02aba50",
+  "onnx_torch_max_logit_error": 7.152557373046875e-06,
+  "onnx_tolerance": 0.0001
+}

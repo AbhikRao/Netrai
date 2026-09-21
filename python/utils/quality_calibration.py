@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import numpy as np
 from scipy.optimize import differential_evolution
 from sklearn.metrics import f1_score
@@ -10,6 +13,35 @@ from sklearn.metrics import f1_score
 EYEQ_GOOD = 0
 EYEQ_USABLE = 1
 EYEQ_REJECT = 2
+
+
+def load_iqs_thresholds(
+        path: str | Path, *, allow_evidence_only: bool = False,
+        ) -> tuple[float, float, dict]:
+    """Load a versioned EyeQ artifact without silently deploying weak evidence."""
+    artifact_path = Path(path)
+    if not artifact_path.is_file():
+        raise FileNotFoundError(f'Quality-threshold artifact not found: {artifact_path}')
+    with artifact_path.open(encoding='utf-8') as handle:
+        artifact = json.load(handle)
+    required = {
+        'schema_version', 'status', 'deployment_status', 'reject_threshold',
+        'good_threshold', 'train_metrics', 'test_metrics',
+    }
+    missing = sorted(required - set(artifact))
+    if missing:
+        raise ValueError(f'Quality-threshold artifact is missing fields: {missing}')
+    deployment_status = str(artifact['deployment_status'])
+    if deployment_status != 'deployed' and not allow_evidence_only:
+        raise ValueError(
+            'Quality-threshold artifact is evidence-only and must not be '
+            f'deployed (deployment_status={deployment_status!r})')
+    reject = float(artifact['reject_threshold'])
+    good = float(artifact['good_threshold'])
+    if (not np.isfinite([reject, good]).all() or reject < 0 or good > 1
+            or reject >= good):
+        raise ValueError('Quality thresholds must satisfy 0 <= reject < good <= 1')
+    return reject, good, artifact
 
 
 def apply_iqs_thresholds(

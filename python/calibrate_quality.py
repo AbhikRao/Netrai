@@ -13,13 +13,17 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+from concurrent.futures import ProcessPoolExecutor
 from datetime import date
 from pathlib import Path
 
 import cv2
 import numpy as np
 import pandas as pd
-from sklearn.metrics import balanced_accuracy_score, confusion_matrix, f1_score
+from sklearn.metrics import (
+    balanced_accuracy_score, confusion_matrix, f1_score, roc_auc_score,
+)
 from tqdm import tqdm
 
 from modules.quality import assess_image_quality
@@ -28,6 +32,7 @@ from utils.quality_calibration import apply_iqs_thresholds, fit_iqs_thresholds
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_EYEQ = ROOT / 'data' / 'eyeq'
+DEFAULT_EYEQ_LABELS = DEFAULT_EYEQ / 'data'
 
 
 def file_sha256(path: Path) -> str:
@@ -49,42 +54,106 @@ def resolve_eyeq_image(image_dir: Path, label_name: str) -> Path | None:
     return next((path for path in candidates if path.is_file()), None)
 
 
-def extract_features(labels_path: Path, image_dir: Path, cache_path: Path) -> pd.DataFrame:
-    if cache_path.is_file():
-        cached = pd.read_csv(cache_path)
-        required = {'image', 'quality', 'iqs', 'focus', 'illumination', 'fov', 'status'}
-        if required.issubset(cached.columns):
-            return cached
+FEATURE_COLUMNS = [
+    'image', 'quality', 'status', 'image_path',
+    'iqs', 'focus', 'illumination', 'fov',
+]
+
+
+def _measure_quality(task: tuple[str, int, str]) -> dict:
+    """Measure one EyeQ image; kept top-level for process-pool workers."""
+    label_name, quality, image_path = task
+    if not image_path:
+        return {
+            'image': label_name, 'quality': quality,
+            'status': 'missing', 'image_path': '',
+        }
+    path = Path(image_path)
+    bgr = cv2.imread(str(path), cv2.IMREAD_COLOR)
+    if bgr is None:
+        return {
+            'image': label_name, 'quality': quality,
+            'status': 'decode_error', 'image_path': str(path),
+        }
+    score, metrics = assess_image_quality(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB))
+    return {
+        'image': label_name, 'quality': quality, 'status': 'success',
+        'image_path': str(path), 'iqs': float(score),
+        'focus': float(metrics['focus']),
+        'illumination': float(metrics['illumination']),
+        'fov': float(metrics['fov']),
+    }
+
+
+def _ordered_cache(labels: pd.DataFrame, completed: dict[str, dict]) -> pd.DataFrame:
+    """Build a cache in label-file order, retaining only completed rows."""
+    rows = [completed[str(item.image)] for item in labels.itertuples(index=False)
+            if str(item.image) in completed]
+    return pd.DataFrame(rows, columns=FEATURE_COLUMNS)
+
+
+def _write_cache_atomic(frame: pd.DataFrame, cache_path: Path) -> None:
+    """Replace a checkpoint atomically so interruption cannot truncate it."""
+    temporary = cache_path.with_name(f'.{cache_path.name}.tmp')
+    frame.to_csv(temporary, index=False)
+    temporary.replace(cache_path)
+
+
+def extract_features(labels_path: Path, image_dir: Path, cache_path: Path,
+                     workers: int = 1, checkpoint_every: int = 250) -> pd.DataFrame:
     labels = pd.read_csv(labels_path)
     if not {'image', 'quality'}.issubset(labels.columns):
         raise ValueError(f'{labels_path} must contain image and quality columns')
-    rows = []
-    for item in tqdm(labels.itertuples(index=False), total=len(labels), desc=labels_path.stem):
+    if labels['image'].astype(str).duplicated().any():
+        raise ValueError(f'{labels_path} contains duplicate image names')
+    if workers < 1:
+        raise ValueError('workers must be at least one')
+    if checkpoint_every < 1:
+        raise ValueError('checkpoint_every must be at least one')
+
+    expected_quality = dict(zip(
+        labels['image'].astype(str), labels['quality'].astype(int)))
+    completed: dict[str, dict] = {}
+    required = set(FEATURE_COLUMNS)
+    if cache_path.is_file():
+        cached = pd.read_csv(cache_path)
+        if required.issubset(cached.columns):
+            for row in cached.to_dict('records'):
+                image = str(row['image'])
+                if (image in expected_quality
+                        and int(row['quality']) == expected_quality[image]
+                        and row.get('status') == 'success'):
+                    completed[image] = row
+            if len(completed) == len(labels):
+                return _ordered_cache(labels, completed)
+
+    tasks = []
+    for item in labels.itertuples(index=False):
+        label_name = str(item.image)
+        if label_name in completed:
+            continue
         path = resolve_eyeq_image(image_dir, str(item.image))
-        if path is None:
-            rows.append({
-                'image': str(item.image), 'quality': int(item.quality),
-                'status': 'missing', 'image_path': '',
-            })
-            continue
-        bgr = cv2.imread(str(path), cv2.IMREAD_COLOR)
-        if bgr is None:
-            rows.append({
-                'image': str(item.image), 'quality': int(item.quality),
-                'status': 'decode_error', 'image_path': str(path),
-            })
-            continue
-        score, metrics = assess_image_quality(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB))
-        rows.append({
-            'image': str(item.image), 'quality': int(item.quality), 'status': 'success',
-            'image_path': str(path), 'iqs': float(score),
-            'focus': float(metrics['focus']),
-            'illumination': float(metrics['illumination']),
-            'fov': float(metrics['fov']),
-        })
-    result = pd.DataFrame(rows)
+        tasks.append((label_name, int(item.quality), str(path) if path else ''))
+
     cache_path.parent.mkdir(parents=True, exist_ok=True)
-    result.to_csv(cache_path, index=False)
+    if workers == 1:
+        measured = map(_measure_quality, tasks)
+    else:
+        pool = ProcessPoolExecutor(max_workers=workers)
+        measured = pool.map(_measure_quality, tasks, chunksize=4)
+    try:
+        progress = tqdm(measured, total=len(labels), initial=len(completed),
+                        desc=labels_path.stem)
+        for index, row in enumerate(progress, start=1):
+            completed[str(row['image'])] = row
+            if index % checkpoint_every == 0:
+                _write_cache_atomic(_ordered_cache(labels, completed), cache_path)
+    finally:
+        if workers != 1:
+            pool.shutdown(wait=True, cancel_futures=True)
+
+    result = _ordered_cache(labels, completed)
+    _write_cache_atomic(result, cache_path)
     return result
 
 
@@ -104,7 +173,54 @@ def evaluate(frame: pd.DataFrame, reject: float, good: float) -> tuple[dict, np.
             name: float(matrix[index, index] / max(matrix[index].sum(), 1))
             for index, name in enumerate(('good', 'usable', 'reject'))
         },
+        'per_class_precision': {
+            name: float(matrix[index, index] / max(matrix[:, index].sum(), 1))
+            for index, name in enumerate(('good', 'usable', 'reject'))
+        },
+        'predicted_counts': {
+            name: int(matrix[:, index].sum())
+            for index, name in enumerate(('good', 'usable', 'reject'))
+        },
     }, matrix
+
+
+def factor_diagnostics(frame: pd.DataFrame) -> dict:
+    """Quantify how each handcrafted factor associates with EyeQ labels.
+
+    EyeQ provides a global quality label, not focus/illumination/FOV cause
+    labels.  These AUCs therefore measure association only and must not be
+    described as factor-specific ground-truth validation.
+    """
+    valid = frame.loc[frame['status'] == 'success'].copy()
+    labels = valid['quality'].to_numpy(dtype=int)
+    class_names = ('good', 'usable', 'reject')
+    result = {
+        'scope': (
+            'Association with global EyeQ quality labels; EyeQ has no '
+            'factor-specific focus, illumination, or FOV annotations.'
+        ),
+        'features': {},
+    }
+    for feature in ('iqs', 'focus', 'illumination', 'fov'):
+        values = valid[feature].to_numpy(dtype=float)
+        class_summary = {}
+        for class_index, class_name in enumerate(class_names):
+            subset = values[labels == class_index]
+            class_summary[class_name] = {
+                'count': int(len(subset)),
+                'mean': float(np.mean(subset)),
+                'median': float(np.median(subset)),
+                'p10': float(np.percentile(subset, 10)),
+                'p90': float(np.percentile(subset, 90)),
+            }
+        result['features'][feature] = {
+            'class_summary': class_summary,
+            'good_vs_rest_auc_high_score': float(
+                roc_auc_score(labels == 0, values)),
+            'reject_vs_rest_auc_low_score': float(
+                roc_auc_score(labels == 2, -values)),
+        }
+    return result
 
 
 def main(args: argparse.Namespace) -> None:
@@ -112,10 +228,12 @@ def main(args: argparse.Namespace) -> None:
     output.mkdir(parents=True, exist_ok=True)
     train = extract_features(
         args.train_labels.resolve(), args.train_images.resolve(),
-        output / 'eyeq_train_quality_features.csv')
+        output / 'eyeq_train_quality_features.csv',
+        workers=args.workers, checkpoint_every=args.checkpoint_every)
     test = extract_features(
         args.test_labels.resolve(), args.test_images.resolve(),
-        output / 'eyeq_test_quality_features.csv')
+        output / 'eyeq_test_quality_features.csv',
+        workers=args.workers, checkpoint_every=args.checkpoint_every)
     train_valid = train.loc[train['status'] == 'success']
     if len(train_valid) != len(train):
         raise RuntimeError(
@@ -131,6 +249,18 @@ def main(args: argparse.Namespace) -> None:
         train_valid['iqs'].to_numpy(), train_valid['quality'].to_numpy(), seed=args.seed)
     train_metrics, train_matrix = evaluate(train, reject, good)
     test_metrics, test_matrix = evaluate(test, reject, good)
+    held_out_gate = {
+        'minimum_macro_f1': float(args.minimum_macro_f1),
+        'minimum_reject_recall': float(args.minimum_reject_recall),
+        'passed': bool(
+            test_metrics['macro_f1'] >= args.minimum_macro_f1
+            and test_metrics['per_class_recall']['reject']
+            >= args.minimum_reject_recall),
+        'purpose': (
+            'Project engineering gate only; not a clinical or regulatory '
+            'acceptance threshold.'
+        ),
+    }
     pd.DataFrame(
         train_matrix, index=['true_good', 'true_usable', 'true_reject'],
         columns=['pred_good', 'pred_usable', 'pred_reject'],
@@ -142,7 +272,14 @@ def main(args: argparse.Namespace) -> None:
 
     artifact = {
         'schema_version': 1,
-        'status': 'eyeq_calibrated_research_thresholds',
+        'status': (
+            'eyeq_threshold_candidate_passed_project_gate'
+            if held_out_gate['passed']
+            else 'eyeq_threshold_baseline_failed_held_out_gate'),
+        'deployment_status': (
+            'candidate_not_clinically_validated'
+            if held_out_gate['passed']
+            else 'not_deployed'),
         'created_on': date.today().isoformat(),
         'label_mapping': {'0': 'Good', '1': 'Usable', '2': 'Reject'},
         'reject_threshold': reject,
@@ -150,6 +287,11 @@ def main(args: argparse.Namespace) -> None:
         'optimizer': optimizer,
         'train_metrics': train_metrics,
         'test_metrics': test_metrics,
+        'held_out_gate': held_out_gate,
+        'factor_diagnostics': {
+            'train': factor_diagnostics(train),
+            'test': factor_diagnostics(test),
+        },
         'sources': {
             'train_labels': str(args.train_labels.resolve()),
             'train_labels_sha256': file_sha256(args.train_labels.resolve()),
@@ -169,8 +311,12 @@ def main(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--train-labels', type=Path, default=DEFAULT_EYEQ / 'Label_EyeQ_train.csv')
-    parser.add_argument('--test-labels', type=Path, default=DEFAULT_EYEQ / 'Label_EyeQ_test.csv')
+    parser.add_argument(
+        '--train-labels', type=Path,
+        default=DEFAULT_EYEQ_LABELS / 'Label_EyeQ_train.csv')
+    parser.add_argument(
+        '--test-labels', type=Path,
+        default=DEFAULT_EYEQ_LABELS / 'Label_EyeQ_test.csv')
     parser.add_argument(
         '--train-images', type=Path, default=DEFAULT_EYEQ / 'images' / 'train')
     parser.add_argument(
@@ -178,7 +324,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--output', type=Path, default=ROOT / 'results' / 'eyeq_quality_calibration')
     parser.add_argument('--artifact', type=Path, default=ROOT / 'python' / 'weights' / 'quality_thresholds_eyeq.json')
     parser.add_argument('--seed', type=int, default=42)
-    return parser.parse_args()
+    parser.add_argument('--minimum-macro-f1', type=float, default=0.70)
+    parser.add_argument('--minimum-reject-recall', type=float, default=0.80)
+    parser.add_argument(
+        '--workers', type=int, default=min(4, os.cpu_count() or 1),
+        help='Parallel image readers/feature workers (default: up to 4)')
+    parser.add_argument(
+        '--checkpoint-every', type=int, default=250,
+        help='Persist the resumable feature cache after this many new images')
+    args = parser.parse_args()
+    if not 0 <= args.minimum_macro_f1 <= 1:
+        parser.error('--minimum-macro-f1 must be between zero and one')
+    if not 0 <= args.minimum_reject_recall <= 1:
+        parser.error('--minimum-reject-recall must be between zero and one')
+    return args
 
 
 if __name__ == '__main__':

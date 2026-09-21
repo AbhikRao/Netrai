@@ -91,16 +91,54 @@ fixture. It fails loudly if a toolbox, converter, artifact, or model output is
 wrong. The reference ONNX Runtime comparison passed across all six outputs
 with maximum absolute error `5.25e-06` on five real APTOS images. Desktop
 MATLAB execution uses the installed ONNX converter support package. On
-2026-09-19, all six raw fixture outputs passed with maximum error `7.63e-06`
-and the end-to-end grade matched. The verifier also reported a `1.0163`
-preprocessing-path logit difference, so MATLAB/OpenCV resize and Gaussian
-boundary alignment remains an explicit follow-up before the full holdout.
+2026-09-21, all six raw fixture outputs passed with maximum error `7.63e-06`
+and the end-to-end grade matched. Measured bicubic/uint8 preprocessing
+alignment reduced the fixture's maximum preprocessing-path logit difference
+from `1.0163` to `0.2210`.
+
+The complete aligned MATLAB Fold-0 run then processed 733/733 images with zero
+errors: QWK `0.9297`, referable sensitivity `94.97%`, specificity `93.33%`, AUC
+`0.9841`, and average model time `1.55 s/image`. Row-for-row comparison with
+Python matches 717/733 strict grades, 729/733 grade-derived referable decisions,
+727/733 independent referable-head decisions, and 724/733 final triage actions.
+The maximum comparable probability difference is `0.2990`; exact screening,
+strict-grade, and `0.05` probability-tolerance gates therefore remain failed.
+Do not describe the runtimes as exactly equivalent. The MATLAB pipeline is
+executable and independently exceeds the internal screening target, while
+cross-library preprocessing remains a bounded deployment difference.
 
 The deployment config also contains the fitted confidence temperature. On a
 disjoint post-hoc half of Fold 0 it reduced deployed-policy ECE from 4.59% to
 2.58%, NLL from 0.3932 to 0.3837, and Brier from 0.2101 to 0.2079. This is not
 external validation; the full artifact and limitation statement are in
 `../python/weights/calibration.json`.
+
+## Learned M1 quality candidate (non-default)
+
+`models/quality_model_candidate.onnx` is the evaluated frozen
+MobileNetV3-Small EyeQ candidate. Its input is the complete RGB frame resized
+to 224 x 224 with explicit half-pixel bilinear coordinates, float32 ImageNet
+normalization, no crop, no enhancement, and no antialiasing. The class policy
+is Good/Usable argmax unless calibrated Reject probability is at least 0.375.
+
+Verify the shared Python/ONNX/MATLAB contract with:
+
+```matlab
+qualityReport = verifyQualityModel();
+```
+
+The fixed real-image fixture passes with exact preprocessed-input equality,
+the same decision, and maximum MATLAB/Python logit error `2.65e-05`. The
+command writes `results/quality_model_candidate_parity.json` for the validation
+passport.
+
+The candidate is intentionally not called by `main_pipeline` yet. Although it
+passes the global EyeQ engineering gate (macro-F1 `0.8289`, Reject recall
+`86.37%`), the paired synthetic audit hard-rejects only `0.4%` of defocus,
+`7.6%` low light, `6.4%` uneven illumination, `1.6%` shifted FOV, and `0%` JPEG
+Q25 cases. It also lacks real portable-camera and factor-specific validation.
+Promoting it would turn a benchmark improvement into an unsupported field
+claim, so the existing research route remains unchanged for now.
 
 ## Run one image
 
@@ -156,8 +194,23 @@ The validator writes:
 
 Per-image and aggregate evidence includes both referable decisions,
 disagreement, triage, concordant coverage, and retained sensitivity and
-specificity. The matching Python Fold-0 run found 9/733 disagreements (1.23%);
-the MATLAB run must reproduce this after installation.
+specificity. The matching Python Fold-0 run found 9/733 internal head
+disagreements (1.23%); the aligned MATLAB run finds 11/733 (1.50%). This
+difference is retained as evidence and routed to human review rather than
+normalized away.
+
+Compare a MATLAB CSV with the Python evidence using the layered audit:
+
+```bash
+python3 ../python/compare_runtime_outputs.py \
+  --python-csv ../results/verification_2026-09-18/fold0_dual_head/per_image_results.csv \
+  --matlab-csv results/fold0_combined/per_image_results.csv \
+  --output-dir ../results/matlab_python_comparison
+```
+
+The audit reports screening-decision parity, strict five-grade parity,
+threshold-edge mismatches, and numerical tolerances separately. Do not use a
+screening parity pass as a claim of exact logits or exact five-grade parity.
 
 For an unlabeled folder, use:
 

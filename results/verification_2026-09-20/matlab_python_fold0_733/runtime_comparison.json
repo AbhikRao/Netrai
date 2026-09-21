@@ -1,0 +1,168 @@
+{
+  "schema_version": "1.0",
+  "python_csv": "/home/ovoabhik/Downloads/Larp/Netrai/results/verification_2026-09-18/fold0_dual_head/per_image_results.csv",
+  "matlab_csv": "/home/ovoabhik/Downloads/Larp/Netrai/results/verification_2026-09-20/matlab_fold0_733/per_image_results.csv",
+  "ordinal_thresholds": [
+    0.5421875,
+    1.4859374999999995,
+    2.5546875,
+    3.3031249999999996
+  ],
+  "tolerances": {
+    "probability_absolute": 0.05,
+    "threshold_edge_score_distance": 0.05
+  },
+  "counts": {
+    "python_rows": 733,
+    "matlab_rows": 733,
+    "matched_rows": 733,
+    "compared_successful_rows": 733,
+    "python_only_rows": 0,
+    "matlab_only_rows": 0,
+    "matched_rows_not_successful_in_both": 0
+  },
+  "unmatched": {
+    "python_only_ids": [],
+    "matlab_only_ids": []
+  },
+  "exact_comparisons": {
+    "true_grade": {
+      "matches": 733,
+      "mismatches": 0,
+      "match_rate": 1.0
+    },
+    "predicted_grade": {
+      "matches": 703,
+      "mismatches": 30,
+      "match_rate": 0.9590723055934516
+    },
+    "referable_head_prediction": {
+      "matches": 729,
+      "mismatches": 4,
+      "match_rate": 0.9945429740791268
+    },
+    "head_disagreement": {
+      "matches": 726,
+      "mismatches": 7,
+      "match_rate": 0.990450204638472
+    },
+    "triage_action": {
+      "matches": 724,
+      "mismatches": 9,
+      "match_rate": 0.9877216916780355
+    }
+  },
+  "derived_screening_comparisons": {
+    "grade_referable": {
+      "matches": 726,
+      "mismatches": 7,
+      "match_rate": 0.990450204638472
+    }
+  },
+  "numerical_comparisons": {
+    "continuous_score": {
+      "count": 733,
+      "mean_abs_difference": 0.027884621999992424,
+      "p95_abs_difference": 0.11466398934883659,
+      "max_abs_difference": 0.44580114638363044
+    },
+    "confidence": {
+      "count": 733,
+      "mean_abs_difference": 0.03048305091954777,
+      "p95_abs_difference": 0.09760941997877462,
+      "max_abs_difference": 0.7602641395125384
+    },
+    "referable_probability": {
+      "count": 733,
+      "mean_abs_difference": 0.010045107151878233,
+      "p95_abs_difference": 0.05404449393781074,
+      "max_abs_difference": 0.17446675240050874
+    },
+    "calibrated_referable_probability": {
+      "count": 733,
+      "mean_abs_difference": 0.009838839574962377,
+      "p95_abs_difference": 0.05614751033385021,
+      "max_abs_difference": 0.2100165720152627
+    },
+    "referable_head_probability": {
+      "count": 733,
+      "mean_abs_difference": 0.009735004312248057,
+      "p95_abs_difference": 0.0570994613045935,
+      "max_abs_difference": 0.24036949748671071
+    },
+    "iqs": {
+      "count": 733,
+      "mean_abs_difference": 5.6619863480913515e-05,
+      "p95_abs_difference": 0.00024991106901139926,
+      "max_abs_difference": 0.0004937981546720982
+    },
+    "raw_prob_grade_0": {
+      "count": 733,
+      "mean_abs_difference": 0.004643109664834212,
+      "p95_abs_difference": 0.01946068158076858,
+      "max_abs_difference": 0.1687686280272263
+    },
+    "calibrated_prob_grade_0": {
+      "count": 733,
+      "mean_abs_difference": 0.003713196370405247,
+      "p95_abs_difference": 0.015868628380317,
+      "max_abs_difference": 0.2067416174575805
+    },
+    "raw_prob_grade_1": {
+      "count": 733,
+      "mean_abs_difference": 0.010633113952318468,
+      "p95_abs_difference": 0.0533512977638806,
+      "max_abs_difference": 0.16164542555380823
+    },
+    "calibrated_prob_grade_1": {
+      "count": 733,
+      "mean_abs_difference": 0.010604500823127198,
+      "p95_abs_difference": 0.05873126663866362,
+      "max_abs_difference": 0.18384302208944658
+    },
+    "raw_prob_grade_2": {
+      "count": 733,
+      "mean_abs_difference": 0.011458330921714303,
+      "p95_abs_difference": 0.05295525864035483,
+      "max_abs_difference": 0.15357671174423113
+    },
+    "calibrated_prob_grade_2": {
+      "count": 733,
+      "mean_abs_difference": 0.0127504137602358,
+      "p95_abs_difference": 0.06320510610810251,
+      "max_abs_difference": 0.19004351322460972
+    },
+    "raw_prob_grade_3": {
+      "count": 733,
+      "mean_abs_difference": 0.007327924412113974,
+      "p95_abs_difference": 0.03648316134395214,
+      "max_abs_difference": 0.15296403254769553
+    },
+    "calibrated_prob_grade_3": {
+      "count": 733,
+      "mean_abs_difference": 0.007521536396999009,
+      "p95_abs_difference": 0.03866200439443925,
+      "max_abs_difference": 0.17854483329783338
+    },
+    "raw_prob_grade_4": {
+      "count": 733,
+      "mean_abs_difference": 0.008114439689951049,
+      "p95_abs_difference": 0.04190270141974475,
+      "max_abs_difference": 0.15598775092610273
+    },
+    "calibrated_prob_grade_4": {
+      "count": 733,
+      "mean_abs_difference": 0.008116376583599634,
+      "p95_abs_difference": 0.044321923682034324,
+      "max_abs_difference": 0.17234945786512157
+    }
+  },
+  "threshold_edge_grade_mismatches": 10,
+  "maximum_probability_abs_difference": 0.24036949748671071,
+  "gates": {
+    "screening_decision_parity_pass": false,
+    "strict_five_grade_parity_pass": false,
+    "probability_tolerance_pass": false
+  },
+  "interpretation": "Screening parity covers grade-derived referability, the independent referable head, head-disagreement routing, and triage. Strict five-grade parity is reported separately and must not be inferred from screening parity."
+}

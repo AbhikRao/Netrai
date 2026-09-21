@@ -1,0 +1,4 @@
+quality,pred_good,pred_usable,pred_reject
+true_good,6458,1420,593
+true_usable,1391,2031,1136
+true_reject,583,840,1797

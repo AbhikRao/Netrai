@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "status": "eyeq_threshold_baseline_failed_held_out_gate",
+  "deployment_status": "not_deployed",
+  "created_on": "2026-09-21",
+  "label_mapping": {
+    "0": "Good",
+    "1": "Usable",
+    "2": "Reject"
+  },
+  "reject_threshold": 0.3319358597897512,
+  "good_threshold": 0.3684080869128397,
+  "optimizer": {
+    "training_macro_f1": 0.42948916132985326,
+    "optimizer_evaluations": 1723,
+    "seed": 42
+  },
+  "train_metrics": {
+    "samples": 12543,
+    "missing_or_failed": 0,
+    "accuracy": 0.6409152515347205,
+    "balanced_accuracy": 0.41794333104311093,
+    "macro_f1": 0.4294891613298532,
+    "per_class_recall": {
+      "good": 0.859710075476219,
+      "usable": 0.11567164179104478,
+      "reject": 0.27844827586206894
+    },
+    "per_class_precision": {
+      "good": 0.7131074232336282,
+      "usable": 0.1609792284866469,
+      "reject": 0.5706713780918727
+    },
+    "predicted_counts": {
+      "good": 10063,
+      "usable": 1348,
+      "reject": 1132
+    }
+  },
+  "test_metrics": {
+    "samples": 16249,
+    "missing_or_failed": 0,
+    "accuracy": 0.5317865714813219,
+    "balanced_accuracy": 0.41014778390002204,
+    "macro_f1": 0.39762620462935816,
+    "per_class_recall": {
+      "good": 0.8608192657301381,
+      "usable": 0.11869240895129443,
+      "reject": 0.25093167701863356
+    },
+    "per_class_precision": {
+      "good": 0.5655343570653016,
+      "usable": 0.2945019052803484,
+      "reject": 0.5322793148880105
+    },
+    "predicted_counts": {
+      "good": 12894,
+      "usable": 1837,
+      "reject": 1518
+    }
+  },
+  "held_out_gate": {
+    "minimum_macro_f1": 0.7,
+    "minimum_reject_recall": 0.8,
+    "passed": false,
+    "purpose": "Project engineering gate only; not a clinical or regulatory acceptance threshold."
+  },
+  "factor_diagnostics": {
+    "train": {
+      "scope": "Association with global EyeQ quality labels; EyeQ has no factor-specific focus, illumination, or FOV annotations.",
+      "features": {
+        "iqs": {
+          "class_summary": {
+            "good": {
+              "count": 8347,
+              "mean": 0.41531307288001884,
+              "median": 0.4104649862767161,
+              "p10": 0.3579163594978161,
+              "p90": 0.48254606766771513
+            },
+            "usable": {
+              "count": 1876,
+              "mean": 0.42266034156443344,
+              "median": 0.42782545239930575,
+              "p10": 0.3429359934495379,
+              "p90": 0.49210690744545316
+            },
+            "reject": {
+              "count": 2320,
+              "mean": 0.3772085884342385,
+              "median": 0.38614123037512815,
+              "p10": 0.26993046353230876,
+              "p90": 0.4740769950054422
+            }
+          },
+          "good_vs_rest_auc_high_score": 0.5532210587410717,
+          "reject_vs_rest_auc_low_score": 0.6448313808956815
+        },
+        "focus": {
+          "class_summary": {
+            "good": {
+              "count": 8347,
+              "mean": 0.0013375268040133016,
+              "median": 0.0005238010529286,
+              "p10": 0.00025381914202742,
+              "p90": 0.002742621244903141
+            },
+            "usable": {
+              "count": 1876,
+              "mean": 0.0027352066517506595,
+              "median": 0.0005785962452659,
+              "p10": 0.00030441465888155,
+              "p90": 0.0019725866824226498
+            },
+            "reject": {
+              "count": 2320,
+              "mean": 0.0025617906508213113,
+              "median": 0.00064173822483325,
+              "p10": 0.00025972426725549,
+              "p90": 0.002522004394364399
+            }
+          },
+          "good_vs_rest_auc_high_score": 0.4680886929801189,
+          "reject_vs_rest_auc_low_score": 0.4606035410349213
+        },
+        "illumination": {
+          "class_summary": {
+            "good": {
+              "count": 8347,
+              "mean": 0.7681528442967683,
+              "median": 0.7868441384439625,
+              "p10": 0.625854679617631,
+              "p90": 0.8839411045108932
+            },
+            "usable": {
+              "count": 1876,
+              "mean": 0.7279194406303077,
+              "median": 0.7473715987540259,
+              "p10": 0.5354223349961333,
+              "p90": 0.8858887321052129
+            },
+            "reject": {
+              "count": 2320,
+              "mean": 0.6155486217993823,
+              "median": 0.632679221515712,
+              "p10": 0.3527729182692412,
+              "p90": 0.8455607232869984
+            }
+          },
+          "good_vs_rest_auc_high_score": 0.6758234036694596,
+          "reject_vs_rest_auc_low_score": 0.7370618820981762
+        },
+        "fov": {
+          "class_summary": {
+            "good": {
+              "count": 8347,
+              "mean": 0.5836982666181783,
+              "median": 0.4981303068102241,
+              "p10": 0.45631196221473996,
+              "p90": 0.7569472369912229
+            },
+            "usable": {
+              "count": 1876,
+              "mean": 0.6671778187325023,
+              "median": 0.7244891495342656,
+              "p10": 0.4580253489758698,
+              "p90": 0.7752199519526579
+            },
+            "reject": {
+              "count": 2320,
+              "mean": 0.6429674181765046,
+              "median": 0.6735513752349743,
+              "p10": 0.4571229971612559,
+              "p90": 0.7831061604817708
+            }
+          },
+          "good_vs_rest_auc_high_score": 0.36654727048403246,
+          "reject_vs_rest_auc_low_score": 0.415714248972061
+        }
+      }
+    },
+    "test": {
+      "scope": "Association with global EyeQ quality labels; EyeQ has no factor-specific focus, illumination, or FOV annotations.",
+      "features": {
+        "iqs": {
+          "class_summary": {
+            "good": {
+              "count": 8471,
+              "mean": 0.4170075122953234,
+              "median": 0.4123484068746456,
+              "p10": 0.3587949810580613,
+              "p90": 0.4845839699382084
+            },
+            "usable": {
+              "count": 4558,
+              "mean": 0.4165826871905885,
+              "median": 0.41979907159405405,
+              "p10": 0.33692778599264706,
+              "p90": 0.490257123710412
+            },
+            "reject": {
+              "count": 3220,
+              "mean": 0.3834960188207546,
+              "median": 0.39195201470923324,
+              "p10": 0.276730825116847,
+              "p90": 0.4789474489582453
+            }
+          },
+          "good_vs_rest_auc_high_score": 0.543090839258312,
+          "reject_vs_rest_auc_low_score": 0.6211790563716202
+        },
+        "focus": {
+          "class_summary": {
+            "good": {
+              "count": 8471,
+              "mean": 0.001550401559951584,
+              "median": 0.0005305091324122,
+              "p10": 0.0002548677436374,
+              "p90": 0.0027034154876173
+            },
+            "usable": {
+              "count": 4558,
+              "mean": 0.0016503065141859014,
+              "median": 0.0005495326779457999,
+              "p10": 0.00028180264809161997,
+              "p90": 0.0020437978743753416
+            },
+            "reject": {
+              "count": 3220,
+              "mean": 0.0021635973999265803,
+              "median": 0.0006126020428826,
+              "p10": 0.00025257934045618,
+              "p90": 0.00277192122500649
+            }
+          },
+          "good_vs_rest_auc_high_score": 0.48106620870582345,
+          "reject_vs_rest_auc_low_score": 0.4646138880824382
+        },
+        "illumination": {
+          "class_summary": {
+            "good": {
+              "count": 8471,
+              "mean": 0.7718003657129827,
+              "median": 0.7876167443639428,
+              "p10": 0.6374679364127365,
+              "p90": 0.8853735942807579
+            },
+            "usable": {
+              "count": 4558,
+              "mean": 0.7200186381257374,
+              "median": 0.7423965174173208,
+              "p10": 0.5306504659224187,
+              "p90": 0.8793949504350546
+            },
+            "reject": {
+              "count": 3220,
+              "mean": 0.6306217323966954,
+              "median": 0.646280592414552,
+              "p10": 0.3725378955275853,
+              "p90": 0.8577639260119452
+            }
+          },
+          "good_vs_rest_auc_high_score": 0.6609412707775949,
+          "reject_vs_rest_auc_low_score": 0.7042645670027063
+        },
+        "fov": {
+          "class_summary": {
+            "good": {
+              "count": 8471,
+              "mean": 0.5850288946871953,
+              "median": 0.4979860904817656,
+              "p10": 0.4565476019666361,
+              "p90": 0.7571183268229167
+            },
+            "usable": {
+              "count": 4558,
+              "mean": 0.655664164963624,
+              "median": 0.7180668277350347,
+              "p10": 0.4583335126836547,
+              "p90": 0.7829512939453125
+            },
+            "reject": {
+              "count": 3220,
+              "mean": 0.6476518940877626,
+              "median": 0.6879676664189911,
+              "p10": 0.45729905693320216,
+              "p90": 0.783158447265625
+            }
+          },
+          "good_vs_rest_auc_high_score": 0.37722970803630274,
+          "reject_vs_rest_auc_low_score": 0.4281888372283711
+        }
+      }
+    }
+  },
+  "sources": {
+    "train_labels": "/home/ovoabhik/Downloads/Larp/Netrai/data/eyeq/data/Label_EyeQ_train.csv",
+    "train_labels_sha256": "34f39f8923f62a13fcaeccef7e5da7ec607b45805e7736042fa274b2731b9480",
+    "test_labels": "/home/ovoabhik/Downloads/Larp/Netrai/data/eyeq/data/Label_EyeQ_test.csv",
+    "test_labels_sha256": "209135bb0dff2d6203c445ee010cbdcb925edb5338a040dc6ae62c06649047b3"
+  },
+  "limitation": "EyeQ is a re-annotated EyePACS subset. Thresholds require additional portable-camera/domain validation before rural clinical use."
+}
