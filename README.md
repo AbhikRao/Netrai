@@ -15,12 +15,12 @@ screening completion.
 ## Screening workflow
 
 ```mermaid
-flowchart LR
-    A[Fundus image] --> B[Quality assessment]
-    B -->|Recapture required| C[Acquisition feedback]
-    B -->|Accepted| D[Retinal analysis and grading]
+flowchart TD
+    A[Fundus image] --> B[Image quality]
+    B -->|Recapture| C[Acquisition feedback]
+    B -->|Accepted| D[Analysis and grading]
     D --> E[Explanation report]
-    E --> F[Screening or human-review route]
+    E --> F[Review / screening route]
 ```
 
 | Component | Implemented capability |
