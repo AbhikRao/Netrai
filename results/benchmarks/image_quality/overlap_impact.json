@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "confirmed_overlap_diagnostic_exclusion_not_independent_test",
+  "confirmed_cross_split_same_retina_pairs": 5,
+  "sources_sha256": {
+    "confirmed_pairs": "8529f2978e387ed49ba5a493bd8779f2f722b865fb67f51bc19aa6f2adb08c17",
+    "geometric_review": "f9ab1c9e35e14aee6191f252d21e24c252f8f12d5ad5cab71bbc89eb53a27281",
+    "test_predictions": "cb14a851c82e6fd8d16ae2774d53f094a966e15335867f1c7dfb8e10ab0ba96c",
+    "training_labels": "34f39f8923f62a13fcaeccef7e5da7ec607b45805e7736042fa274b2731b9480",
+    "test_labels": "209135bb0dff2d6203c445ee010cbdcb925edb5338a040dc6ae62c06649047b3"
+  },
+  "official_full_test": {
+    "images": 16249,
+    "metrics": {
+      "accuracy": 0.850513877777094,
+      "balanced_accuracy": 0.8298664167103941,
+      "macro_f1": 0.8288882229049658,
+      "per_class_recall": {
+        "good": 0.9271632628969425,
+        "usable": 0.6987713909609478,
+        "reject": 0.863664596273292
+      },
+      "per_class_precision": {
+        "good": 0.9048387096774193,
+        "usable": 0.7610513739545998,
+        "reject": 0.8218085106382979
+      }
+    },
+    "false_reject_rate_good_or_usable": 0.04628137232327884
+  },
+  "after_excluding_confirmed_test_images": {
+    "images": 16244,
+    "metrics": {
+      "accuracy": 0.8504678650578675,
+      "balanced_accuracy": 0.8298520776409589,
+      "macro_f1": 0.8288718615421792,
+      "per_class_recall": {
+        "good": 0.9271202456886369,
+        "usable": 0.6987713909609478,
+        "reject": 0.863664596273292
+      },
+      "per_class_precision": {
+        "good": 0.9047838616714697,
+        "usable": 0.7610513739545998,
+        "reject": 0.8218085106382979
+      }
+    },
+    "false_reject_rate_good_or_usable": 0.04629914004914005
+  },
+  "confirmed_pair_details": [
+    {
+      "train_image": "14282_left.jpeg",
+      "test_image": "3010_left.jpeg",
+      "train_quality_label": 0,
+      "test_quality_label": 0,
+      "test_prediction": 0
+    },
+    {
+      "train_image": "19207_left.jpeg",
+      "test_image": "9621_left.jpeg",
+      "train_quality_label": 0,
+      "test_quality_label": 0,
+      "test_prediction": 0
+    },
+    {
+      "train_image": "1167_left.jpeg",
+      "test_image": "15021_left.jpeg",
+      "train_quality_label": 0,
+      "test_quality_label": 0,
+      "test_prediction": 0
+    },
+    {
+      "train_image": "299_right.jpeg",
+      "test_image": "18156_right.jpeg",
+      "train_quality_label": 0,
+      "test_quality_label": 0,
+      "test_prediction": 0
+    },
+    {
+      "train_image": "44022_right.jpeg",
+      "test_image": "2750_right.jpeg",
+      "train_quality_label": 0,
+      "test_quality_label": 0,
+      "test_prediction": 0
+    }
+  ],
+  "limitations": [
+    "Five same-retina pairs were visually adjudicated after pHash+ORB triage.",
+    "The pHash radius and ORB gate may miss other transformed duplicates.",
+    "The official test set was previously exposed during development.",
+    "Excluding five images post hoc does not create an independent external cohort."
+  ]
+}

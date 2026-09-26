@@ -1,5 +1,5 @@
 """
-NetrAI Module 4: CAFE Explainability
+NetrAI Module 4: model attribution and candidate overlays
 Grad-CAM, lesion overlay, calibrated confidence, evidence checklist.
 """
 
@@ -155,7 +155,7 @@ def assess_gradcam_quality(heatmap, fov_mask=None, border_fraction=0.10):
 
 def generate_evidence_checklist(seg_results, grade, probs):
     """
-    Structured clinical evidence checklist.
+    Structured retinal-candidate evidence checklist.
     Returns list of dicts with 'criterion', 'status', 'detail'.
     """
     checklist = []

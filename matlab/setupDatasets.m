@@ -1,5 +1,5 @@
 function report = setupDatasets(datasetPath)
-%SETUPDATASETS Verify a real APTOS-style dataset; never generate fake images.
+%SETUPDATASETS Verify the required files in a local APTOS-style dataset.
 %
 % report = setupDatasets('../data/aptos2019')
 

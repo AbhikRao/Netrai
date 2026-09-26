@@ -1,4 +1,4 @@
-"""Versioned screening-triage policy for NetrAI's independent model heads."""
+"""Versioned screening-triage policy for NetrAI's shared-backbone grade and referral outputs."""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ def load_safety_policy(path: str | Path) -> dict:
 def assign_triage(
         *, quality_rejected: bool, grade_referable: bool,
         referable_head_positive: bool) -> str:
-    """Return the four-way fail-safe screening disposition."""
+    """Apply conservative four-way research screening routing."""
     if quality_rejected:
         return TRIAGE_RECAPTURE
     if bool(grade_referable) != bool(referable_head_positive):

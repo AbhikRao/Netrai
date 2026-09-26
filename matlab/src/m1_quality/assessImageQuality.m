@@ -1,5 +1,5 @@
 function [iqs, metrics] = assessImageQuality(rawImg)
-%ASSESSIMAGEQUALITY MATLAB equivalent of Python M1 quality scoring.
+%ASSESSIMAGEQUALITY Compute native focus, illumination and field-of-view quality heuristics.
 
     if nargin < 1 || isempty(rawImg)
         error('NetrAI:EmptyImage', 'Input RGB image is required.');

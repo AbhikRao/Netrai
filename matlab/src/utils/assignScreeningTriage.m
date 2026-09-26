@@ -1,5 +1,5 @@
 function action = assignScreeningTriage(qualityRejected, gradeReferable, referableHeadPositive)
-%ASSIGNSCREENINGTRIAGE Fail-safe four-way screening disposition.
+%ASSIGNSCREENINGTRIAGE Apply conservative four-way research screening routing.
 
     if qualityRejected
         action = "recapture";

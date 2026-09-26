@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "purpose": "Portable publication of recorded evaluation evidence; not a new evaluation",
+  "path_policy": "Workspace paths are relative; MATLAB installation paths use MATLAB_ROOT or MATLAB_SUPPORT_PACKAGES. Original raw outputs remain local. Numeric evaluation values are preserved.",
+  "artifacts": [
+    {
+      "path": "results/benchmarks/matlab_grading/aggregate_metrics.json",
+      "source_path": "results/verification_2026-09-20/matlab_fold0_733_aligned/aggregate_metrics.json",
+      "evidence_date": "2026-09-20",
+      "scope": "MATLAB model-only internal development evaluation; training overlap and selection exposure",
+      "source_sha256": "3e171284d66096ad2c10d11ea360f73e2c43d4717c700c8f371dbdbadc9ed52a",
+      "published_sha256": "3e171284d66096ad2c10d11ea360f73e2c43d4717c700c8f371dbdbadc9ed52a",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_grading/confusion_matrix.csv",
+      "source_path": "results/verification_2026-09-20/matlab_fold0_733_aligned/confusion_matrix.csv",
+      "evidence_date": "2026-09-20",
+      "scope": "MATLAB model-only internal development evaluation; training overlap and selection exposure",
+      "source_sha256": "8390d1210345e986b4780ea9cba5800d2568630ee5089e4edb1feaf421146ee3",
+      "published_sha256": "8390d1210345e986b4780ea9cba5800d2568630ee5089e4edb1feaf421146ee3",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_grading/per_grade_metrics.csv",
+      "source_path": "results/verification_2026-09-20/matlab_fold0_733_aligned/per_grade_metrics.csv",
+      "evidence_date": "2026-09-20",
+      "scope": "MATLAB model-only internal development evaluation; training overlap and selection exposure",
+      "source_sha256": "a21570cbcf1151856bca1edd78c29fc6522f42dc204716f652e1171863054af6",
+      "published_sha256": "a21570cbcf1151856bca1edd78c29fc6522f42dc204716f652e1171863054af6",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/runtime_comparison/runtime_comparison.json",
+      "source_path": "results/verification_2026-09-20/matlab_python_fold0_733_aligned/runtime_comparison.json",
+      "evidence_date": "2026-09-20",
+      "scope": "MATLAB versus reference runtime; exact and numerical gates failed",
+      "source_sha256": "5b3aaefde348836c0594edd5b7999f0b74f9aafc5bff765d50f964e7acc5e7f3",
+      "published_sha256": "51529f55b71910a53f572dfd6c7281cbf4d93a1c03f9dba60edae472a1cfa086",
+      "paths_normalized": true
+    },
+    {
+      "path": "results/benchmarks/split_integrity/legacy_aptos_overlap.json",
+      "source_path": "results/implementation_2026-09-24/legacy_aptos_overlap.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Exact-content overlap in the legacy grading split; development evidence",
+      "source_sha256": "5314b3363c8945301f81200ff27762b9da0d2fd44babc32fbba3b2ca0627f012",
+      "published_sha256": "5314b3363c8945301f81200ff27762b9da0d2fd44babc32fbba3b2ca0627f012",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/reference_grading/aggregate_metrics.json",
+      "source_path": "results/verification_2026-09-18/idrid_external_grading/aggregate_metrics.json",
+      "evidence_date": "2026-09-18",
+      "scope": "Supporting reference runtime on previously exposed IDRiD test labels; not MATLAB external validation",
+      "source_sha256": "09c3bdde87b0a29aafe322811d1bbff5f3b20329e696908fa0f10000a40e8433",
+      "published_sha256": "679927eb66c21e61a2c902c0aea4492609142c557b96be85406e7263a7157ab5",
+      "paths_normalized": true
+    },
+    {
+      "path": "results/benchmarks/reference_grading/bootstrap_metrics.json",
+      "source_path": "results/verification_2026-09-18/idrid_external_grading/bootstrap_metrics.json",
+      "evidence_date": "2026-09-18",
+      "scope": "Supporting reference runtime on previously exposed IDRiD test labels; not MATLAB external validation",
+      "source_sha256": "9f7317eab207a5cc1d3ba2d000766aec303a9c23aeac05b79b18086785098517",
+      "published_sha256": "9f7317eab207a5cc1d3ba2d000766aec303a9c23aeac05b79b18086785098517",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/reference_grading/confusion_matrix.csv",
+      "source_path": "results/verification_2026-09-18/idrid_external_grading/confusion_matrix.csv",
+      "evidence_date": "2026-09-18",
+      "scope": "Supporting reference runtime on previously exposed IDRiD test labels; not MATLAB external validation",
+      "source_sha256": "2ca345e0168660d7d249bb62709cb788956ea625d2b5895003a556e1050a5a85",
+      "published_sha256": "2ca345e0168660d7d249bb62709cb788956ea625d2b5895003a556e1050a5a85",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/reference_grading/per_grade_metrics.csv",
+      "source_path": "results/verification_2026-09-18/idrid_external_grading/per_grade_metrics.csv",
+      "evidence_date": "2026-09-18",
+      "scope": "Supporting reference runtime on previously exposed IDRiD test labels; not MATLAB external validation",
+      "source_sha256": "b3c3ff6debdcaba362673357b5eb6fb57f2da1d96fe9cee660cc3a582a79ae07",
+      "published_sha256": "b3c3ff6debdcaba362673357b5eb6fb57f2da1d96fe9cee660cc3a582a79ae07",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/grading_candidate/summary.json",
+      "source_path": "results/verification_2026-09-26/grading_idrid_test/summary.json",
+      "evidence_date": "2026-09-26",
+      "scope": "Non-default corrected candidate; failed screening targets; no MATLAB export; exposed development test",
+      "source_sha256": "c352ea1b58f65bd0a9feac480677b1f31a8b5053552879a447cdd50480c6a128",
+      "published_sha256": "c352ea1b58f65bd0a9feac480677b1f31a8b5053552879a447cdd50480c6a128",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/capacity_simulation/simulink_scenario_sweep.json",
+      "source_path": "results/implementation_2026-09-24/m5_simevents/simulink_scenario_sweep.json",
+      "evidence_date": "2026-09-24",
+      "scope": "MATLAB SimEvents endpoint-v2 assumptions and separate reference implementation; recapture unresolved",
+      "source_sha256": "67ec883588c3b91a8e3cd877b52a7592d113df4307aa35b1b9df71a946dcdfed",
+      "published_sha256": "67ec883588c3b91a8e3cd877b52a7592d113df4307aa35b1b9df71a946dcdfed",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/capacity_simulation/simulink_scenario_sweep.csv",
+      "source_path": "results/implementation_2026-09-24/m5_simevents/simulink_scenario_sweep.csv",
+      "evidence_date": "2026-09-24",
+      "scope": "MATLAB SimEvents endpoint-v2 assumptions and separate reference implementation; recapture unresolved",
+      "source_sha256": "194620e10773970a516cc3e3dbd8e1147e486b1c6b71ca377cd76065f8bee6e7",
+      "published_sha256": "194620e10773970a516cc3e3dbd8e1147e486b1c6b71ca377cd76065f8bee6e7",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/capacity_simulation/reference_crosscheck.json",
+      "source_path": "results/implementation_2026-09-24/m5_crosscheck/python_scenario_sweep.json",
+      "evidence_date": "2026-09-24",
+      "scope": "MATLAB SimEvents endpoint-v2 assumptions and separate reference implementation; recapture unresolved",
+      "source_sha256": "aa521deeb408dcdb28449400c7f85ff548ac62a05067811f5b66de330c079800",
+      "published_sha256": "aa521deeb408dcdb28449400c7f85ff548ac62a05067811f5b66de330c079800",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/retinal_analysis/idrid_native_mask_metrics.csv",
+      "source_path": "results/implementation_2026-09-24/lesions_native/lesion_mask_aggregate.csv",
+      "evidence_date": "2026-09-24",
+      "scope": "Supporting reference runtime; weak candidate-mask baselines, not measured MATLAB segmentation accuracy",
+      "source_sha256": "747180f7f3e58ec3192c72af8867db88c19e71c6f83f3c8348f280924642d292",
+      "published_sha256": "747180f7f3e58ec3192c72af8867db88c19e71c6f83f3c8348f280924642d292",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/retinal_analysis/idrid_landmark_metrics.json",
+      "source_path": "results/implementation_2026-09-24/landmarks_test/idrid_landmark_metrics.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Supporting reference runtime; weak candidate-mask baselines, not measured MATLAB segmentation accuracy",
+      "source_sha256": "8b8a7f8d14cf3035e9c89b18b776c0da5904840a16aa28dc5f9b18a3c4f0a606",
+      "published_sha256": "8b8a7f8d14cf3035e9c89b18b776c0da5904840a16aa28dc5f9b18a3c4f0a606",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/retinal_analysis/drive_vessel_metrics.json",
+      "source_path": "results/verification_2026-09-18/drive_vessel_validation/drive_vessel_metrics.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Supporting reference runtime; weak candidate-mask baselines, not measured MATLAB segmentation accuracy",
+      "source_sha256": "fd1ffe93d56581b372177b974b41b9607aba3c1b0c4e93e9197d56acb4c6dde7",
+      "published_sha256": "fd1ffe93d56581b372177b974b41b9607aba3c1b0c4e93e9197d56acb4c6dde7",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/image_quality/quality_model_metrics.json",
+      "source_path": "results/verification_2026-09-21/eyeq_learned_quality/quality_model_metrics.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Non-default learned quality model; synthetic stress and same-retina overlap block promotion",
+      "source_sha256": "0cf93480af97023af01312bf32a475e40ffa23c1b80c81a701a341fba5aa2f35",
+      "published_sha256": "0cf93480af97023af01312bf32a475e40ffa23c1b80c81a701a341fba5aa2f35",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/image_quality/test_confusion_matrix.csv",
+      "source_path": "results/verification_2026-09-21/eyeq_learned_quality/test_confusion_matrix.csv",
+      "evidence_date": "2026-09-24",
+      "scope": "Non-default learned quality model; synthetic stress and same-retina overlap block promotion",
+      "source_sha256": "8549a74e2090f547695f2f9c61d35dc372c39c16781955a5ff19b893cbfa13fb",
+      "published_sha256": "8549a74e2090f547695f2f9c61d35dc372c39c16781955a5ff19b893cbfa13fb",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/image_quality/exact_duplicate_audit.json",
+      "source_path": "results/verification_2026-09-21/eyeq_learned_quality/exact_duplicate_audit.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Non-default learned quality model; synthetic stress and same-retina overlap block promotion",
+      "source_sha256": "78f7c324be2174f59bd206ca9988f1f0783b85a6fafe594408993f0f43d442f0",
+      "published_sha256": "78f7c324be2174f59bd206ca9988f1f0783b85a6fafe594408993f0f43d442f0",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/image_quality/learned_quality_robustness.json",
+      "source_path": "results/verification_2026-09-21/eyeq_learned_quality/robustness/learned_quality_robustness.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Non-default learned quality model; synthetic stress and same-retina overlap block promotion",
+      "source_sha256": "9a70b5b5b368d0c766a07445f2b95589b44313da1bf352b187f75b08e04e9da9",
+      "published_sha256": "9a70b5b5b368d0c766a07445f2b95589b44313da1bf352b187f75b08e04e9da9",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/image_quality/overlap_impact.json",
+      "source_path": "results/verification_2026-09-24/perceptual_overlap/overlap_impact.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Non-default learned quality model; synthetic stress and same-retina overlap block promotion",
+      "source_sha256": "a5a3f90cd3e0c6fe70ec7c727cad920eefce8fce2a4fe14bd4e2883279112626",
+      "published_sha256": "a5a3f90cd3e0c6fe70ec7c727cad920eefce8fce2a4fe14bd4e2883279112626",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/image_quality/heuristic_quality_metrics.json",
+      "source_path": "results/verification_2026-09-20/eyeq_quality_calibration/quality_calibration_metrics.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Non-default learned quality model; synthetic stress and same-retina overlap block promotion",
+      "source_sha256": "fb7840dd2fb9636e745cb9d950359dad07d173b5791667990370be61ffc81852",
+      "published_sha256": "748075cb7cb5fd0fdcaf974dfb7e381828e6686b7eced5bfbf6b88cab4bb1012",
+      "paths_normalized": true
+    },
+    {
+      "path": "results/benchmarks/image_quality/heuristic_quality_robustness.json",
+      "source_path": "results/verification_2026-09-20/eyeq_quality_robustness/quality_robustness_summary.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Non-default learned quality model; synthetic stress and same-retina overlap block promotion",
+      "source_sha256": "a0a4d79fa131fa0942ee2c37919d3cf648492bf956a5e67d1c36871c4b742409",
+      "published_sha256": "f00c3b85ecfa654685351ce677dc78bbfb53f3fe9dc05424cff0d980f16cc92b",
+      "paths_normalized": true
+    },
+    {
+      "path": "results/benchmarks/image_quality/matlab_candidate_fixture.json",
+      "source_path": "matlab/results/quality_model_candidate_parity.json",
+      "evidence_date": "2026-09-24",
+      "scope": "Non-default learned quality model; synthetic stress and same-retina overlap block promotion",
+      "source_sha256": "12da32fc58cbc34679426128c3d26b1ef15fcde10d8e42955d04144c810e6384",
+      "published_sha256": "12da32fc58cbc34679426128c3d26b1ef15fcde10d8e42955d04144c810e6384",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/explanation_qc/gradcam_qc_summary.json",
+      "source_path": "results/verification_2026-09-18/gradcam_qc_25/gradcam_qc_summary.json",
+      "evidence_date": "2026-09-18",
+      "scope": "Supporting reference runtime heuristic attribution audit; not clinician/lesion validation",
+      "source_sha256": "64b0f214cb471c15e73b0404f211bd1185728bc786b8eb05e74143a0d648f762",
+      "published_sha256": "64b0f214cb471c15e73b0404f211bd1185728bc786b8eb05e74143a0d648f762",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/environment/matlab_environment.json",
+      "source_path": "matlab/results/environment_2026-09-18.json",
+      "evidence_date": "2026-09-18",
+      "scope": "Recorded MATLAB products and installed converter; machine paths made portable",
+      "source_sha256": "160f57b4d441664b59a9c72d79fbc3eb4cc806660b524f68892b0e244ad89423",
+      "published_sha256": "1f87804e4deaf8c62b5e2c764e8b07a15faec08a44bb8cd0c830ac27070e7157",
+      "paths_normalized": true
+    },
+    {
+      "path": "results/benchmarks/confidence_calibration/calibration_metrics.json",
+      "source_path": "results/verification_2026-09-17/calibration/calibration_metrics.json",
+      "evidence_date": "2026-09-17",
+      "scope": "Legacy post-hoc internal confidence calibration; evaluation cohort also selected the model/policy",
+      "source_sha256": "0bddf7789262e01da3d9c1f66457c0115a03fb0bd8e873138c8bf9ed5caacf2f",
+      "published_sha256": "0bddf7789262e01da3d9c1f66457c0115a03fb0bd8e873138c8bf9ed5caacf2f",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/confidence_calibration/reliability_bins.csv",
+      "source_path": "results/verification_2026-09-17/calibration/reliability_bins.csv",
+      "evidence_date": "2026-09-17",
+      "scope": "Legacy post-hoc internal confidence calibration; evaluation cohort also selected the model/policy",
+      "source_sha256": "e7c3af85a9b4f7c5c49e021ac79f90f6faad423c156b63fadfca229cad8e4e9b",
+      "published_sha256": "e7c3af85a9b4f7c5c49e021ac79f90f6faad423c156b63fadfca229cad8e4e9b",
+      "paths_normalized": false
+    }
+  ]
+}

@@ -84,11 +84,10 @@ def run(args):
 
 
 if __name__ == '__main__':
-    result = ROOT / 'results/verification_2026-09-21/eyeq_learned_quality'
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--checkpoint', type=Path, default=result / 'quality_mobilenet_v3_small.pth')
-    parser.add_argument('--metrics', type=Path, default=result / 'quality_model_metrics.json')
-    parser.add_argument('--config', type=Path, default=result / 'quality_model_config.json')
+    parser.add_argument('--checkpoint', type=Path, default=ROOT / 'python/weights/quality_model_candidate.pth')
+    parser.add_argument('--metrics', type=Path, default=ROOT / 'results/benchmarks/image_quality/quality_model_metrics.json')
+    parser.add_argument('--config', type=Path, default=ROOT / 'python/weights/quality_model_candidate.json')
     parser.add_argument('--image', type=Path, default=ROOT / 'data/eyeq/images/test/1_right.jpeg')
     parser.add_argument('--output', type=Path, default=ROOT / 'matlab/models/quality_model_candidate.onnx')
     parser.add_argument('--tolerance', type=float, default=1e-4)

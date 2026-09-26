@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "matlab_version": "26.1.0.3346908 (R2026a) Update 5",
+  "matlab_release": "2026a",
+  "matlab_root": "MATLAB_ROOT",
+  "simulink_license": true,
+  "importNetworkFromONNX": "MATLAB_SUPPORT_PACKAGES/R2026a/toolbox/nnet/supportpackages/onnx/importNetworkFromONNX.m",
+  "simevents": "MATLAB_ROOT/toolbox/slde/slde/simevents.m",
+  "products": [
+    {
+      "Name": "Computer Vision Toolbox",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "20-Nov-2025"
+    },
+    {
+      "Name": "Deep Learning Toolbox",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "20-Nov-2025"
+    },
+    {
+      "Name": "Image Processing Toolbox",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "20-Nov-2025"
+    },
+    {
+      "Name": "MATLAB",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "19-Nov-2025"
+    },
+    {
+      "Name": "Medical Imaging Toolbox",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "20-Nov-2025"
+    },
+    {
+      "Name": "Optimization Toolbox",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "20-Nov-2025"
+    },
+    {
+      "Name": "Parallel Computing Toolbox",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "20-Nov-2025"
+    },
+    {
+      "Name": "SimEvents",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "01-May-2025"
+    },
+    {
+      "Name": "Simulink",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "20-Nov-2025"
+    },
+    {
+      "Name": "Statistics and Machine Learning Toolbox",
+      "Version": "26.1",
+      "Release": "(R2026a)",
+      "Date": "12-Jan-2026"
+    }
+  ],
+  "onnx_converter_ready": true,
+  "status": "ready_for_m1_to_m5_runtime_verification"
+}

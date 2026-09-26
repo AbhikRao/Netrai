@@ -1,5 +1,5 @@
 function [modelInput, modelFov] = preprocessModelInput(imageRGB, config)
-%PREPROCESSMODELINPUT Reproduce the Python training preprocessing in MATLAB.
+%PREPROCESSMODELINPUT Apply the versioned MATLAB deployment preprocessing.
 % Output is single H-by-W-by-3 in ImageNet-normalized RGB order.
 
     if isempty(imageRGB)

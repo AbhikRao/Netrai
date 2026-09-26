@@ -100,8 +100,8 @@ def run(args):
 if __name__ == '__main__':
     result = ROOT / 'results/verification_2026-09-21/eyeq_learned_quality'
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--checkpoint', type=Path, default=result / 'quality_mobilenet_v3_small.pth')
-    parser.add_argument('--config', type=Path, default=result / 'quality_model_config.json')
+    parser.add_argument('--checkpoint', type=Path, default=ROOT / 'python/weights/quality_model_candidate.pth')
+    parser.add_argument('--config', type=Path, default=ROOT / 'python/weights/quality_model_candidate.json')
     parser.add_argument('--labels', type=Path, default=ROOT / 'data/eyeq/data/Label_EyeQ_test.csv')
     parser.add_argument('--images', type=Path, default=ROOT / 'data/eyeq/images/test')
     parser.add_argument('--output', type=Path, default=result / 'robustness')

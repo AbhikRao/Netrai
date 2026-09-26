@@ -1,5 +1,5 @@
 function feedback = generateRecaptureFeedback(metrics)
-%GENERATERECAPTUREFEEDBACK Actionable capture guidance aligned with Python M1.
+%GENERATERECAPTUREFEEDBACK Generate capture guidance from native quality heuristics.
 
     if metrics.iqs >= 0.7
         feedback = "Good quality image.";

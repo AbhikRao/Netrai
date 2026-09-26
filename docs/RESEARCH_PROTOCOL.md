@@ -12,12 +12,13 @@ been repeatedly inspected; five transformed same-retina EyeQ pairs cross the
 official split. These sources remain development evidence. A fresh identity-reviewed
 external cohort and clinician study are required for final generalization/usefulness claims.
 
-Historical metrics are retained under their original result directories.
-New evaluations use separate output directories.
+Raw historical metrics are retained locally. The public [benchmark index](../results/README.md)
+provides curated evidence with source hashes and runtime scope. New evaluations
+use separate output directories.
 
 ## Corrected training
 
-`prepare_training_manifest.py` creates five grouped development folds: three fit,
+The corrected local manifest builder creates five grouped development folds: three fit,
 one selection, one calibration. Content duplicates are grouped transitively with
 provided identities; absent verified identity, grouping is file-only and patient
 independence is unknown. Perceptual review is still required.

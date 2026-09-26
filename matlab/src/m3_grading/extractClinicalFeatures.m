@@ -1,5 +1,5 @@
 function featureVec = extractClinicalFeatures(segResults)
-%EXTRACTCLINICALFEATURES Build the documented 12-D clinical feature vector.
+%EXTRACTCLINICALFEATURES Summarize retinal candidates in a 12-D feature vector.
 % These features support explanations; the exported Fold-0 grade head itself
 % was trained from images and does not consume this vector.
 

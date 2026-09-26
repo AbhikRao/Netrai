@@ -90,7 +90,7 @@ def model_space_fov_mask(image_rgb, size=512):
     return resized.astype(bool)
 
 def ben_graham_preprocess(image, size=512):
-    """Ben Graham's famous Kaggle preprocessing: crop to circle, apply Gaussian-weighted subtraction for illumination normalization."""
+    """Normalize illumination using a circular crop and Gaussian-weighted subtraction."""
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
     # Crop to circle

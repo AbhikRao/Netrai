@@ -1,5 +1,5 @@
 function overlayImg = generateLesionOverlay(originalImg, segResults)
-%GENERATELESIONOVERLAY Creates a color-coded clinical lesion overlay on fundus image.
+%GENERATELESIONOVERLAY Create a color-coded candidate lesion overlay on fundus image.
 %
 %   overlayImg = generateLesionOverlay(originalImg, segResults)
 %

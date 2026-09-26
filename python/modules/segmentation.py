@@ -496,7 +496,7 @@ def detect_neovascularization(green_ch, vessel_mask, od_center, od_radius, fov_m
 
 def extract_clinical_features(seg_results):
     """
-    Extracts 12-D normalized clinical feature vector from segmentation results.
+    Extracts a 12-D normalized retinal-candidate feature vector from segmentation results.
     """
     features = np.zeros(12)
 

@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "status": "research_candidate_not_deployed",
+  "split_audit": {
+    "patient_identifier": "numeric EyePACS filename prefix; both eyes grouped",
+    "official_train_images": 12543,
+    "official_test_images": 16249,
+    "official_train_patients": 8614,
+    "official_test_patients": 12048,
+    "fit_images": 7527,
+    "selection_images": 2508,
+    "calibration_images": 2508,
+    "fit_patients": 5159,
+    "selection_patients": 1736,
+    "calibration_patients": 1719,
+    "train_test_patient_overlap": 0,
+    "internal_partition_patient_overlap": 0,
+    "seed": 42,
+    "train_labels_sha256": "34f39f8923f62a13fcaeccef7e5da7ec607b45805e7736042fa274b2731b9480",
+    "test_labels_sha256": "209135bb0dff2d6203c445ee010cbdcb925edb5338a040dc6ae62c06649047b3",
+    "exact_duplicate_audit": "exact_duplicate_audit.json",
+    "limitation": "Filename identity and exact-file hashes do not establish same-retina independence; inspect the separate perceptual-overlap audit."
+  },
+  "selected_on_training_selection": {
+    "C": 0.001,
+    "metrics": {
+      "accuracy": 0.9066985645933014,
+      "balanced_accuracy": 0.8731998879729298,
+      "macro_f1": 0.8566129942886125,
+      "per_class_recall": {
+        "good": 0.9394847213900539,
+        "usable": 0.8266666666666667,
+        "reject": 0.853448275862069
+      },
+      "per_class_precision": {
+        "good": 0.981226533166458,
+        "usable": 0.6581740976645435,
+        "reject": 0.9020501138952164
+      }
+    }
+  },
+  "selected_on_training_calibration": {
+    "reject_threshold": 0.375,
+    "reject_recall_patient_cluster_bootstrap_95_lower": 0.8687447033898306,
+    "reject_hits": 415,
+    "reject_total": 464,
+    "metrics": {
+      "accuracy": 0.9078947368421053,
+      "balanced_accuracy": 0.8602220580841994,
+      "macro_f1": 0.8507669871043171,
+      "per_class_recall": {
+        "good": 0.9502696225284601,
+        "usable": 0.736,
+        "reject": 0.8943965517241379
+      },
+      "per_class_precision": {
+        "good": 0.97539975399754,
+        "usable": 0.6917293233082706,
+        "reject": 0.8592132505175983
+      }
+    }
+  },
+  "confidence_temperature": 0.706358021779812,
+  "official_test_metrics": {
+    "accuracy": 0.850513877777094,
+    "balanced_accuracy": 0.8298664167103941,
+    "macro_f1": 0.8288882229049658,
+    "per_class_recall": {
+      "good": 0.9271632628969425,
+      "usable": 0.6987713909609478,
+      "reject": 0.863664596273292
+    },
+    "per_class_precision": {
+      "good": 0.9048387096774193,
+      "usable": 0.7610513739545998,
+      "reject": 0.8218085106382979
+    }
+  },
+  "patient_bootstrap": {
+    "unit": "filename patient identifier",
+    "replicates": 1000,
+    "macro_f1_95_ci": [
+      0.8226958505016199,
+      0.8351246963592299
+    ],
+    "reject_recall_95_ci": [
+      0.8519079924350096,
+      0.8756186781229446
+    ]
+  },
+  "retention_metrics": {
+    "false_reject_rate_among_good_or_usable": 0.04628137232327884,
+    "acceptance_rate": 0.7917410302172442,
+    "acceptance_rate_by_true_quality": {
+      "good": 0.998937551646795,
+      "usable": 0.8696796840719614,
+      "reject": 0.13633540372670808
+    },
+    "acceptance_rate_by_dr_grade": {
+      "0": 0.7989790529836296,
+      "1": 0.8798283261802575,
+      "2": 0.7768532526475038,
+      "3": 0.7321428571428571,
+      "4": 0.44080604534005036
+    }
+  },
+  "held_out_gate": {
+    "minimum_macro_f1": 0.7,
+    "minimum_reject_recall": 0.8,
+    "passed": true,
+    "purpose": "Engineering gate; not clinical validation"
+  },
+  "head_conversion_max_probability_error": 2.980232238769531e-07,
+  "checkpoint_sha256": "0cddeade514f9eb50e3e7419b6b4216304c23c41dce47919db5e555dd7d0da75",
+  "limitations": [
+    "Frozen ImageNet features; no retinal fine-tuning yet.",
+    "Test split has been examined for prior baseline development.",
+    "No portable-camera validation or factor-specific quality labels.",
+    "Filename grouping and exact-file hashing do not exclude transformed cross-split images.",
+    "Five visually confirmed same-retina images cross official EyeQ train/test despite distinct filename IDs; other overlaps may remain."
+  ],
+  "confirmed_cross_split_image_overlap": {
+    "audit": "results/verification_2026-09-24/perceptual_overlap/overlap_impact.json",
+    "same_retina_train_test_pairs": 5,
+    "post_hoc_exclusion_metrics": {
+      "images": 16244,
+      "metrics": {
+        "accuracy": 0.8504678650578675,
+        "balanced_accuracy": 0.8298520776409589,
+        "macro_f1": 0.8288718615421792,
+        "per_class_recall": {
+          "good": 0.9271202456886369,
+          "usable": 0.6987713909609478,
+          "reject": 0.863664596273292
+        },
+        "per_class_precision": {
+          "good": 0.9047838616714697,
+          "usable": 0.7610513739545998,
+          "reject": 0.8218085106382979
+        }
+      },
+      "false_reject_rate_good_or_usable": 0.04629914004914005
+    },
+    "interpretation": "Official test is not strictly image-independent; exclusion is diagnostic only."
+  }
+}

@@ -1,4 +1,4 @@
-% H1: generateClinicalReport - Generates a clinical DR screening report
+%GENERATECLINICALREPORT Generate a research screening report with attribution warnings.
 %
 % Syntax: reportPath = generateClinicalReport(img, segResults, grade, calProbs, checklist, heatmap, overlayImg, outputDir, gradcamStatus, gradcamQC, safety)
 %

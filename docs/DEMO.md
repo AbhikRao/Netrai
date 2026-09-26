@@ -5,6 +5,19 @@ report and the SimEvents capacity model. A recording has not yet been published.
 
 ## Prepare the session
 
+From a **Linux terminal**, run the launcher at the repository root:
+
+```bash
+./scripts/launch_demo.sh /absolute/path/to/fundus.png
+```
+
+If your local checkout has an image in the documented dataset layout, omitting
+the image argument uses that local sample. A fresh clone requires your own image.
+The launcher opens MATLAB, produces the report and opens the capacity model.
+Allow the first model import to finish before recording.
+
+For manual control, enter the following commands in the **MATLAB Command Window**.
+
 1. Open the repository's `matlab` folder in MATLAB and run `verifyMatlabPackage`.
 2. Choose a local fundus image whose terms permit showing it in a shared recording. Use a neutral filename and remove personal identifiers.
 3. Run the demo once before recording so model import is complete and the report is ready:
@@ -24,7 +37,7 @@ Prepare the capacity model in another MATLAB tab:
 open_system('models/NetrAI_Telemedicine_Model.slx')
 ```
 
-Use the [recorded scenario table](../results/implementation_2026-09-24/m5_simevents/simulink_scenario_sweep.csv)
+Use the [recorded scenario table](../results/benchmarks/capacity_simulation/simulink_scenario_sweep.csv)
 instead of running an annual sweep during the recording.
 
 ## Recording on Ubuntu GNOME

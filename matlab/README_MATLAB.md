@@ -15,11 +15,11 @@ Tested on MATLAB R2026a Update 5 with:
 
 The image pipeline runs serially on CPU. Install the ONNX converter through
 MATLAB **Add-Ons**, then check `which importNetworkFromONNX`.
-The [recorded environment](results/environment_2026-09-18.json) lists the tested products.
+The [recorded environment](../results/benchmarks/environment/matlab_environment.json) lists the tested products.
 
 ## Verify deployment
 
-Open this repository's `matlab` folder and run:
+Open this repository's `matlab` folder and run in the **MATLAB Command Window**:
 
 ```matlab
 fixtureReport = verifyMatlabPackage();
@@ -34,10 +34,20 @@ full-cohort numerical/decision equivalence remains unresolved. See
 ## Demonstrate one image
 
 Images are not bundled; obtain a local image under terms that permit your use.
+Enter this command in MATLAB's Command Window:
 
 ```matlab
 result = demo_netrai("/absolute/path/to/fundus.png");
 ```
+
+Alternatively, from a **Linux terminal** at the repository root:
+
+```bash
+./scripts/launch_demo.sh /absolute/path/to/fundus.png
+```
+
+This opens MATLAB, runs the demo and opens the capacity model. MATLAB syntax
+cannot run directly in Bash. The first model import can take several minutes.
 
 The demo enforces quality assessment and uses a new report directory each run.
 If quality is rejected, it returns acquisition feedback and `triageAction="recapture"`.
@@ -112,7 +122,7 @@ The endpoint-v2 definition counts automatic routing and completed clinician
 review as completion. Recapture requests remain unfinished. Service times and
 routing rates are planning assumptions. The current graph lacks a complete
 recapture-return and timed-escalation branch; simulation outcomes do not establish
-field benefit. [Recorded scenarios](../results/implementation_2026-09-24/m5_simevents/simulink_scenario_sweep.json)
+field benefit. [Recorded scenarios](../results/benchmarks/capacity_simulation/simulink_scenario_sweep.json)
 
 ## Quality-model candidate
 

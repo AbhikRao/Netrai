@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 NetrAI Inference & Demo — Generate clinical reports with REAL model predictions.
-Uses trained EfficientNet-B4 weights from Kaggle training.
+Uses the versioned EfficientNet-B4 deployment artifacts.
 
 Usage:
     python inference.py --image ../data/patient_sample.jpg
@@ -285,7 +285,7 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
                               overlay, output_dir, filename='ClinicalReport',
                               gradcam_image=None, gradcam_qc=None,
                               calibration_temperature=None, safety=None):
-    """Generate a professional 6-panel clinical screening report."""
+    """Generate a six-panel research screening report."""
     os.makedirs(output_dir, exist_ok=True)
 
     if calibration_temperature is None:
@@ -483,7 +483,7 @@ def run_pipeline(image_path, output_dir='../results'):
     }
 
     clinical_features = extract_clinical_features(seg_results)
-    print(f"     12-D Clinical Vector: [{', '.join(f'{v:.3f}' for v in clinical_features)}]")
+    print(f"     12-D Retinal Candidate Vector: [{', '.join(f'{v:.3f}' for v in clinical_features)}]")
 
     # Module 3: DR Severity Grading (REAL MODEL)
     print("[M3] DR Severity Grading (EfficientNet-B4)...")
@@ -506,8 +506,8 @@ def run_pipeline(image_path, output_dir='../results'):
     print(f"     Triage: {prediction['triage_actions']}")
     print("     Method: Trained EfficientNet-B4 (QWK=0.93)")
 
-    # Module 4: CAFE Explainability
-    print("[M4] CAFE Explainability...")
+    # Module 4: Model attribution and candidate evidence
+    print("[M4] Model attribution and candidate evidence...")
     heatmap = generate_real_gradcam(image_rgb)
     gradcam_qc = None
     if heatmap is not None:

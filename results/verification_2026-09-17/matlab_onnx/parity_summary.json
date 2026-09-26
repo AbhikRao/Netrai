@@ -1,7 +1,0 @@
-{
-  "sample_count": 5,
-  "max_absolute_output_error": 5.245208740234375e-06,
-  "tolerance": 0.0002,
-  "onnxruntime_version": "1.30.0",
-  "passed": true
-}

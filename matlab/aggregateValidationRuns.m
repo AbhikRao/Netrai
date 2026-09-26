@@ -1,6 +1,6 @@
 function summary = aggregateValidationRuns(inputFolder, outputDir)
 %AGGREGATEVALIDATIONRUNS Merge chunked MATLAB Online validation CSV files.
-% Finds every per_image_results.csv below inputFolder, removes duplicate IDs,
+% Finds every per_image_results.csv below inputFolder, rejects duplicate IDs,
 % recomputes all metrics, and writes one combined evidence bundle.
 
     if nargin < 2 || strlength(string(outputDir)) == 0

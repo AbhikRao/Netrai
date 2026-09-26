@@ -1,4 +1,4 @@
-% H1: calibrateConfidence - Calibrates classification probabilities using temperature scaling
+%CALIBRATECONFIDENCE Apply fitted scalar temperature to classification probabilities.
 %
 % Syntax: [calProbs, temperature] = calibrateConfidence(rawProbs, temperature)
 %

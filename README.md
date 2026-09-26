@@ -62,7 +62,8 @@ Deep Learning Toolbox, Image Processing Toolbox and the Deep Learning Toolbox
 Converter for ONNX Model Format support package. M5 also requires Simulink and
 SimEvents. No local GPU is required.
 
-Clone the repository, open its `matlab` folder, and run:
+Clone the repository, open its `matlab` folder, and enter these commands in the
+**MATLAB Command Window**:
 
 ```matlab
 fixtureReport = verifyMatlabPackage();
@@ -81,6 +82,16 @@ open_system('models/NetrAI_Telemedicine_Model.slx')
 
 See [MATLAB setup and batch validation](matlab/README_MATLAB.md) for detailed instructions.
 
+On Linux, you can launch the demonstration from a **terminal** at the repository root:
+
+```bash
+./scripts/launch_demo.sh /absolute/path/to/fundus.png
+```
+
+The launcher opens MATLAB, runs the image demonstration and opens the SimEvents
+model. MATLAB expressions such as `result = demo_netrai(...)` belong in MATLAB's
+Command Window; they cannot be entered directly into Bash.
+
 ## Scope and next steps
 
 Lesion overlays are candidate detections, and Grad-CAM visualizes model
@@ -93,7 +104,7 @@ recapture-return workflow in the capacity simulation.
 
 - [`matlab/`](matlab/README_MATLAB.md): primary screening implementation, deployment artifacts and SimEvents model.
 - [`docs/`](docs/VALIDATION.md): validation, model documentation and demonstration instructions.
-- [`results/`](results/README.md): recorded experiments and aggregate evidence.
+- [`results/`](results/README.md): organized benchmark evidence with dates, runtime and limitations.
 - [`data/README.md`](data/README.md): dataset sources, layout and usage terms.
 - [`research/`](research/README.md): model-training provenance.
 
