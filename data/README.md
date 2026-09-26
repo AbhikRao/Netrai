@@ -3,9 +3,8 @@
 Large medical-image datasets stay under `data/` and must not be committed or
 redistributed. The extracted trees were normalized and re-audited on
 2026-09-19. Machine-readable status is in
-`../results/dataset_audit/dataset_audit.json`. The user deleted the redundant
-download archives after confirming extraction; the normalized datasets and
-their SHA-256 manifests remain local under `data/`.
+`../results/dataset_audit/dataset_audit.json`. Dataset images and SHA-256 manifests remain local under `data/`; obtain data
+from the official sources under their applicable terms.
 
 ## 1. EyeQ / EyePACS — M1 quality calibration
 
@@ -39,12 +38,17 @@ python3 calibrate_quality.py
 ```
 
 The runner refuses to fit or report test metrics if any listed image is
-missing/unreadable. It fits thresholds only on the official train split and
-evaluates once on the official test split.
+missing/unreadable. It fits thresholds only on the official train split.
+The official test has since been repeatedly inspected during model development,
+so its results are retrospective development evidence. A perceptual/geometry
+review confirmed five same-retina images across the official train/test split
+despite different filename identities. Review
+`../results/verification_2026-09-24/perceptual_overlap/` before citing M1.
 
-**Current status:** ready for calibration. Both official label files and all
-28,792 corresponding EyePACS images are present in the split directories. The
-2026-09-19 strict dataset audit matched every expected image and label count.
+**Current status:** both official label files and all 28,792 corresponding
+EyePACS images are present. The learned quality candidate remains non-default
+because factor-specific and portable-camera gates are open. The 2026-09-19
+strict dataset audit matched every expected image and label count.
 
 ## 2. IDRiD — lesions, landmarks, and external Indian-domain grading
 
@@ -63,8 +67,10 @@ The complete release is present under `data/idrid/`: 413/103 grading images,
 54/27 segmentation images, 81 MA masks, 80 haemorrhage masks, 81 hard-exudate
 masks, 40 soft-exudate masks, and 81 optic-disc masks. The normalized
 `segmentation_manifest.csv` contains 81 cases. Current evaluation evidence is
-under `../results/verification_2026-09-18/idrid_lesion_validation/` and
-`idrid_landmark_validation/`.
+under `../results/implementation_2026-09-24/lesions_native/` and
+`landmarks_test/`. Native masks stay at sensor resolution for pixel and lesion
+scoring; missing masks are not interpreted as negatives. The official test has
+already been examined during this project and is not fresh validation.
 
 ## 3. DRIVE — vessel segmentation benchmark
 
@@ -92,8 +98,21 @@ that label source/version explicit.
 
 **Current status:** all 1,748 images and 874 eye-pair metadata rows are under
 `data/messidor2/`. There are no grading labels, so this set is not used to
-claim external DR accuracy. IDRiD's independent 103-image official test split
-is currently the external grading check.
+claim external DR accuracy. IDRiD's 103-image official test split is the
+retrospective external-domain grading check; it has been exposed during project
+development and fails the original screening target.
+
+## 5. APTOS 2019 — corrected grading development protocol
+
+The 3,662 source images remain intact under `data/aptos2019/`. Exact-content
+review found 30 conflicting-grade groups covering 62 images. A new development
+manifest quarantines those rows and groups the remaining 3,600 by content:
+2,159 fit, 720 selection, 721 calibration. It is recorded under
+`../results/implementation_2026-09-24/manifests/`. APTOS filenames do not
+provide verified patient IDs. The old 733-image Fold-0 evaluation contains 35
+validation images with exact training copies, so its reported scores are
+contaminated internal development evidence. See
+`../results/implementation_2026-09-24/legacy_aptos_overlap.json`.
 
 ## Integrity manifest
 

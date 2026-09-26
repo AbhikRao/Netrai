@@ -16,8 +16,8 @@ function [grade, probabilities, isReferable, continuousScore, logits, ...
         error('NetrAI:InvalidReferableThreshold', ...
             'Referable-head threshold must be strictly between zero and one.');
     end
-    thresholds = sort(double(thresholds(:)'));
-    if numel(thresholds) ~= 4 || any(~isfinite(thresholds))
+    thresholds = double(thresholds(:)');
+    if numel(thresholds) ~= 4 || any(~isfinite(thresholds)) || any(diff(thresholds) <= 0)
         error('NetrAI:InvalidThresholds', 'Exactly four finite grade thresholds are required.');
     end
     if size(modelInput, 1) ~= 512 || size(modelInput, 2) ~= 512 || size(modelInput, 3) ~= 3
@@ -39,7 +39,7 @@ function [grade, probabilities, isReferable, continuousScore, logits, ...
     probabilities = exp(shifted);
     probabilities = probabilities ./ sum(probabilities);
     continuousScore = probabilities * (0:4)';
-    grade = sum(continuousScore > thresholds);
+    grade = sum(continuousScore >= thresholds);
     grade = min(max(grade, 0), 4);
     isReferable = grade >= 2;
     if referableLogit >= 0

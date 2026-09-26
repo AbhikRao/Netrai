@@ -39,13 +39,16 @@ function foveaCenter = localizeFovea(greenChannel, odCenter, odRadius)
     
     % Find darkest point in the search region
     if xMin < xMax && yMin < yMax
-        searchRegion = smoothed(yMin:yMax, xMin:xMax);
+        searchRegion = double(smoothed(yMin:yMax, xMin:xMax));
+        valid = greenChannel(yMin:yMax, xMin:xMax) > 10;
+        if ~any(valid,'all'), foveaCenter = []; return; end
+        searchRegion(~valid) = Inf;
         [~, minIdx] = min(searchRegion(:));
         [minY, minX] = ind2sub(size(searchRegion), minIdx);
         
         foveaCenter = [xMin + minX - 1, yMin + minY - 1];
     else
         % Fallback
-        foveaCenter = [w/2, h/2];
+        foveaCenter = [];
     end
 end

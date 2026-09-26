@@ -1,23 +1,33 @@
-% DEMO_NETRAI Run the trained MATLAB/ONNX pipeline on a real APTOS image.
-% This demo never creates a synthetic retina or a fabricated prediction.
+function result = demo_netrai(imagePath)
+%DEMO_NETRAI Run a quality-gated MATLAB screening demonstration.
+% Supply a permitted local RGB fundus image. Reports use a fresh directory.
 
-clc; close all;
-baseDir = fileparts(mfilename('fullpath'));
-projectDir = fileparts(baseDir);
-imagePath = fullfile(projectDir, 'data', 'aptos2019', 'train_images', '000c1434d8d7.png');
-if ~isfile(imagePath)
-    imagePath = fullfile(projectDir, 'data', 'patient_sample.jpg');
+    arguments
+        imagePath (1,1) string = ""
+    end
+    baseDir = fileparts(mfilename('fullpath'));
+    projectDir = fileparts(baseDir);
+    if strlength(imagePath) == 0
+        imagePath = string(fullfile(projectDir, 'data', 'aptos2019', ...
+            'train_images', '000c1434d8d7.png'));
+        if ~isfile(imagePath)
+            imagePath = string(fullfile(projectDir, 'data', 'patient_sample.jpg'));
+        end
+    end
+    if ~isfile(imagePath)
+        error('NetrAI:DemoImageMissing', ...
+            'Supply a permitted local image: result = demo_netrai("fundus.png").');
+    end
+    demoRoot = fullfile(baseDir, 'results', 'demo');
+    if ~isfolder(demoRoot), mkdir(demoRoot); end
+    outputDir = tempname(demoRoot);
+    fprintf('NetrAI MATLAB screening prototype — research demonstration\n');
+    result = main_pipeline(imagePath, OutputDir=outputDir, ...
+        Verbose=true, GenerateReport=true, RunGradCAM=true, EnforceQuality=true);
+    if result.status == "rejected"
+        fprintf('Recapture requested: %s\n', result.qualityFeedback);
+    else
+        fprintf('Grade %d | routing %s\n', result.grade, result.triageAction);
+        fprintf('Report: %s\n', result.reportPath);
+    end
 end
-if ~isfile(imagePath)
-    error('NetrAI:DemoImageMissing', [ ...
-        'No real demo image was found. Upload an RGB fundus image and call ' ...
-        'main_pipeline(''your_image.png'').']);
-end
-
-fprintf('NetrAI MATLAB/ONNX demo\nInput: %s\n', imagePath);
-result = main_pipeline(imagePath, ...
-    'OutputDir',fullfile(baseDir, 'results', 'demo'), ...
-    'Verbose',true, 'GenerateReport',true, 'EnforceQuality',false);
-fprintf('Grade %d | continuous score %.4f | referable %s\n', ...
-    result.grade, result.continuousScore, string(result.isReferable));
-fprintf('Report: %s\n', result.reportPath);

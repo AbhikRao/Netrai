@@ -10,6 +10,12 @@ function [iqs, metrics] = assessImageQuality(rawImg)
     rawImg = im2uint8(rawImg);
     green = double(rawImg(:,:,2));
     [rows, cols] = size(green);
+    ranges = max(reshape(rawImg,[],3),[],1) - min(reshape(rawImg,[],3),[],1);
+    if min(rows,cols) < 2 || all(ranges == 0)
+        iqs = 0;
+        metrics = struct('focus',0,'illumination',0,'fov',0,'iqs',0,'invalid_input',true);
+        return;
+    end
 
     laplacianKernel = [0 1 0; 1 -4 1; 0 1 0];
     laplacian = imfilter(green, laplacianKernel, 'replicate', 'conv');

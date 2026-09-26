@@ -2,7 +2,11 @@
 %
 % Syntax: reportPath = generateClinicalReport(img, segResults, grade, calProbs, checklist, heatmap, overlayImg, outputDir, gradcamStatus, gradcamQC, safety)
 %
-function reportPath = generateClinicalReport(img, segResults, grade, calProbs, checklist, heatmap, overlayImg, outputDir, gradcamStatus, gradcamQC, safety)
+function reportPath = generateClinicalReport(img, segResults, grade, calProbs, checklist, heatmap, overlayImg, outputDir, gradcamStatus, gradcamQC, safety, modelDisplay)
+    if nargin < 12 && ~isempty(heatmap)
+        error('NetrAI:MissingModelDisplay','A classifier-space image is required for Grad-CAM.');
+    end
+    if nargin < 12, modelDisplay = img; end
     if nargin < 9
         gradcamStatus = "unavailable";
     end
@@ -25,7 +29,7 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
     
     % Layout
     t = tiledlayout(2, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
-    title(t, 'NetrAI Clinical DR Screening Report', 'FontSize', 20, 'FontWeight', 'bold');
+    title(t, 'NetrAI Research Screening Report - Not a Diagnosis', 'FontSize', 20, 'FontWeight', 'bold');
     
     % Panel 1: Enhanced Fundus
     nexttile;
@@ -34,7 +38,7 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
     
     % Panel 2: Grad-CAM. Never replace a failed explanation with synthetic data.
     nexttile;
-    imshow(img);
+    imshow(modelDisplay);
     if isempty(heatmap)
         title('Grad-CAM unavailable');
         text(0.5, 0.05, char(gradcamStatus), 'Units', 'normalized', ...
@@ -42,14 +46,14 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
             'BackgroundColor', 'black', 'Interpreter', 'none', 'FontSize', 8);
     else
         hold on;
-        h = imagesc(imresize(heatmap, size(img, [1 2])));
+        h = imagesc(imresize(heatmap, size(modelDisplay, [1 2])));
         colormap(gca, jet);
         alpha(h, 0.4);
         axis image off;
         if isfield(gradcamQC,'shortcut_flag') && gradcamQC.shortcut_flag
-            title('Genuine Grad-CAM - QC FLAG');
+            title('Referral-logit Grad-CAM - QC FLAG');
         else
-            title('Genuine Grad-CAM Attention');
+            title('Referral-logit Grad-CAM');
         end
     end
     
@@ -63,30 +67,33 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
     axis off;
     str = sprintf('DR Grade: Level %d\n\n', grade);
     str = [str sprintf('Referable: %s\n\n', num2str(grade > 1))];
-    str = [str sprintf('Max Probability: %.2f%%\n\n', max(calProbs)*100)];
+    str = [str sprintf('Post-hoc grade probability: %.2f%%\n\n', calProbs(grade+1)*100)];
     if isfield(safety, 'referableHeadProbability')
-        str = [str sprintf('Independent referable head: %.2f%%\n', ...
+        str = [str sprintf('Referral head (shared backbone): %.2f%%\n', ...
             safety.referableHeadProbability*100)];
         str = [str sprintf('Head disagreement: %s\n', ...
             string(safety.headDisagreement))];
         str = [str sprintf('Triage: %s\n', string(safety.triageAction))];
     end
-    text(0.1, 0.6, str, 'FontSize', 14, 'Interpreter', 'none');
+    text(0, 0.95, str, 'Units', 'normalized', 'VerticalAlignment', 'top', ...
+        'FontSize', 12, 'Interpreter', 'none');
     
     % Panel 5: Checklist
     nexttile;
     axis off;
-    strChecklist = 'Evidence Checklist:\n';
+    strChecklist = sprintf('Evidence Checklist:\n');
     for i=1:length(checklist)
         strChecklist = [strChecklist sprintf('%s: %s (%s)\n', checklist(i).criterion, checklist(i).status, checklist(i).detail)];
     end
     if isfield(safety, 'referableHeadProbability')
         agreement = "AGREE";
         if safety.headDisagreement, agreement = "DISAGREE - REVIEW"; end
-        strChecklist = [strChecklist sprintf('Independent head: %s (%.1f%%)\n', ...
+        strChecklist = [strChecklist sprintf('Referral head: %s (%.1f%%)\n', ...
             agreement, safety.referableHeadProbability*100)];
     end
-    text(0.0, 0.5, sprintf(strChecklist), 'FontSize', 10, 'Interpreter', 'none');
+    text(0, 0.95, wrapReportText(strChecklist, 52), ...
+        'Units', 'normalized', 'VerticalAlignment', 'top', ...
+        'FontSize', 9, 'Interpreter', 'none');
     
     % Panel 6: Bar chart
     nexttile;
@@ -107,9 +114,31 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
         try
             saveas(fig, reportPath);
         catch
-            % ignore pdf driver failure
+            reportPath = reportPng;
         end
     end
     
     close(fig);
+end
+
+function wrapped = wrapReportText(value, maxCharacters)
+    lines = splitlines(string(value));
+    output = strings(0, 1);
+    for i = 1:numel(lines)
+        words = split(strtrim(lines(i)));
+        current = "";
+        for j = 1:numel(words)
+            if strlength(current) > 0 && ...
+                    strlength(current) + 1 + strlength(words(j)) > maxCharacters
+                output(end + 1, 1) = current; %#ok<AGROW>
+                current = words(j);
+            elseif strlength(current) == 0
+                current = words(j);
+            else
+                current = current + " " + words(j);
+            end
+        end
+        output(end + 1, 1) = current; %#ok<AGROW>
+    end
+    wrapped = char(join(output, newline));
 end

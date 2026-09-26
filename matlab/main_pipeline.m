@@ -95,6 +95,8 @@ function results = main_pipeline(imagePath, varargin)
 
     [net, config] = loadNetrAIModel(modelPath, configPath);
     [modelInput, modelFov] = preprocessModelInput(rawImg, config);
+    modelDisplay = min(max(double(modelInput) .* reshape([0.229 0.224 0.225],1,1,3) ...
+        + reshape([0.485 0.456 0.406],1,1,3),0),1);
     [grade, rawProbs, isReferable, continuousScore, logits, ...
         referableHeadProbability, referableHeadPositive, headDisagreement, ...
         referableLogit] = predictDRGrade(net, modelInput, ...
@@ -106,7 +108,7 @@ function results = main_pipeline(imagePath, varargin)
         false, isReferable, referableHeadPositive);
 
     if runGradCAM
-        [heatmap, gradcamStatus] = generateGradCAM(net, modelInput, grade + 1);
+        [heatmap, gradcamStatus] = generateGradCAM(net, modelInput, 6);
     else
         heatmap = [];
         gradcamStatus = "disabled";
@@ -128,11 +130,11 @@ function results = main_pipeline(imagePath, varargin)
             'headDisagreement', headDisagreement, 'triageAction', triageAction);
         reportPath = string(generateClinicalReport(procImg, segResults, grade, ...
             calProbs, checklist, heatmap, overlayImg, outDir, gradcamStatus, ...
-            gradcamQC, safety));
+            gradcamQC, safety, modelDisplay));
     end
 
     if verbose
-        showResults(procImg, overlayImg, heatmap, gradcamStatus, calProbs, grade);
+        showResults(procImg, overlayImg, heatmap, gradcamStatus, calProbs, grade, modelDisplay);
         fprintf('\n--- NetrAI result ---\n');
         fprintf('Grade: %d | continuous score: %.4f | confidence: %.2f%%\n', ...
             grade, continuousScore, confidence * 100);
@@ -155,12 +157,13 @@ function results = main_pipeline(imagePath, varargin)
         'headDisagreement', headDisagreement, 'triageAction', triageAction, ...
         'clinicalFeatures', clinicalFeatures, 'temperature', temperature, ...
         'segResults', segResults, 'gradcamStatus', gradcamStatus, ...
-        'gradcamQC', gradcamQC, ...
+        'gradcamQC', gradcamQC, 'explanationTarget',"referral_logit", ...
+        'researchOnly',true, ...
         'reportPath', reportPath);
 end
 
 
-function showResults(procImg, overlayImg, heatmap, gradcamStatus, probabilities, grade)
+function showResults(procImg, overlayImg, heatmap, gradcamStatus, probabilities, grade, modelDisplay)
     figure('Name', 'NetrAI Analysis Results', 'Position', [100, 100, 1100, 800]);
     tiledlayout(2, 2, 'TileSpacing', 'compact');
     nexttile; imshow(procImg); title('Analysis Image');
@@ -169,8 +172,8 @@ function showResults(procImg, overlayImg, heatmap, gradcamStatus, probabilities,
     if isempty(heatmap)
         imshow(procImg); title("Grad-CAM " + gradcamStatus, 'Interpreter', 'none');
     else
-        imshow(procImg); hold on;
-        h = imagesc(imresize(heatmap, size(procImg, [1 2])));
+        imshow(modelDisplay); hold on;
+        h = imagesc(imresize(heatmap, size(modelDisplay, [1 2])));
         colormap(gca, jet); alpha(h, 0.4); axis image off;
         title('Genuine Grad-CAM Attention');
     end

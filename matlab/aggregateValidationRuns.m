@@ -8,11 +8,28 @@ function summary = aggregateValidationRuns(inputFolder, outputDir)
     end
     inputFolder = string(inputFolder); outputDir = string(outputDir);
     files = dir(fullfile(inputFolder, '**', 'per_image_results.csv'));
+    outputCanonical = string(java.io.File(char(outputDir)).getCanonicalPath());
+    keep = true(numel(files),1);
+    for k=1:numel(files)
+        folderCanonical = string(java.io.File(files(k).folder).getCanonicalPath());
+        keep(k) = folderCanonical ~= outputCanonical;
+    end
+    files = files(keep);
     if isempty(files)
         error('NetrAI:NoChunkFiles', 'No per_image_results.csv files found below %s.', inputFolder);
     end
     combined = table();
+    identity = [];
     for i = 1:numel(files)
+        identityPath=fullfile(files(i).folder,'run_identity.json');
+        if ~isfile(identityPath)
+            error('NetrAI:UnboundChunk','Missing run_identity.json; rerun legacy chunks before merging.');
+        end
+        currentIdentity=jsondecode(fileread(identityPath));
+        if isempty(identity), identity=currentIdentity;
+        elseif ~isequal(identity,currentIdentity)
+            error('NetrAI:IncompatibleChunks','Model/config/cohort/mode identities differ.');
+        end
         current = readtable(fullfile(files(i).folder, files(i).name), ...
             'TextType','string', 'VariableNamingRule','preserve');
         combined = [combined; current]; %#ok<AGROW>
@@ -23,10 +40,19 @@ function summary = aggregateValidationRuns(inputFolder, outputDir)
     if ~all(ismember(required, combined.Properties.VariableNames))
         error('NetrAI:InvalidChunk', 'Chunk CSV files do not have the expected validation columns.');
     end
-    [~, uniqueRows] = unique(combined.id_code, 'stable');
-    combined = combined(sort(uniqueRows), :);
+    if any(ismissing(combined.id_code)) || numel(unique(combined.id_code)) ~= height(combined)
+        error('NetrAI:DuplicateChunkIDs','Missing/duplicate IDs; do not merge overlapping chunks.');
+    end
+    successful = combined.status == "success";
+    values = [combined.true_grade(successful); combined.predicted_grade(successful)];
+    if any(~isfinite(values) | values ~= floor(values) | values < 0 | values > 4)
+        error('NetrAI:InvalidGrade','Successful rows require integer grades 0-4.');
+    end
     if ~isfolder(outputDir), mkdir(outputDir); end
     writetable(combined, fullfile(outputDir, 'per_image_results.csv'));
+    fid=fopen(fullfile(outputDir,'run_identity.json'),'w');
+    if fid<0, error('NetrAI:WriteFailed','Cannot write run identity'); end
+    fprintf(fid,'%s\n',jsonencode(identity)); fclose(fid);
 
     valid = combined.status == "success" & isfinite(combined.predicted_grade);
     yTrue = combined.true_grade(valid); yPred = combined.predicted_grade(valid);

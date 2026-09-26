@@ -60,11 +60,11 @@ function results = runSimulinkScenarioSweep(outputDir, totalPatients)
         row.auto_cleared = round(finalValue(simulation, 'autoCleared'));
         row.reviewed = round(finalValue(simulation, 'reviewed'));
         row.recaptures = round(finalValue(simulation, 'recaptures'));
-        row.completed = row.auto_cleared + row.reviewed + row.recaptures;
+        row.completed = row.auto_cleared + row.reviewed;
         row.unfinished_at_stop = max(expectedArrivals - row.completed, 0);
         row.completion_rate = row.completed / expectedArrivals;
         row.review_rate = row.reviewed / max(row.completed, 1);
-        row.recapture_rate_observed = row.recaptures / max(row.completed, 1);
+        row.recapture_rate_observed = row.recaptures / expectedArrivals;
         row.clinician_utilization = finalValue(simulation, 'clinicianUtilization');
         row.average_review_wait_seconds = finalValue( ...
             simulation, 'reviewQueueAverageWait');
@@ -76,7 +76,8 @@ function results = runSimulinkScenarioSweep(outputDir, totalPatients)
         row.max_review_queue = maxValue(simulation, 'reviewQueueLength');
         row.throughput_patients_per_hour = row.completed / (250 * 8);
         row.required_review_clinicians_at_80pct_utilization = max(1, ceil( ...
-            row.reviewed * 30 / (annualSeconds * 0.80)));
+            expectedArrivals * (1-scenario.quality_reject_rate) * (0.08+0.0123) ...
+            * 30 / (annualSeconds * 0.80)));
         row.runtime_seconds = elapsed;
         rows(index) = row;
         fprintf(['M5 %02d/%02d: %.2f Mbps, %d clinician(s), reject %.0f%% ' ...
@@ -89,12 +90,13 @@ function results = runSimulinkScenarioSweep(outputDir, totalPatients)
     results = struct2table(rows);
     writetable(results, fullfile(outputDir, 'simulink_scenario_sweep.csv'));
     payload = struct();
-    payload.schema_version = 1;
+    payload.schema_version = 2;
     payload.model = 'NetrAI_Telemedicine_Model.slx';
     payload.scope = '100000+ annual district screening arrivals';
     payload.scenario_count = height(results);
     payload.results = table2struct(results);
     payload.limitations = { ...
+        'Recapture requests remain unresolved; retry/return behavior is not yet simulated.', ...
         ['Routing uses configurable research assumptions pending EyeQ/external ' ...
          'validation.'], ...
         ['P90 is the percentile of the running average review-wait statistic; ' ...
@@ -110,6 +112,7 @@ end
 
 function row = emptyResult()
     row = struct( ...
+        'endpoint_version', 2, ...
         'scenario_id', 0, ...
         'total_patients_target', 0, ...
         'expected_arrivals', 0, ...

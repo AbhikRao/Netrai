@@ -34,11 +34,21 @@ function summary = validatePipeline(datasetPath, varargin)
     if ~all(ismember({'id_code','diagnosis'}, labels.Properties.VariableNames))
         error('NetrAI:InvalidLabels', 'train.csv must contain id_code and diagnosis.');
     end
+    if any(ismissing(labels.id_code)) || numel(unique(labels.id_code)) ~= height(labels)
+        error('NetrAI:InvalidIDs','Image IDs must be nonempty and unique.');
+    end
+    if any(~isfinite(labels.diagnosis) | labels.diagnosis ~= floor(labels.diagnosis) ...
+            | labels.diagnosis < 0 | labels.diagnosis > 4)
+        error('NetrAI:InvalidLabels','Labels must be finite integer grades 0-4.');
+    end
     selectionCsv = string(p.Results.SelectionCsv);
     if strlength(selectionCsv) > 0
         selection = readtable(selectionCsv, 'TextType','string', 'VariableNamingRule','preserve');
         if ~ismember('id_code', selection.Properties.VariableNames)
             error('NetrAI:InvalidSelection', 'SelectionCsv must contain id_code.');
+        end
+        if numel(unique(selection.id_code)) ~= height(selection)
+            error('NetrAI:InvalidSelection','Duplicate selection IDs.');
         end
         [found, positions] = ismember(selection.id_code, labels.id_code);
         if any(~found)
@@ -144,6 +154,14 @@ function summary = validatePipeline(datasetPath, varargin)
         'raw_prob_grade_4','iqs','elapsed_seconds','status','error', ...
         'ma_count','hem_count','hard_exudate_count','soft_exudate_count','nv_detected','vessel_density'});
     writetable(perImage, fullfile(outputDir, 'per_image_results.csv'));
+    provenance = struct('schema_version',1,'model_sha256',fileSHA256(modelPath), ...
+        'config_sha256',fileSHA256(configPath),'labels_sha256',fileSHA256(csvPath), ...
+        'mode',mode,'selection_sha256',"",'preprocess_sha256', ...
+        fileSHA256(fullfile(baseDir,'src','m3_grading','preprocessModelInput.m')));
+    if strlength(selectionCsv)>0, provenance.selection_sha256=fileSHA256(selectionCsv); end
+    fid=fopen(fullfile(outputDir,'run_identity.json'),'w');
+    if fid<0, error('NetrAI:WriteFailed','Cannot write run identity'); end
+    fprintf(fid,'%s\n',jsonencode(provenance)); fclose(fid);
 
     valid = status == "success";
     if ~any(valid), error('NetrAI:NoValidResults', 'No images completed successfully.'); end

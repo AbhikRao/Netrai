@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "source_images": 3662,
+  "legacy_split": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42), fold 0",
+  "cross_split_exact_hash_groups": 35,
+  "validation_images_with_identical_training_content": 35,
+  "train_images_in_overlapping_groups": 40,
+  "conflicting_grade_hash_groups": 30,
+  "conflicting_grade_images": 62,
+  "method": "SHA-256 hashes from aptos_development.csv plus quarantined rows; joined by original image ID",
+  "interpretation": "Historical Fold-0 evaluation has exact-image training overlap and is not independent. No estimate of metric inflation is implied. New manifests group by content and quarantine label conflicts."
+}

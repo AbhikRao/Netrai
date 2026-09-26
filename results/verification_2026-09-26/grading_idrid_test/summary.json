@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "retrospective_development_not_clinical_validation",
+  "mode": "test-idrid",
+  "checkpoint_sha256": "4f5fd0d0e3bd643a7c809e70368a3fb966f4688f0fffa54dbbecc848e524c8bc",
+  "policy_sha256": "9ca76434fa89c93155f5192673ad58a6fd6279439c9f1bbdeb0b501d102bbf46",
+  "metrics": {
+    "images": 103,
+    "referable": 64,
+    "accuracy": 0.44660194174757284,
+    "qwk": 0.5842888835431534,
+    "per_grade_support": [
+      34,
+      5,
+      32,
+      19,
+      13
+    ],
+    "per_grade_recall": [
+      0.5588235294117647,
+      0.4,
+      0.46875,
+      0.42105263157894735,
+      0.15384615384615385
+    ],
+    "referable_sensitivity": 0.84375,
+    "referable_specificity": 0.6923076923076923,
+    "referable_auc_score": 0.8653846153846153,
+    "calibration": {
+      "accuracy": 0.44660194174757284,
+      "mean_confidence": 0.46823048869569706,
+      "nll": 1.4872636999506408,
+      "brier": 0.7448442177604768,
+      "ece": 0.19130734417966683
+    },
+    "image_bootstrap_95": {
+      "referable_sensitivity": [
+        0.75,
+        0.921875
+      ],
+      "referable_specificity": [
+        0.5384615384615384,
+        0.8461538461538461
+      ],
+      "replicates": 5000,
+      "unit": "image; patient identity unavailable"
+    }
+  },
+  "limitations": [
+    "APTOS has no verified patient IDs",
+    "IDRiD test labels were exposed during project development",
+    "Do not promote until an identity-reviewed fresh external cohort passes predeclared targets"
+  ]
+}

@@ -49,8 +49,8 @@ function [exMask, hardCount, softCount, nearestFoveaDist] = detectExudates(img, 
     exMask = cleanHard | softMask;
 
     nearestFoveaDist = -1;
-    if ~isempty(hardCentroids) && odRadius > 0
+    if ~isempty(hardCentroids) && ~isempty(foveaCenter) && odRadius > 0
         distances = vecnorm(hardCentroids - foveaCenter, 2, 2);
-        nearestFoveaDist = min(distances) / odRadius;
+        nearestFoveaDist = min(distances) / (2 * odRadius);
     end
 end

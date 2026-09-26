@@ -26,14 +26,18 @@ function featureVec = extractClinicalFeatures(segResults)
     if isfield(segResults, 'hemMask') && ~isempty(segResults.hemMask)
         mask = logical(segResults.hemMask);
         r = floor(rows/2); c = floor(cols/2);
-        regions = {mask(1:r,1:c), mask(1:r,c+1:end), ...
-                   mask(r+1:end,1:c), mask(r+1:end,c+1:end)};
+        valid = true(size(mask));
+        if isfield(segResults,'fovMask'), valid = logical(segResults.fovMask); end
+        regions = {mask(r+1:end,c+1:end), mask(r+1:end,1:c), ...
+                   mask(1:r,1:c), mask(1:r,c+1:end)};
+        fovs = {valid(r+1:end,c+1:end), valid(r+1:end,1:c), ...
+                valid(1:r,1:c), valid(1:r,c+1:end)};
         for i = 1:4
-            featureVec(4+i) = nnz(regions{i}) / max(numel(regions{i}), 1);
+            featureVec(4+i) = nnz(regions{i} & fovs{i}) / max(nnz(fovs{i}), 1);
         end
     end
 
-    if isfield(segResults, 'foveaDist') && segResults.foveaDist > 0
+    if isfield(segResults, 'foveaDist') && segResults.foveaDist >= 0
         featureVec(9) = min(segResults.foveaDist/5, 1);
     else
         featureVec(9) = 1;

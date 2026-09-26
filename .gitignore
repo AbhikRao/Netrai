@@ -1,4 +1,9 @@
 # Research datasets and medical images are local-only.
+/AGENTS.md
+/.project-notes/
+/netrai_kaggle_train.ipynb
+/Netrai_Kaggle_Grading_Study.ipynb
+/GPU_RUNBOOK.md
 /data/**
 !/data/README.md
 
@@ -25,6 +30,7 @@ kaggle.json
 /results/**/lesion_overlay.*
 /results/**/vessel_segmentation.*
 /results/**/flagged_maps/
+/results/**/per_image.csv
 /results/**/preprocessing_fixtures/
 /results/**/eyeq_*_quality_features.csv
 /results/**/cache/
@@ -48,6 +54,12 @@ slprj/
 *.slxc
 *.asv
 *.autosave
+*.egg-info/
+/build/
+/dist/
+/results/**/last.pt
+/results/**/best.pt
+/results/**/progress.json
 
 # Editors and operating systems.
 .idea/
