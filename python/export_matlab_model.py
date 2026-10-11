@@ -18,6 +18,7 @@ import onnx
 import torch
 
 from models.netrai_model import NetrAIModel
+from utils.bundle import load_legacy_checkpoint
 from utils.calibration import load_calibration_temperature
 from utils.preprocessing import IMAGENET_MEAN, IMAGENET_STD
 from utils.safety import load_safety_policy
@@ -46,7 +47,7 @@ class DualHeadOutputs(torch.nn.Module):
 def export_model(
         checkpoint_path: Path, thresholds_path: Path, calibration_path: Path,
         safety_policy_path: Path, output_path: Path) -> None:
-    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    checkpoint = load_legacy_checkpoint(checkpoint_path)
     model = NetrAIModel("efficientnet_b4", 5, pretrained=False)
     model.load_state_dict(checkpoint["model_state_dict"])
     wrapper = DualHeadOutputs(model.eval()).eval()

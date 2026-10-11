@@ -65,6 +65,32 @@ The workflows differ, so the change cannot isolate a loss-function effect.
 IDRiD test outcomes were already inspected during development. Neither result
 constitutes fresh external or prospective clinical validation.
 
+### DeepDRiD development validation (MATLAB, September 28)
+
+The deployed MATLAB pipeline processed the DeepDRiD v1.1 regular-fundus
+**validation** partition: 400 requested images from 100 patients, four images of
+one patient excluded before prediction for an identity overlap with the reserved
+evaluation set, 396 processed and zero model errors. This is the first result on
+a source new to the project, but it is a development partition, not the reserved
+evaluation set, and it is now exposed.
+
+| Model-only endpoint (396 images) | Value |
+| --- | ---: |
+| Referable sensitivity | 63.33% (114/180) |
+| Referable specificity | 96.76% (209/216) |
+| Referable AUC | 0.910 |
+| Quadratic weighted kappa | 0.749 |
+| Grade-2 / Grade-4 recall | 32/92 / 6/20 |
+
+With the quality gate, 61 of 180 known-referable images were auto-cleared and 20
+remained unresolved (recapture or head disagreement). The model ranks referable
+disease reasonably (AUC 0.91) but systematically under-grades this camera domain,
+so the screening sensitivity target fails by a wide margin. Metrics are
+image-level without confidence intervals; views of one patient are correlated.
+[Summary](../results/benchmarks/deepdrid_development/summary.json),
+[confusion matrix](../results/benchmarks/deepdrid_development/confusion_matrix.csv),
+[per-grade metrics](../results/benchmarks/deepdrid_development/per_grade_metrics.csv)
+
 ## SimEvents capacity scenarios
 
 The September 28 endpoint-v3 sweep completed all 18 combinations of 0.25/1/5 Mbps,

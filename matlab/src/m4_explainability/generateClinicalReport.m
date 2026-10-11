@@ -71,7 +71,7 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
     nexttile;
     axis off;
     str = sprintf('DR Grade: Level %d\n\n', grade);
-    str = [str sprintf('Referable: %s\n\n', num2str(grade > 1))];
+    str = [str sprintf('Referable (grade >= 2): %s\n\n', string(categorical(grade > 1, [false true], ["No" "Yes"])))];
     str = [str sprintf('Post-hoc grade probability: %.2f%%\n\n', calProbs(grade+1)*100)];
     if isfield(safety, 'referableHeadProbability')
         str = [str sprintf('Referral head (shared backbone): %.2f%%\n', ...
@@ -108,7 +108,7 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
     ylabel('Probability');
     
     % Annotation
-    footer = sprintf('AI-assisted | Requires ophthalmologist validation | Generated: %s',datestr(now));
+    footer = sprintf('AI-assisted | Requires ophthalmologist validation | Generated: %s',char(datetime('now','Format','yyyy-MM-dd HH:mm')));
     if isfield(safety,'deploymentIdentity') && isfield(safety,'inputSha256')
         identity=safety.deploymentIdentity;
         footer=sprintf('%s\nModel SHA256: %.12s | Input SHA256: %.12s | Input contract: %s', ...
