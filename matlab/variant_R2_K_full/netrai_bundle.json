@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "artifacts": [
+    {
+      "role": "model",
+      "path": "netrai_fold0.onnx",
+      "sha256": "0fc558cfae10944f9b615db30e4830db512ba08d4ca7333fdb4cfc20267789f4"
+    },
+    {
+      "role": "config",
+      "path": "netrai_config.json",
+      "sha256": "07da96ccda520944a52a10bf7565c986d4395d4a2ab939f77c0dfad171b17d3f"
+    },
+    {
+      "role": "preprocessing",
+      "path": "../src/m3_grading/preprocessModelInput.m",
+      "sha256": "a67bb76fb9ba6261ed2d615b9644c58f3f8ebc82753dc938609f92d7e2a4c646"
+    },
+    {
+      "role": "grading",
+      "path": "../src/m3_grading/predictDRGrade.m",
+      "sha256": "9919370d96d1c9fac1b26b85b79d71f1c609c1703a819fd401b9a40020ec4617"
+    },
+    {
+      "role": "calibration",
+      "path": "../src/m4_explainability/calibrateConfidence.m",
+      "sha256": "99473b0c26e69209a17b5c0a245dcc1dfd8fbb927ed5f38b508598fff2f97611"
+    },
+    {
+      "role": "routing",
+      "path": "../src/utils/assignScreeningTriage.m",
+      "sha256": "583ccd99088a2c277bfb1cc57f0713770442447a97671f6a58731cbeb10e8d82"
+    },
+    {
+      "role": "decoding",
+      "path": "../src/utils/readScreeningImage.m",
+      "sha256": "f13f2c1937b45541df8c8551ac0511397241c16499ab3b7f996bc5d8f4bbcf78"
+    }
+  ]
+}
