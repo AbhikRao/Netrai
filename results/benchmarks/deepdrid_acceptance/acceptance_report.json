@@ -1,0 +1,751 @@
+{
+  "schema_version": 1,
+  "scope": "locked DeepDRiD v1.1 regular-fundus evaluation",
+  "header": {
+    "scope": "locked DeepDRiD v1.1 regular-fundus evaluation",
+    "acceptance_lock_sha256": "c039f49ba4883af956ae41d9ed5d28a0160f882b0d1d9322f213f045f5203a8b",
+    "label_receipt_sha256": "e570509493bb9f5e23bfdd5587b968b672100d70a4e4919fd6dcc5257a627347",
+    "exposure": "DeepDRiD evaluation outcomes are exposed after this run."
+  },
+  "evaluated_utc": "2026-10-11T15:29:01Z",
+  "endpoint_unit": "image; patient-cluster bootstrap; no patient aggregation",
+  "primary_population": {
+    "images": 392,
+    "patients": 98
+  },
+  "all_records": 400,
+  "processed_records": 400,
+  "variants": [
+    {
+      "id": "A_legacy",
+      "primary": {
+        "requested": 392,
+        "gradable": 392,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 392,
+          "tp": 103,
+          "fn": 61,
+          "tn": 221,
+          "fp": 7,
+          "sensitivity": 0.62804878048780488,
+          "specificity": 0.9692982456140351,
+          "auc": 0.95095207531022685,
+          "qwk": 0.81233048195284785,
+          "per_grade_recall": [
+            0.80729166666666663,
+            0.41666666666666669,
+            0.2638888888888889,
+            0.34722222222222221,
+            0.5
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 93,
+          "referable_auto_cleared": 58,
+          "referable_unresolved": 13,
+          "negative_auto_cleared": 211,
+          "negative_referred": 4,
+          "negative_unresolved": 13,
+          "ungradable_actions": []
+        }
+      },
+      "all_records": {
+        "requested": 400,
+        "gradable": 400,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 400,
+          "tp": 103,
+          "fn": 61,
+          "tn": 229,
+          "fp": 7,
+          "sensitivity": 0.62804878048780488,
+          "specificity": 0.97033898305084743,
+          "auc": 0.95116783794956616,
+          "qwk": 0.81326873440902081,
+          "per_grade_recall": [
+            0.805,
+            0.41666666666666669,
+            0.2638888888888889,
+            0.34722222222222221,
+            0.5
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 93,
+          "referable_auto_cleared": 58,
+          "referable_unresolved": 13,
+          "negative_auto_cleared": 218,
+          "negative_referred": 4,
+          "negative_unresolved": 14,
+          "ungradable_actions": []
+        }
+      }
+    },
+    {
+      "id": "B_site",
+      "primary": {
+        "requested": 392,
+        "gradable": 392,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 392,
+          "tp": 152,
+          "fn": 12,
+          "tn": 189,
+          "fp": 39,
+          "sensitivity": 0.926829268292683,
+          "specificity": 0.82894736842105265,
+          "auc": 0.95095207531022685,
+          "qwk": 0.80881233346022086,
+          "per_grade_recall": [
+            0.82291666666666663,
+            0.027777777777777776,
+            0.81944444444444442,
+            0.31944444444444442,
+            0.5
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 146,
+          "referable_auto_cleared": 4,
+          "referable_unresolved": 14,
+          "negative_auto_cleared": 114,
+          "negative_referred": 35,
+          "negative_unresolved": 79,
+          "ungradable_actions": []
+        }
+      },
+      "all_records": {
+        "requested": 400,
+        "gradable": 400,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 400,
+          "tp": 152,
+          "fn": 12,
+          "tn": 195,
+          "fp": 41,
+          "sensitivity": 0.926829268292683,
+          "specificity": 0.826271186440678,
+          "auc": 0.95116783794956616,
+          "qwk": 0.806499009537303,
+          "per_grade_recall": [
+            0.82,
+            0.027777777777777776,
+            0.81944444444444442,
+            0.31944444444444442,
+            0.5
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 146,
+          "referable_auto_cleared": 4,
+          "referable_unresolved": 14,
+          "negative_auto_cleared": 115,
+          "negative_referred": 37,
+          "negative_unresolved": 84,
+          "ungradable_actions": []
+        }
+      }
+    },
+    {
+      "id": "C_site",
+      "primary": {
+        "requested": 392,
+        "gradable": 392,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 392,
+          "tp": 153,
+          "fn": 11,
+          "tn": 203,
+          "fp": 25,
+          "sensitivity": 0.93292682926829273,
+          "specificity": 0.89035087719298245,
+          "auc": 0.97055519897304232,
+          "qwk": 0.86481947942905124,
+          "per_grade_recall": [
+            0.82291666666666663,
+            0.3888888888888889,
+            0.625,
+            0.90277777777777779,
+            0.2
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 147,
+          "referable_auto_cleared": 7,
+          "referable_unresolved": 10,
+          "negative_auto_cleared": 192,
+          "negative_referred": 16,
+          "negative_unresolved": 20,
+          "ungradable_actions": []
+        }
+      },
+      "all_records": {
+        "requested": 400,
+        "gradable": 400,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 400,
+          "tp": 153,
+          "fn": 11,
+          "tn": 210,
+          "fp": 26,
+          "sensitivity": 0.93292682926829273,
+          "specificity": 0.88983050847457623,
+          "auc": 0.97067486564696148,
+          "qwk": 0.863397851949291,
+          "per_grade_recall": [
+            0.82,
+            0.3888888888888889,
+            0.625,
+            0.90277777777777779,
+            0.2
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 147,
+          "referable_auto_cleared": 7,
+          "referable_unresolved": 10,
+          "negative_auto_cleared": 198,
+          "negative_referred": 16,
+          "negative_unresolved": 22,
+          "ungradable_actions": []
+        }
+      }
+    },
+    {
+      "id": "C_noDD_site",
+      "primary": {
+        "requested": 392,
+        "gradable": 392,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 392,
+          "tp": 154,
+          "fn": 10,
+          "tn": 181,
+          "fp": 47,
+          "sensitivity": 0.93902439024390238,
+          "specificity": 0.793859649122807,
+          "auc": 0.94587077449721857,
+          "qwk": 0.78657743074920994,
+          "per_grade_recall": [
+            0.74479166666666663,
+            0.30555555555555558,
+            0.69444444444444442,
+            0.34722222222222221,
+            0.55
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 149,
+          "referable_auto_cleared": 9,
+          "referable_unresolved": 6,
+          "negative_auto_cleared": 169,
+          "negative_referred": 29,
+          "negative_unresolved": 30,
+          "ungradable_actions": []
+        }
+      },
+      "all_records": {
+        "requested": 400,
+        "gradable": 400,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 400,
+          "tp": 154,
+          "fn": 10,
+          "tn": 186,
+          "fp": 50,
+          "sensitivity": 0.93902439024390238,
+          "specificity": 0.788135593220339,
+          "auc": 0.94375258371227766,
+          "qwk": 0.778715784088002,
+          "per_grade_recall": [
+            0.735,
+            0.30555555555555558,
+            0.69444444444444442,
+            0.34722222222222221,
+            0.55
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 149,
+          "referable_auto_cleared": 9,
+          "referable_unresolved": 6,
+          "negative_auto_cleared": 174,
+          "negative_referred": 29,
+          "negative_unresolved": 33,
+          "ungradable_actions": []
+        }
+      }
+    },
+    {
+      "id": "D_site",
+      "primary": {
+        "requested": 392,
+        "gradable": 392,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 392,
+          "tp": 156,
+          "fn": 8,
+          "tn": 207,
+          "fp": 21,
+          "sensitivity": 0.95121951219512191,
+          "specificity": 0.90789473684210531,
+          "auc": 0.975342319212666,
+          "qwk": 0.89120900076277654,
+          "per_grade_recall": [
+            0.91145833333333337,
+            0.1388888888888889,
+            0.56944444444444442,
+            0.84722222222222221,
+            0.7
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 149,
+          "referable_auto_cleared": 6,
+          "referable_unresolved": 9,
+          "negative_auto_cleared": 193,
+          "negative_referred": 16,
+          "negative_unresolved": 19,
+          "ungradable_actions": []
+        }
+      },
+      "all_records": {
+        "requested": 400,
+        "gradable": 400,
+        "ungradable": 0,
+        "model_errors": 0,
+        "not_processed": 0,
+        "model_only": {
+          "count": 400,
+          "tp": 156,
+          "fn": 8,
+          "tn": 214,
+          "fp": 22,
+          "sensitivity": 0.95121951219512191,
+          "specificity": 0.90677966101694918,
+          "auc": 0.97560975609756084,
+          "qwk": 0.89026585888320864,
+          "per_grade_recall": [
+            0.91,
+            0.1388888888888889,
+            0.56944444444444442,
+            0.84722222222222221,
+            0.7
+          ]
+        },
+        "quality_gated": {
+          "known_referable": 164,
+          "referable_referred": 149,
+          "referable_auto_cleared": 6,
+          "referable_unresolved": 9,
+          "negative_auto_cleared": 199,
+          "negative_referred": 16,
+          "negative_unresolved": 21,
+          "ungradable_actions": []
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "reference": "A_legacy",
+      "candidate": "B_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.29878048780487809,
+        "sensitivity_difference_ci95": [
+          0.21084337349397586,
+          0.3881944444444444
+        ],
+        "specificity_difference": -0.14035087719298245,
+        "specificity_difference_ci95": [
+          -0.20624696159455519,
+          -0.0855855855855856
+        ],
+        "reference_sensitivity_ci95": [
+          0.51994434137291279,
+          0.73182218309859159
+        ],
+        "candidate_sensitivity_ci95": [
+          0.8716216216216216,
+          0.96951219512195119
+        ],
+        "reference_specificity_ci95": [
+          0.94384888786975463,
+          0.9907407407407407
+        ],
+        "candidate_specificity_ci95": [
+          0.75669696244917484,
+          0.889593428225318
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "A_legacy",
+      "candidate": "C_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.30487804878048785,
+        "sensitivity_difference_ci95": [
+          0.2147009966777409,
+          0.39715954875100723
+        ],
+        "specificity_difference": -0.078947368421052655,
+        "specificity_difference_ci95": [
+          -0.12938731527093594,
+          -0.033333333333333326
+        ],
+        "reference_sensitivity_ci95": [
+          0.51994434137291279,
+          0.73182218309859159
+        ],
+        "candidate_sensitivity_ci95": [
+          0.88096590909090911,
+          0.97452125933138589
+        ],
+        "reference_specificity_ci95": [
+          0.94384888786975463,
+          0.9907407407407407
+        ],
+        "candidate_specificity_ci95": [
+          0.83265027322404372,
+          0.93863786825554452
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "A_legacy",
+      "candidate": "C_noDD_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.3109756097560975,
+        "sensitivity_difference_ci95": [
+          0.22041316526610644,
+          0.40792778649921507
+        ],
+        "specificity_difference": -0.17543859649122806,
+        "specificity_difference_ci95": [
+          -0.23760245901639343,
+          -0.1205357142857143
+        ],
+        "reference_sensitivity_ci95": [
+          0.51994434137291279,
+          0.73182218309859159
+        ],
+        "candidate_sensitivity_ci95": [
+          0.8905179794520548,
+          0.977269792070257
+        ],
+        "reference_specificity_ci95": [
+          0.94384888786975463,
+          0.9907407407407407
+        ],
+        "candidate_specificity_ci95": [
+          0.72544447101969234,
+          0.85565205210813844
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "A_legacy",
+      "candidate": "D_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.323170731707317,
+        "sensitivity_difference_ci95": [
+          0.22513736263736261,
+          0.42466899461661572
+        ],
+        "specificity_difference": -0.061403508771929793,
+        "specificity_difference_ci95": [
+          -0.10909090909090907,
+          -0.019999999999999962
+        ],
+        "reference_sensitivity_ci95": [
+          0.51994434137291279,
+          0.73182218309859159
+        ],
+        "candidate_sensitivity_ci95": [
+          0.9,
+          0.98882646691635456
+        ],
+        "reference_specificity_ci95": [
+          0.94384888786975463,
+          0.9907407407407407
+        ],
+        "candidate_specificity_ci95": [
+          0.85551619433198378,
+          0.95246490927764471
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "B_site",
+      "candidate": "C_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.0060975609756097615,
+        "sensitivity_difference_ci95": [
+          -0.020547945205479479,
+          0.034246575342465668
+        ],
+        "specificity_difference": 0.061403508771929793,
+        "specificity_difference_ci95": [
+          0.017857142857142849,
+          0.10880327163151099
+        ],
+        "reference_sensitivity_ci95": [
+          0.8716216216216216,
+          0.96951219512195119
+        ],
+        "candidate_sensitivity_ci95": [
+          0.88096590909090911,
+          0.97452125933138589
+        ],
+        "reference_specificity_ci95": [
+          0.75669696244917484,
+          0.889593428225318
+        ],
+        "candidate_specificity_ci95": [
+          0.83265027322404372,
+          0.93863786825554452
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "B_site",
+      "candidate": "C_noDD_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.012195121951219412,
+        "sensitivity_difference_ci95": [
+          -0.01754445964432283,
+          0.043209876543209846
+        ],
+        "specificity_difference": -0.035087719298245612,
+        "specificity_difference_ci95": [
+          -0.078843762950683738,
+          0.008032258064516129
+        ],
+        "reference_sensitivity_ci95": [
+          0.8716216216216216,
+          0.96951219512195119
+        ],
+        "candidate_sensitivity_ci95": [
+          0.8905179794520548,
+          0.977269792070257
+        ],
+        "reference_specificity_ci95": [
+          0.75669696244917484,
+          0.889593428225318
+        ],
+        "candidate_specificity_ci95": [
+          0.72544447101969234,
+          0.85565205210813844
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "B_site",
+      "candidate": "D_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.024390243902438935,
+        "sensitivity_difference_ci95": [
+          0.0054945054945055305,
+          0.051709320091673061
+        ],
+        "specificity_difference": 0.078947368421052655,
+        "specificity_difference_ci95": [
+          0.030457637600494747,
+          0.12837947552163681
+        ],
+        "reference_sensitivity_ci95": [
+          0.8716216216216216,
+          0.96951219512195119
+        ],
+        "candidate_sensitivity_ci95": [
+          0.9,
+          0.98882646691635456
+        ],
+        "reference_specificity_ci95": [
+          0.75669696244917484,
+          0.889593428225318
+        ],
+        "candidate_specificity_ci95": [
+          0.85551619433198378,
+          0.95246490927764471
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "C_site",
+      "candidate": "C_noDD_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.0060975609756096505,
+        "sensitivity_difference_ci95": [
+          -0.020135135135135152,
+          0.033707865168539353
+        ],
+        "specificity_difference": -0.0964912280701754,
+        "specificity_difference_ci95": [
+          -0.14457967458677684,
+          -0.0518054651919323
+        ],
+        "reference_sensitivity_ci95": [
+          0.88096590909090911,
+          0.97452125933138589
+        ],
+        "candidate_sensitivity_ci95": [
+          0.8905179794520548,
+          0.977269792070257
+        ],
+        "reference_specificity_ci95": [
+          0.83265027322404372,
+          0.93863786825554452
+        ],
+        "candidate_specificity_ci95": [
+          0.72544447101969234,
+          0.85565205210813844
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "C_site",
+      "candidate": "D_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.018292682926829174,
+        "sensitivity_difference_ci95": [
+          -0.0066228070175438636,
+          0.045454545454545525
+        ],
+        "specificity_difference": 0.017543859649122862,
+        "specificity_difference_ci95": [
+          -0.0048543689320388328,
+          0.052030352748154263
+        ],
+        "reference_sensitivity_ci95": [
+          0.88096590909090911,
+          0.97452125933138589
+        ],
+        "candidate_sensitivity_ci95": [
+          0.9,
+          0.98882646691635456
+        ],
+        "reference_specificity_ci95": [
+          0.83265027322404372,
+          0.93863786825554452
+        ],
+        "candidate_specificity_ci95": [
+          0.85551619433198378,
+          0.95246490927764471
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    },
+    {
+      "reference": "C_noDD_site",
+      "candidate": "D_site",
+      "paired_bootstrap": {
+        "images": 392,
+        "patients": 98,
+        "sensitivity_difference": 0.012195121951219523,
+        "sensitivity_difference_ci95": [
+          -0.011494252873563204,
+          0.038218111002921107
+        ],
+        "specificity_difference": 0.11403508771929827,
+        "specificity_difference_ci95": [
+          0.06162958943751129,
+          0.16885451505016724
+        ],
+        "reference_sensitivity_ci95": [
+          0.8905179794520548,
+          0.977269792070257
+        ],
+        "candidate_sensitivity_ci95": [
+          0.9,
+          0.98882646691635456
+        ],
+        "reference_specificity_ci95": [
+          0.72544447101969234,
+          0.85565205210813844
+        ],
+        "candidate_specificity_ci95": [
+          0.85551619433198378,
+          0.95246490927764471
+        ],
+        "replicates": 2000,
+        "seed": 148158
+      }
+    }
+  ],
+  "targets": {
+    "sensitivity": ">0.90",
+    "specificity": ">0.85"
+  }
+}

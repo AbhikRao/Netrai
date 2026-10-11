@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "sample": "APTOS grade-stratified, seed 42",
+  "target": "referral logit",
+  "variants": {
+    "A_legacy": {
+      "images": 25,
+      "flag_rate": 0.8,
+      "flag_rate_by_grade": {
+        "0": 1.0,
+        "1": 1.0,
+        "2": 0.4,
+        "3": 0.6,
+        "4": 1.0
+      },
+      "median_outside_fov_attention_fraction": 0.10254358037475395,
+      "median_border_enrichment": 0.8033571430118002
+    },
+    "C_site": {
+      "images": 25,
+      "flag_rate": 0.64,
+      "flag_rate_by_grade": {
+        "0": 0.6,
+        "1": 0.8,
+        "2": 0.2,
+        "3": 0.6,
+        "4": 1.0
+      },
+      "median_outside_fov_attention_fraction": 0.07284546123631937,
+      "median_border_enrichment": 0.5639383431962054
+    },
+    "D_site": {
+      "images": 25,
+      "flag_rate": 0.64,
+      "flag_rate_by_grade": {
+        "0": 1.0,
+        "1": 0.6,
+        "2": 0.4,
+        "3": 1.0,
+        "4": 0.2
+      },
+      "median_outside_fov_attention_fraction": 0.084637138757762,
+      "median_border_enrichment": 0.8192946647099352
+    }
+  },
+  "interpretation": "Heuristic shortcut-attention QC; not lesion localisation."
+}

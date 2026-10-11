@@ -1,0 +1,361 @@
+{
+  "schema_version": 1,
+  "status": "development_selection_not_acceptance",
+  "pool": [
+    "idrid_train",
+    "eyeq_train"
+  ],
+  "selection": [
+    "deepdrid_validation",
+    "eyeq_test"
+  ],
+  "stress_exposed": [
+    "idrid_test"
+  ],
+  "arguments": {
+    "output": "../results/model_improvement/nodd_v2",
+    "rungs": [
+      "A",
+      "B",
+      "C"
+    ],
+    "pool": [
+      "deepdrid_training",
+      "idrid_train",
+      "eyeq_train"
+    ],
+    "selection": [
+      "deepdrid_validation",
+      "eyeq_test"
+    ],
+    "stress": [
+      "idrid_test"
+    ],
+    "exclude_pool": [
+      "deepdrid_training"
+    ],
+    "target_sensitivity": 0.92,
+    "threshold_rule": "pooled",
+    "holdout_fraction": 0.15,
+    "epochs": 10,
+    "batch_size": 32,
+    "head_lr": 0.0003,
+    "backbone_lr": 5e-05,
+    "threads": 1,
+    "seed": 2026
+  },
+  "code_sha256": "7ea7d9d30110b8d3ea96757db279b64a47edafd80ec32e903f8f69219cbc4a55",
+  "policies": {
+    "A": {
+      "thresholds": [
+        0.5421875,
+        1.4859374999999995,
+        2.5546875,
+        3.3031249999999996
+      ],
+      "temperature": null,
+      "head_threshold": 0.5,
+      "threshold_source": "legacy"
+    },
+    "B": {
+      "thresholds": [
+        0.09158779130666517,
+        0.09163472428917885,
+        1.5072262650355697,
+        2.009302827063948
+      ],
+      "temperature": null,
+      "head_threshold": 0.0002149791398551315,
+      "threshold_source": "training pool"
+    },
+    "C": {
+      "thresholds": [
+        1.350815549474252,
+        1.355366436061888,
+        2.3955342377238855,
+        2.7298508161845745
+      ],
+      "temperature": 0.8006258504625475,
+      "head_threshold": 0.06103520541853833,
+      "threshold_source": "pool holdout"
+    }
+  },
+  "results": {
+    "A": {
+      "deepdrid_validation": {
+        "images": 396,
+        "referable": 180,
+        "sensitivity": 0.6333333333333333,
+        "specificity": 0.9675925925925926,
+        "auc": 0.9392746913580248,
+        "sens_at_spec85": 0.9111111111111111,
+        "sens_at_spec80": 0.9333333333333333,
+        "sens_at_spec90": 0.8444444444444444,
+        "selection_value": 0.8962962962962964,
+        "qwk": 0.7487930665172761,
+        "per_grade_recall": [
+          0.788235294117647,
+          0.45652173913043476,
+          0.34782608695652173,
+          0.25,
+          0.3
+        ],
+        "head_sensitivity": 0.5833333333333334,
+        "head_specificity": 0.9907407407407407,
+        "head_disagreement_rate": 0.03535353535353535
+      },
+      "eyeq_test": {
+        "images": 3000,
+        "referable": 576,
+        "sensitivity": 0.3090277777777778,
+        "specificity": 0.9764851485148515,
+        "auc": 0.8391103433259992,
+        "sens_at_spec85": 0.6788194444444444,
+        "sens_at_spec80": 0.734375,
+        "sens_at_spec90": 0.5677083333333334,
+        "selection_value": 0.6603009259259259,
+        "qwk": 0.5255302967918194,
+        "per_grade_recall": [
+          0.8125880695162048,
+          0.18983050847457628,
+          0.1822125813449024,
+          0.19444444444444445,
+          0.20930232558139536
+        ],
+        "head_sensitivity": 0.3003472222222222,
+        "head_specificity": 0.9826732673267327,
+        "head_disagreement_rate": 0.010666666666666666
+      },
+      "idrid_test": {
+        "images": 103,
+        "referable": 64,
+        "sensitivity": 0.796875,
+        "specificity": 0.8205128205128205,
+        "auc": 0.890625,
+        "sens_at_spec85": 0.78125,
+        "sens_at_spec80": 0.796875,
+        "sens_at_spec90": 0.765625,
+        "selection_value": 0.78125,
+        "qwk": 0.6652417064386731,
+        "per_grade_recall": [
+          0.29411764705882354,
+          0.4,
+          0.46875,
+          0.631578947368421,
+          0.3076923076923077
+        ],
+        "head_sensitivity": 0.765625,
+        "head_specificity": 0.9230769230769231,
+        "head_disagreement_rate": 0.05825242718446602
+      },
+      "holdout": {
+        "images": 776,
+        "referable": 316,
+        "sensitivity": 0.3259493670886076,
+        "specificity": 0.9739130434782609,
+        "auc": 0.8386695101816181,
+        "sens_at_spec85": 0.6930379746835443,
+        "sens_at_spec80": 0.7436708860759493,
+        "sens_at_spec90": 0.629746835443038,
+        "selection_value": 0.6888185654008439,
+        "qwk": 0.5226891063362022,
+        "per_grade_recall": [
+          0.817910447761194,
+          0.232,
+          0.17408906882591094,
+          0.16,
+          0.15789473684210525
+        ],
+        "head_sensitivity": 0.30063291139240506,
+        "head_specificity": 0.9760869565217392,
+        "head_disagreement_rate": 0.014175257731958763
+      }
+    },
+    "B": {
+      "deepdrid_validation": {
+        "images": 396,
+        "referable": 180,
+        "sensitivity": 0.9833333333333333,
+        "specificity": 0.2777777777777778,
+        "auc": 0.9392746913580248,
+        "sens_at_spec85": 0.9111111111111111,
+        "sens_at_spec80": 0.9333333333333333,
+        "sens_at_spec90": 0.8444444444444444,
+        "selection_value": 0.8962962962962964,
+        "qwk": 0.5420883164673413,
+        "per_grade_recall": [
+          0.31176470588235294,
+          0.0,
+          0.5760869565217391,
+          0.22058823529411764,
+          0.7
+        ],
+        "head_sensitivity": 0.9833333333333333,
+        "head_specificity": 0.27314814814814814,
+        "head_disagreement_rate": 0.1388888888888889
+      },
+      "eyeq_test": {
+        "images": 3000,
+        "referable": 576,
+        "sensitivity": 0.9149305555555556,
+        "specificity": 0.4946369636963696,
+        "auc": 0.8391103433259992,
+        "sens_at_spec85": 0.6788194444444444,
+        "sens_at_spec80": 0.734375,
+        "sens_at_spec90": 0.5677083333333334,
+        "selection_value": 0.6603009259259259,
+        "qwk": 0.35233454283385857,
+        "per_grade_recall": [
+          0.5082198215124472,
+          0.0,
+          0.6984815618221258,
+          0.25,
+          0.6046511627906976
+        ],
+        "head_sensitivity": 0.8975694444444444,
+        "head_specificity": 0.3758250825082508,
+        "head_disagreement_rate": 0.23066666666666666
+      },
+      "idrid_test": {
+        "images": 103,
+        "referable": 64,
+        "sensitivity": 1.0,
+        "specificity": 0.0,
+        "auc": 0.890625,
+        "sens_at_spec85": 0.78125,
+        "sens_at_spec80": 0.796875,
+        "sens_at_spec90": 0.765625,
+        "selection_value": 0.78125,
+        "qwk": 0.39929000084523714,
+        "per_grade_recall": [
+          0.0,
+          0.0,
+          0.28125,
+          0.0,
+          0.8461538461538461
+        ],
+        "head_sensitivity": 0.984375,
+        "head_specificity": 0.0,
+        "head_disagreement_rate": 0.009708737864077669
+      },
+      "holdout": {
+        "images": 776,
+        "referable": 316,
+        "sensitivity": 0.9145569620253164,
+        "specificity": 0.4608695652173913,
+        "auc": 0.8386695101816181,
+        "sens_at_spec85": 0.6930379746835443,
+        "sens_at_spec80": 0.7436708860759493,
+        "sens_at_spec90": 0.629746835443038,
+        "selection_value": 0.6888185654008439,
+        "qwk": 0.48784620584681115,
+        "per_grade_recall": [
+          0.4716417910447761,
+          0.0,
+          0.6963562753036437,
+          0.24,
+          0.7368421052631579
+        ],
+        "head_sensitivity": 0.9177215189873418,
+        "head_specificity": 0.3804347826086957,
+        "head_disagreement_rate": 0.19845360824742267
+      }
+    },
+    "C": {
+      "deepdrid_validation": {
+        "images": 396,
+        "referable": 180,
+        "sensitivity": 0.9944444444444445,
+        "specificity": 0.30092592592592593,
+        "auc": 0.9333847736625515,
+        "sens_at_spec85": 0.8944444444444445,
+        "sens_at_spec80": 0.9,
+        "sens_at_spec90": 0.8611111111111112,
+        "selection_value": 0.8851851851851853,
+        "qwk": 0.5343775293680134,
+        "per_grade_recall": [
+          0.31176470588235294,
+          0.0,
+          0.34782608695652173,
+          0.07352941176470588,
+          0.8
+        ],
+        "head_sensitivity": 0.9888888888888889,
+        "head_specificity": 0.27314814814814814,
+        "head_disagreement_rate": 0.047979797979797977
+      },
+      "eyeq_test": {
+        "images": 3000,
+        "referable": 576,
+        "sensitivity": 0.921875,
+        "specificity": 0.4570957095709571,
+        "auc": 0.8642338192152549,
+        "sens_at_spec85": 0.7361111111111112,
+        "sens_at_spec80": 0.7795138888888888,
+        "sens_at_spec90": 0.6614583333333334,
+        "selection_value": 0.7256944444444445,
+        "qwk": 0.35902717315062016,
+        "per_grade_recall": [
+          0.47111319868482854,
+          0.010169491525423728,
+          0.579175704989154,
+          0.2638888888888889,
+          0.7209302325581395
+        ],
+        "head_sensitivity": 0.9288194444444444,
+        "head_specificity": 0.4760726072607261,
+        "head_disagreement_rate": 0.07933333333333334
+      },
+      "idrid_test": {
+        "images": 103,
+        "referable": 64,
+        "sensitivity": 0.90625,
+        "specificity": 0.5384615384615384,
+        "auc": 0.8721955128205129,
+        "sens_at_spec85": 0.78125,
+        "sens_at_spec80": 0.859375,
+        "sens_at_spec90": 0.625,
+        "selection_value": 0.7552083333333334,
+        "qwk": 0.5663630094726526,
+        "per_grade_recall": [
+          0.5588235294117647,
+          0.0,
+          0.21875,
+          0.10526315789473684,
+          0.8461538461538461
+        ],
+        "head_sensitivity": 0.921875,
+        "head_specificity": 0.6153846153846154,
+        "head_disagreement_rate": 0.038834951456310676
+      },
+      "holdout": {
+        "images": 776,
+        "referable": 316,
+        "sensitivity": 0.9208860759493671,
+        "specificity": 0.44130434782608696,
+        "auc": 0.8624862410566868,
+        "sens_at_spec85": 0.759493670886076,
+        "sens_at_spec80": 0.8164556962025317,
+        "sens_at_spec90": 0.7151898734177216,
+        "selection_value": 0.7637130801687763,
+        "qwk": 0.5057258508254041,
+        "per_grade_recall": [
+          0.46865671641791046,
+          0.0,
+          0.5708502024291497,
+          0.2,
+          0.8421052631578947
+        ],
+        "head_sensitivity": 0.9208860759493671,
+        "head_specificity": 0.4717391304347826,
+        "head_disagreement_rate": 0.06958762886597938
+      }
+    }
+  },
+  "holdout_groups": 539,
+  "limitations": [
+    "DeepDRiD validation and EyeQ test subset choose epochs and rungs; they are development data.",
+    "IDRiD test was previously exposed and is not used for any choice.",
+    "Acceptance requires the locked DeepDRiD evaluation."
+  ]
+}

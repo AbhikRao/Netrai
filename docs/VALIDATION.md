@@ -91,6 +91,57 @@ image-level without confidence intervals; views of one patient are correlated.
 [confusion matrix](../results/benchmarks/deepdrid_development/confusion_matrix.csv),
 [per-grade metrics](../results/benchmarks/deepdrid_development/per_grade_metrics.csv)
 
+## Locked DeepDRiD evaluation of site-adapted candidates (October 11)
+
+A new grading candidate was developed without the reserved data and then tested
+once on the DeepDRiD v1.1 regular-fundus **evaluation** set, under an acceptance
+lock that bound the protocol, the five deployment bundles, the decision policies
+and the 50-file MATLAB evaluation source list before any label was read. The
+evaluation ran in MATLAB, and an independent Python recomputation from the
+per-image outputs matches every confusion count.
+
+How the candidates were built: the deployed EfficientNet-B4 architecture, input
+contract and six-output ONNX schema are unchanged. The backbone stays frozen;
+its head layers (`C`) or last stage plus heads (`D`) were retrained on EyePACS
+(EyeQ train, gradable), IDRiD train and DeepDRiD train images. Decision
+thresholds were then calibrated on DeepDRiD **validation** (site calibration).
+The candidate `C_site` was chosen by a rule fixed before `D` finished training.
+
+Primary population: 392 images from 98 patients, all gradable (four images each
+from two patients are kept in coverage but excluded for identity review). Model
+only; intervals are 95% patient-cluster bootstrap.
+
+| Variant | Sensitivity | Specificity | AUC | QWK |
+| --- | --- | --- | ---: | ---: |
+| Deployed legacy model | 62.8% (52.2–73.1) | 96.9% (94.6–99.0) | 0.951 | 0.812 |
+| Legacy + site thresholds | 92.7% (87.5–97.1) | 82.9% (75.6–89.2) | 0.951 | 0.809 |
+| **`C_site` primary candidate** | **93.3% (88.4–97.5)** | **89.0% (83.6–93.9)** | **0.971** | **0.865** |
+| `C_site` recipe without DeepDRiD training | 93.9% (89.2–97.7) | 79.4% (72.5–85.7) | 0.946 | 0.787 |
+| `D_site` secondary (information only) | 95.1% (90.3–98.9) | 90.8% (85.4–95.3) | 0.975 | 0.891 |
+
+`C_site` meets the >90% sensitivity and >85% specificity targets on its point
+estimates; the lower interval bounds (88.4% / 83.6%) do not exclude missing them.
+Against the deployed model it gains 30.5 sensitivity points (paired interval
+21.5–39.7) and loses 7.9 specificity points (3.3–12.9). With the quality gate,
+only 7 of 164 referable images are auto-cleared (deployed model: 58). Grade-4
+recall remains weak (4/20). AUCs use the expected-grade score.
+
+What this shows and what it does not:
+
+- The gain needs labelled images from the target camera: the same recipe without
+  DeepDRiD training images fails specificity, and thresholds fitted on other
+  sources did not transfer during development. A deployment would need a
+  calibration set from each camera.
+- It is a retrospective public benchmark, not prospective or rural-India
+  validation, and the DeepDRiD evaluation set is now exposed.
+- The deployed MATLAB model is unchanged; promoting a candidate is a separate
+  decision. Grad-CAM shortcut flags fell from 80% to 64% of 25 audit maps but
+  remain common.
+
+[Acceptance report](../results/benchmarks/deepdrid_acceptance/acceptance_report.json),
+[independent recomputation](../results/benchmarks/deepdrid_acceptance/python_crosscheck.json),
+[development ladder and policies](../results/benchmarks/model_adaptation/)
+
 ## SimEvents capacity scenarios
 
 The September 28 endpoint-v3 sweep completed all 18 combinations of 0.25/1/5 Mbps,
@@ -180,7 +231,7 @@ warnings; clinician explanation usefulness remains unmeasured.
 
 - Portable-camera quality validation and factor-specific robustness.
 - Reliable annotated lesion evaluation, including appropriate subtype/NV labels.
-- Fresh, identity-reviewed external grading and severe-grade recall.
+- Prospective, camera-specific validation of the site-adapted candidate and severe-grade (Grade-4) recall.
 - Broader full-image runtime checks, including quality and retinal analysis.
 - Clinician explanation usefulness and measured review time.
 - Field-derived recapture-return assumptions, shift/outage modeling and timed referral escalation.
