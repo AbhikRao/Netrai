@@ -16,7 +16,8 @@ import numpy as np
 from train_grading_adapter import evaluate, fit_head_threshold, fit_policy, scores
 from utils.artifacts import atomic_json
 
-RULES = [('pooled', 0.90), ('pooled', 0.92), ('worst-source', 0.90), ('worst-source', 0.92)]
+RULES = [('pooled', 0.90), ('pooled', 0.92), ('balanced', 0.90), ('balanced', 0.92),
+         ('worst-source', 0.90), ('worst-source', 0.92)]
 
 
 def main():
@@ -31,7 +32,7 @@ def main():
         holdout, grade, source = data['holdout'], data['holdout_grade'], data['holdout_source']
         for rule, target in RULES:
             thresholds = fit_policy(scores(holdout), grade, target, source, rule)
-            head = fit_head_threshold(holdout, grade, target)
+            head = fit_head_threshold(holdout, grade, target, source, rule)
             key = f'{rung}|{rule}|{target}'
             table[key] = {'thresholds': thresholds, 'head_threshold': head, **{
                 name: evaluate(data[name], data[f'{name}_grade'], thresholds, head) for name in cohorts}}
