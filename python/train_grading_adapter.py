@@ -106,6 +106,8 @@ def fit_policy(score, labels, target, sources=None, rule='pooled'):
         t1 = referral_threshold(score, labels, target)
     elif rule == 'balanced':
         t1 = balanced_threshold(score, labels, sources, target)
+    elif rule == 'youden-balanced':
+        t1 = youden_balanced_threshold(score, labels, sources)
     else:
         t1 = min(referral_threshold(score[sources == name], labels[sources == name], target)
                  for name in np.unique(sources) if np.any(labels[sources == name] >= 2))
@@ -123,7 +125,19 @@ def balanced_threshold(score, labels, sources, target):
         spec = np.mean([np.mean(score[(sources == n) & (labels < 2)] < cut) for n in names])
         if sens >= target and (best is None or spec > best[0]):
             best = (spec, cut)
-    return float(np.clip(best[1], 1e-3, 4 - 1e-3))
+    return float(np.clip(midpoint_below(score, best[1]), 1e-3, 4 - 1e-3))
+
+
+def youden_balanced_threshold(score, labels, sources):
+    """Boundary maximising the source-averaged Youden index (sens + spec - 1)."""
+    names = [n for n in np.unique(sources) if np.any(labels[sources == n] >= 2) and np.any(labels[sources == n] < 2)]
+    best = None
+    for cut in np.unique(score):
+        value = np.mean([np.mean(score[(sources == n) & (labels >= 2)] >= cut)
+                         + np.mean(score[(sources == n) & (labels < 2)] < cut) - 1 for n in names])
+        if best is None or value > best[0]:
+            best = (value, cut)
+    return float(np.clip(midpoint_below(score, best[1]), 1e-3, 4 - 1e-3))
 
 
 def fit_head_threshold(logits, labels, target, sources=None, rule='pooled'):
@@ -131,6 +145,8 @@ def fit_head_threshold(logits, labels, target, sources=None, rule='pooled'):
     probability = 1 / (1 + np.exp(-logits[:, 5]))
     if rule == 'balanced':
         return float(np.clip(balanced_threshold(probability, labels, sources, target), 1e-4, 1 - 1e-4))
+    if rule == 'youden-balanced':
+        return float(np.clip(youden_balanced_threshold(probability, labels, sources), 1e-6, 1 - 1e-6))
     fpr, tpr, cut = roc_curve(labels >= 2, probability)
     eligible = np.flatnonzero(tpr >= target)
     boundary = midpoint_below(probability, cut[eligible[np.argmin(fpr[eligible])]])

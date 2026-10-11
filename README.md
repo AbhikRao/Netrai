@@ -11,12 +11,13 @@ The simulation explores how connectivity, staffing and recapture demand affect
 screening completion.
 
 <!-- current-state:start -->
-> **Current state (2026-10-11):** the deployed MATLAB model is unchanged. A
-> site-adapted candidate reached 93.3% sensitivity / 89.0% specificity in one
-> locked DeepDRiD evaluation and is available as an opt-in variant. Round 2 is in
-> progress: full-network fine-tuning on a GPU with ~16k training images
-> (APTOS, EyePACS, IDRiD, DeepDRiD), to be judged on a fresh, still-unopened
-> Messidor-2 test with adjudicated grades.
+> **Current state (2026-10-12):** the deployed MATLAB model is unchanged. A
+> site-adapted candidate reached 93.3% sensitivity / 89.0% specificity in one locked
+> DeepDRiD evaluation and is an opt-in variant. Round 2 is training full-network
+> models on GPUs with up to ~24.6k images (APTOS, EyePACS, IDRiD, DeepDRiD, DDR);
+> validation AUCs already exceed the deployed model on every camera domain. They will
+> be judged once on two fresh, still-unopened tests: Messidor-2 (adjudicated grades)
+> and the DDR test split.
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)

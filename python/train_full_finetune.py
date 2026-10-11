@@ -68,16 +68,26 @@ def augment(rgb, rng):
 
 
 class Rows(Dataset):
-    def __init__(self, frame, root, train, seed):
-        self.frame, self.root, self.train, self.seed = frame.reset_index(drop=True), root, train, seed
+    def __init__(self, frame, roots, train, seed):
+        self.frame, self.train, self.seed = frame.reset_index(drop=True), train, seed
+        self.roots = roots if isinstance(roots, (list, tuple)) else [roots]
         self.epoch = 0
+
+    def path(self, image_id):
+        for root in self.roots:
+            candidate = root / f'{image_id}.png'
+            if candidate.exists():
+                return candidate
+        raise FileNotFoundError(image_id)
 
     def __len__(self):
         return len(self.frame)
 
     def __getitem__(self, index):
         row = self.frame.iloc[index]
-        bgr = cv2.imread(str(self.root / f'{row.image_id}.png'), cv2.IMREAD_COLOR)
+        bgr = cv2.imread(str(self.path(row.image_id)), cv2.IMREAD_COLOR)
+        if bgr is None:
+            raise ValueError(f'Unreadable training image {row.image_id}')
         rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
         if self.train:
             rng = np.random.default_rng((self.seed, self.epoch, index, os.getpid()))
@@ -141,14 +151,16 @@ def main():
     parser.add_argument('--workers', type=int, default=4)
     parser.add_argument('--seed', type=int, default=2026)
     parser.add_argument('--max-train-per-epoch', type=int, default=0)
+    parser.add_argument('--manifest', type=Path, help='override manifest (e.g. with extra sources)')
+    parser.add_argument('--extra-images', type=Path, nargs='*', default=[])
     args = parser.parse_args()
     device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)
     args.output.mkdir(parents=True, exist_ok=True)
-    manifest = pd.read_csv(args.export / 'manifest.csv')
+    manifest = pd.read_csv(args.manifest or args.export / 'manifest.csv')
     train = manifest.loc[manifest.split == 'train'].reset_index(drop=True)
     validation = manifest.loc[manifest.split == 'validation'].reset_index(drop=True)
-    images = args.export / 'images'
+    images = [args.export / 'images', *args.extra_images]
     model = NetrAIModel('efficientnet_b4', 5, pretrained=False)
     model.load_state_dict(torch.load(args.init, map_location='cpu', weights_only=True))
     frozen = []
