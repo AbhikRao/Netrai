@@ -49,10 +49,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--variant-id', required=True)
     parser.add_argument('--results', type=Path, required=True, help='train_grading_adapter results.json')
-    parser.add_argument('--rung', required=True, choices=('B', 'C', 'D'))
+    parser.add_argument('--rung', required=True, choices=('B', 'C', 'D'),
+                        help='B = legacy weights; C/D = adapted weights from the run')
+    parser.add_argument('--policy', type=Path, required=True,
+                        help='site policy JSON from calibrate_site_policy.py')
     args = parser.parse_args()
     results = json.loads(args.results.read_text())
-    policy = results['policies'][args.rung]
+    policy = json.loads(args.policy.read_text())
+    expected_rung = 'A' if args.rung == 'B' else args.rung
+    if policy['rung'] != expected_rung:
+        raise ValueError(f'Policy was fitted on rung {policy["rung"]}, not {expected_rung}')
+    thresholds = np.asarray(policy['thresholds'], dtype=float)
+    if thresholds.shape != (4,) or not np.all(np.diff(thresholds) > 0) or thresholds[0] <= 0 or thresholds[-1] >= 4:
+        raise ValueError('Policy thresholds must be strictly increasing inside (0, 4)')
     output = ROOT / 'matlab' / f'variant_{args.variant_id}'
     if output.exists():
         raise FileExistsError(f'{output} exists; variants are immutable')
@@ -84,11 +93,15 @@ def main():
         'schema_version': 1, 'variant_id': args.variant_id, 'rung': args.rung,
         'status': 'research_candidate_not_deployed',
         'adaptation_results_sha256': sha256_file(args.results),
-        'adaptation_code_sha256': results['code_sha256'],
+        'adaptation_code_sha256': (json.loads((args.results.parent / 'code_provenance.json').read_text())
+                                   ['adapter_sha256'] if (args.results.parent / 'code_provenance.json').is_file()
+                                   else results['code_sha256']),
         'rung_checkpoint_sha256': None if args.rung == 'B' else sha256_file(args.results.parent / f'rung_{args.rung}.pt'),
         'onnx_sha256': sha256_file(output / 'netrai_fold0.onnx'),
         'pytorch_onnx_max_abs_error_random_probe': error,
-        'policy': policy, 'training_pool': results['pool'],
+        'policy_sha256': sha256_file(args.policy), 'policy': {k: policy[k] for k in
+            ('thresholds', 'head_threshold', 'temperature', 'calibration_cohort', 'target_sensitivity')},
+        'training_pool': results['pool'],
         'selection_cohorts': results['selection'],
         'note': 'Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant.'})
     print(json.dumps({'variant': str(output.relative_to(ROOT)), 'onnx_parity': error, 'policy': policy}, indent=2))
