@@ -78,3 +78,6 @@ Thumbs.db
 # Local model-improvement caches, checkpoints and logs (aggregate evidence is curated separately).
 /results/model_improvement/
 /results/*.log
+
+# Candidate deployment variants: ONNX weights are distributed as release assets, not Git objects.
+/matlab/variant_*/*.onnx
