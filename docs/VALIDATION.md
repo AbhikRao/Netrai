@@ -106,6 +106,10 @@ its head layers (`C`) or last stage plus heads (`D`) were retrained on EyePACS
 (EyeQ train, gradable), IDRiD train and DeepDRiD train images. Decision
 thresholds were then calibrated on DeepDRiD **validation** (site calibration).
 The candidate `C_site` was chosen by a rule fixed before `D` finished training.
+The first lock halted at label attachment because the workbook column is named
+`DR_Levels` rather than the documented `DR_Level`; only the header and image IDs
+were inspected, and the parser was corrected and re-locked before any grade value
+was read.
 
 Primary population: 392 images from 98 patients, all gradable (four images each
 from two patients are kept in coverage but excluded for identity review). Model
@@ -135,8 +139,10 @@ What this shows and what it does not:
 - It is a retrospective public benchmark, not prospective or rural-India
   validation, and the DeepDRiD evaluation set is now exposed.
 - The deployed MATLAB model is unchanged; promoting a candidate is a separate
-  decision. Grad-CAM shortcut flags fell from 80% to 64% of 25 audit maps but
-  remain common.
+  decision. On the same 25 audit images and the current QC code, Grad-CAM
+  shortcut flags fall from 80% (deployed model) to 64% (`C_site`); flags remain
+  common. The earlier 13/25 (52%) figure below used the previous QC rules, so the
+  two audits are not directly comparable.
 
 [Acceptance report](../results/benchmarks/deepdrid_acceptance/acceptance_report.json),
 [independent recomputation](../results/benchmarks/deepdrid_acceptance/python_crosscheck.json),
