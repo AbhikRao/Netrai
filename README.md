@@ -112,7 +112,10 @@ Command Window; they cannot be entered directly into Bash.
 ## Scope and next steps
 
 Lesion overlays are candidate detections, and Grad-CAM visualizes model
-attribution. Neither is proof of a confirmed lesion. Portable-camera robustness,
+attribution. Neither is proof of a confirmed lesion. On the new-to-project
+DeepDRiD development validation partition the deployed model reaches only 63.3%
+referable sensitivity (96.8% specificity, AUC 0.91), so external screening
+accuracy is the main open problem; see [validation](docs/VALIDATION.md). Portable-camera robustness,
 fresh external grading, broader full-image runtime checks and clinician explanation/review-time
 studies remain open. The capacity model's next steps are field-derived return and
 service assumptions, shift calendars, outages and timed referral escalation.

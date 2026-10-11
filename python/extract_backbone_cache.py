@@ -39,7 +39,8 @@ CHECKPOINT = ROOT / 'python/weights/netrai_fold0_best.pth'
 SHARD = 128
 
 
-def cohort(name: str, eyeq_test_limit: int, seed: int) -> pd.DataFrame:
+def cohort(name: str, eyeq_test_limit: int, seed: int,
+           eyeq_train_normal_patients: int = 0) -> pd.DataFrame:
     """Return image_id, path, grade, group_id and source for one named cohort."""
     if name in ('deepdrid_training', 'deepdrid_validation'):
         frame = pd.read_csv(DEEPDRID / f"{name.split('_')[1]}.csv", dtype={'patient_id': str})
@@ -63,6 +64,12 @@ def cohort(name: str, eyeq_test_limit: int, seed: int) -> pd.DataFrame:
         labels = pd.read_csv(EYEQ / f'data/Label_EyeQ_{split}.csv')
         labels = labels.loc[labels.quality.isin([0, 1])]  # Reject images lack reliable grades
         labels['patient'] = labels.image.str.split('_').str[0]
+        if name == 'eyeq_train' and eyeq_train_normal_patients:
+            # Keep every patient with any DR grade; sample all-normal patients.
+            worst = labels.groupby('patient').DR_grade.max()
+            normal = worst.index[worst == 0].to_series().sample(frac=1, random_state=seed)
+            keep = set(worst.index[worst > 0]) | set(normal.iloc[:eyeq_train_normal_patients])
+            labels = labels.loc[labels.patient.isin(keep)]
         if name == 'eyeq_test':
             overlap = ROOT / 'results/verification_2026-09-24/perceptual_overlap/visually_confirmed_pairs.csv'
             if overlap.is_file():  # same-retina copies of training images are not test data
@@ -130,6 +137,7 @@ def main():
     parser.add_argument('--output', type=Path, default=ROOT / 'results/model_improvement/feature_cache')
     parser.add_argument('--flip', nargs='*', default=['deepdrid_training', 'idrid_train', 'eyeq_train'])
     parser.add_argument('--eyeq-test-limit', type=int, default=3000)
+    parser.add_argument('--eyeq-train-normal-patients', type=int, default=1300)
     parser.add_argument('--batch-size', type=int, default=8)
     parser.add_argument('--workers', type=int, default=2)
     parser.add_argument('--threads', type=int, default=6)
@@ -143,7 +151,8 @@ def main():
     code = {name: sha256_file(Path(__file__).parent / name) for name in
             ('extract_backbone_cache.py', 'utils/preprocessing.py', 'models/netrai_model.py')}
     for name in args.cohorts:
-        frame = cohort(name, args.eyeq_test_limit, args.seed).reset_index(drop=True)
+        frame = cohort(name, args.eyeq_test_limit, args.seed,
+                       args.eyeq_train_normal_patients).reset_index(drop=True)
         folder = args.output / name
         folder.mkdir(parents=True, exist_ok=True)
         identity = {'cohort': name, 'rows': len(frame), 'checkpoint_sha256': sha256_file(CHECKPOINT),

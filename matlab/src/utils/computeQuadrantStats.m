@@ -27,10 +27,12 @@ function stats = computeQuadrantStats(binaryMask, center)
     % ST = Superior-Temporal, SN = Superior-Nasal
     % IT = Inferior-Temporal, IN = Inferior-Nasal
     quadMasks = cell(1, 4);
-    quadMasks{1} = false(h, w); quadMasks{1}(1:cy, cx:end) = true;    % ST
-    quadMasks{2} = false(h, w); quadMasks{2}(1:cy, 1:cx) = true;      % SN
-    quadMasks{3} = false(h, w); quadMasks{3}(cy:end, cx:end) = true;   % IT
-    quadMasks{4} = false(h, w); quadMasks{4}(cy:end, 1:cx) = true;     % IN
+    % Quadrants are disjoint: the centre row/column belongs to the
+    % superior/temporal side only, so no lesion pixel is counted twice.
+    quadMasks{1} = false(h, w); quadMasks{1}(1:cy, cx:end) = true;       % ST
+    quadMasks{2} = false(h, w); quadMasks{2}(1:cy, 1:cx-1) = true;       % SN
+    quadMasks{3} = false(h, w); quadMasks{3}(cy+1:end, cx:end) = true;   % IT
+    quadMasks{4} = false(h, w); quadMasks{4}(cy+1:end, 1:cx-1) = true;   % IN
 
     quadNames = {'ST', 'SN', 'IT', 'IN'};
     counts = zeros(1, 4);

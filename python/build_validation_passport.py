@@ -266,7 +266,7 @@ def build_passport(validation_path: Path, gradcam_path: Path,
         'model': {
             'architecture': matlab_config['architecture'],
             'training_dataset': 'APTOS 2019 Blindness Detection',
-            'training_workflow': 'netrai_kaggle_train.ipynb',
+            'training_workflow': 'research/legacy_training.ipynb',
             'fold': matlab_config['fold'],
             'input_size': matlab_config['input_size'],
             'output_schema': matlab_config['output_schema'],

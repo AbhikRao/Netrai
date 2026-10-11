@@ -16,6 +16,7 @@ from scipy.io import savemat
 from sklearn.model_selection import StratifiedKFold
 
 from models.netrai_model import NetrAIModel
+from utils.bundle import load_legacy_checkpoint
 from utils.preprocessing import preprocess_for_model
 
 
@@ -50,7 +51,7 @@ def main(args: argparse.Namespace) -> None:
         arrays.append(preprocess_for_model(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)))
     batch = np.stack(arrays).transpose(0, 3, 1, 2).astype(np.float32)
 
-    checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
+    checkpoint = load_legacy_checkpoint(args.checkpoint)
     model = NetrAIModel("efficientnet_b4", 5, pretrained=False)
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()

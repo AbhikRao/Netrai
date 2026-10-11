@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add patient-level bootstrap confidence intervals to a grading validation."""
+"""Add image-level, grade-stratified bootstrap intervals to a grading validation."""
 
 from __future__ import annotations
 
