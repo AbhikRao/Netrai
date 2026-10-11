@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "variant_id": "R2_K_full",
+  "rung": "F",
+  "status": "research_candidate_not_deployed",
+  "adaptation_results_sha256": "e31a76e1d2f5019167fbaccdfa6aa9c363391d23f6cbff873b5ba0ec405c4a98",
+  "adaptation_code_sha256": null,
+  "rung_checkpoint_sha256": [
+    "3b5d8dad119a596a10ac16e5924ed86d47314e7744246ea9e2f82db2d976b2be"
+  ],
+  "onnx_sha256": "0fc558cfae10944f9b615db30e4830db512ba08d4ca7333fdb4cfc20267789f4",
+  "pytorch_onnx_max_abs_error_random_probe": 1.6093254089355469e-06,
+  "policy_sha256": "e31a76e1d2f5019167fbaccdfa6aa9c363391d23f6cbff873b5ba0ec405c4a98",
+  "policy": {
+    "thresholds": [
+      0.7948787024194919,
+      0.7953632382878695,
+      2.031843722378337,
+      2.682476995698275
+    ],
+    "head_threshold": 0.1110044502181175,
+    "temperature": 0.8031014267190558,
+    "calibration_cohort": null,
+    "target_sensitivity": 0.9,
+    "rule": "balanced"
+  },
+  "training_pool": null,
+  "selection_cohorts": null,
+  "note": "Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant."
+}

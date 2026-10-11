@@ -45,20 +45,41 @@ def adapted_model(rung_checkpoint: Path | None) -> NetrAIModel:
     return model.eval()
 
 
+def full_model(path: Path) -> NetrAIModel:
+    model = NetrAIModel('efficientnet_b4', 5, pretrained=False)
+    state = torch.load(path, map_location='cpu', weights_only=False)
+    model.load_state_dict(state.get('model_state_dict', state))
+    return model.eval()
+
+
+class MeanEnsemble(torch.nn.Module):
+    """Average of member models' grade and referral logits in one ONNX graph."""
+
+    def __init__(self, members):
+        super().__init__()
+        self.members = torch.nn.ModuleList(members)
+
+    def forward(self, x):
+        outputs = [m(x) for m in self.members]
+        return (torch.stack([o[0] for o in outputs]).mean(0), torch.stack([o[1] for o in outputs]).mean(0))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--variant-id', required=True)
     parser.add_argument('--results', type=Path, required=True, help='train_grading_adapter results.json')
-    parser.add_argument('--rung', required=True, choices=('B', 'C', 'D'),
-                        help='B = legacy weights; C/D = adapted weights from the run')
+    parser.add_argument('--rung', required=True, choices=('B', 'C', 'D', 'F'),
+                        help='B = legacy weights; C/D = adapted weights from the run; F = full checkpoint(s)')
+    parser.add_argument('--full-checkpoint', type=Path, nargs='*', default=[],
+                        help='round-2 full-network checkpoint(s); several = mean ensemble')
     parser.add_argument('--policy', type=Path, required=True,
                         help='site policy JSON from calibrate_site_policy.py')
     args = parser.parse_args()
     results = json.loads(args.results.read_text())
     policy = json.loads(args.policy.read_text())
     expected_rung = 'A' if args.rung == 'B' else args.rung
-    if policy['rung'] != expected_rung:
-        raise ValueError(f'Policy was fitted on rung {policy["rung"]}, not {expected_rung}')
+    if args.rung != 'F' and policy.get('rung') != expected_rung:
+        raise ValueError(f'Policy was fitted on rung {policy.get("rung")}, not {expected_rung}')
     thresholds = np.asarray(policy['thresholds'], dtype=float)
     if thresholds.shape != (4,) or not np.all(np.diff(thresholds) > 0) or thresholds[0] <= 0 or thresholds[-1] >= 4:
         raise ValueError('Policy thresholds must be strictly increasing inside (0, 4)')
@@ -74,6 +95,12 @@ def main():
     if args.rung == 'B':
         shutil.copy2(ACTIVE / 'netrai_fold0.onnx', output / 'netrai_fold0.onnx')
         model = adapted_model(None)
+    elif args.rung == 'F':
+        members = [full_model(c) for c in args.full_checkpoint]
+        model = members[0] if len(members) == 1 else MeanEnsemble(members).eval()
+        torch.onnx.export(DualHeadOutputs(model).eval(), torch.zeros(1, 3, 512, 512), output / 'netrai_fold0.onnx',
+                          export_params=True, opset_version=17, do_constant_folding=True,
+                          input_names=['input'], output_names=['model_outputs'], dynamo=False)
     else:
         checkpoint = args.results.parent / f'rung_{args.rung}.pt'
         model = adapted_model(checkpoint)
@@ -93,16 +120,18 @@ def main():
         'schema_version': 1, 'variant_id': args.variant_id, 'rung': args.rung,
         'status': 'research_candidate_not_deployed',
         'adaptation_results_sha256': sha256_file(args.results),
-        'adaptation_code_sha256': (json.loads((args.results.parent / 'code_provenance.json').read_text())
+        'adaptation_code_sha256': None if args.rung == 'F' else (json.loads((args.results.parent / 'code_provenance.json').read_text())
                                    ['adapter_sha256'] if (args.results.parent / 'code_provenance.json').is_file()
                                    else results['code_sha256']),
-        'rung_checkpoint_sha256': None if args.rung == 'B' else sha256_file(args.results.parent / f'rung_{args.rung}.pt'),
+        'rung_checkpoint_sha256': (None if args.rung == 'B' else
+                                   [sha256_file(c) for c in args.full_checkpoint] if args.rung == 'F'
+                                   else sha256_file(args.results.parent / f'rung_{args.rung}.pt')),
         'onnx_sha256': sha256_file(output / 'netrai_fold0.onnx'),
         'pytorch_onnx_max_abs_error_random_probe': error,
-        'policy_sha256': sha256_file(args.policy), 'policy': {k: policy[k] for k in
-            ('thresholds', 'head_threshold', 'temperature', 'calibration_cohort', 'target_sensitivity')},
-        'training_pool': results['pool'],
-        'selection_cohorts': results['selection'],
+        'policy_sha256': sha256_file(args.policy), 'policy': {k: policy.get(k) for k in
+            ('thresholds', 'head_threshold', 'temperature', 'calibration_cohort', 'target_sensitivity', 'rule')},
+        'training_pool': results.get('pool'),
+        'selection_cohorts': results.get('selection'),
         'note': 'Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant.'})
     print(json.dumps({'variant': str(output.relative_to(ROOT)), 'onnx_parity': error, 'policy': policy}, indent=2))
 
