@@ -85,8 +85,18 @@ def referral_threshold(score, labels, target):
     return float(np.clip(cut[best], 1e-3, 4 - 1e-3))
 
 
-def fit_policy(score, labels, target):
-    t1 = referral_threshold(score, labels, target)
+def fit_policy(score, labels, target, sources=None, rule='pooled'):
+    """Fix the grade-2 boundary, then fit the other ordinal boundaries for QWK.
+
+    ``pooled``: lowest-FPR boundary reaching ``target`` sensitivity on all rows.
+    ``worst-source``: the most conservative of the per-source boundaries, so each
+    source separately reaches ``target`` sensitivity.
+    """
+    if rule == 'pooled':
+        t1 = referral_threshold(score, labels, target)
+    else:
+        t1 = min(referral_threshold(score[sources == name], labels[sources == name], target)
+                 for name in np.unique(sources) if np.any(labels[sources == name] >= 2))
     return ordinal_thresholds(fit_other_thresholds(score, labels, t1)).tolist()
 
 
@@ -96,6 +106,11 @@ def fit_head_threshold(logits, labels, target):
     fpr, tpr, cut = roc_curve(labels >= 2, probability)
     eligible = np.flatnonzero(tpr >= target)
     return float(np.clip(cut[eligible[np.argmin(fpr[eligible])]], 1e-4, 1 - 1e-4))
+
+
+def selection_value(score, labels):
+    """Smooth high-sensitivity criterion: mean sensitivity at 80/85/90% specificity."""
+    return float(np.mean([sens_at_spec(score, labels, m) for m in (0.80, 0.85, 0.90)]))
 
 
 def sens_at_spec(score, labels, minimum=0.85):
@@ -114,6 +129,8 @@ def evaluate(logits, labels, thresholds, head_threshold=0.5):
         'images': int(len(labels)), 'referable': int(truth.sum()),
         'sensitivity': float(positive[truth].mean()), 'specificity': float((~positive[~truth]).mean()),
         'auc': float(roc_auc_score(truth, score)), 'sens_at_spec85': sens_at_spec(score, labels),
+        'sens_at_spec80': sens_at_spec(score, labels, 0.80), 'sens_at_spec90': sens_at_spec(score, labels, 0.90),
+        'selection_value': selection_value(score, labels),
         'qwk': float(quadratic_weighted_kappa(labels, predicted)),
         'per_grade_recall': [float(np.mean(predicted[labels == g] == g)) if np.any(labels == g) else None
                              for g in range(5)],
@@ -196,9 +213,9 @@ def train_rung(rung, model, pool, selection, args, log):
             losses.append(float(loss))
         scheduler.step()
         metrics = {name: evaluate(predict(tail, data[key], args), data['grade'], LEGACY) for name, data in selection.items()}
-        criterion_value = float(np.mean([m['sens_at_spec85'] for m in metrics.values()]))
+        criterion_value = float(np.mean([m['selection_value'] for m in metrics.values()]))
         tie = float(np.mean([m['auc'] for m in metrics.values()]))
-        history.append({'epoch': epoch, 'loss': float(np.mean(losses)), 'selection_sens_at_spec85': criterion_value,
+        history.append({'epoch': epoch, 'loss': float(np.mean(losses)), 'selection_value': criterion_value,
                         'selection_auc': tie, 'seconds': round(time.time() - started, 1)})
         log(f'{rung} epoch {epoch}: {history[-1]}')
         if criterion_value + 1e-3 * tie > best:
@@ -250,6 +267,7 @@ def main():
     parser.add_argument('--stress', nargs='*', default=list(STRESS))
     parser.add_argument('--exclude-pool', nargs='*', default=[], help='e.g. deepdrid_training for D-noDeepDRiD')
     parser.add_argument('--target-sensitivity', type=float, default=0.92)
+    parser.add_argument('--threshold-rule', choices=('pooled', 'worst-source'), default='pooled')
     parser.add_argument('--holdout-fraction', type=float, default=0.15)
     parser.add_argument('--epochs', type=int, default=12)
     parser.add_argument('--batch-size', type=int, default=32)
@@ -294,7 +312,8 @@ def main():
             if rung == 'A':
                 thresholds, temperature, head_threshold = LEGACY, None, 0.5
             else:
-                thresholds = fit_policy(scores(pool['logits']), pool['grade'], args.target_sensitivity)
+                thresholds = fit_policy(scores(pool['logits']), pool['grade'], args.target_sensitivity,
+                                        pool['source'], args.threshold_rule)
                 head_threshold = fit_head_threshold(pool['logits'], pool['grade'], args.target_sensitivity)
                 temperature = None
         else:
@@ -302,11 +321,15 @@ def main():
             key = 'block5' if rung == 'D' else 'pooled'
             outputs = {'holdout': predict(tail, holdout[key], args),
                        **{n: predict(tail, d[key], args) for n, d in {**selection, **stress}.items()}}
-            thresholds = fit_policy(scores(outputs['holdout']), holdout['grade'], args.target_sensitivity)
+            thresholds = fit_policy(scores(outputs['holdout']), holdout['grade'], args.target_sensitivity,
+                                    holdout['source'], args.threshold_rule)
             head_threshold = fit_head_threshold(outputs['holdout'], holdout['grade'], args.target_sensitivity)
             temperature, _ = fit_temperature(outputs['holdout'][:, :5], holdout['grade'])
             torch.save({'state_dict': tail.state_dict(), 'start': tail.start}, args.output / f'rung_{rung}.pt')
             atomic_json(args.output / f'rung_{rung}_history.json', history)
+        np.savez(args.output / f'rung_{rung}_outputs.npz', **outputs,
+                 **{f'{name}_grade': data['grade'] for name, data in {**selection, **stress}.items()},
+                 holdout_grade=holdout['grade'], holdout_source=holdout['source'])
         policies[rung] = {'thresholds': thresholds, 'temperature': temperature, 'head_threshold': head_threshold,
                           'threshold_source': 'legacy' if rung == 'A' else ('training pool' if rung == 'B' else 'pool holdout')}
         results[rung] = {name: evaluate(outputs[name], data['grade'], thresholds, head_threshold)
