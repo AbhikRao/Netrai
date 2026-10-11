@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "variant_id": "B_site",
+  "rung": "B",
+  "status": "research_candidate_not_deployed",
+  "adaptation_results_sha256": "6f2b696b9ec9762d146ede9bf1cfbd29b986b98ddec48e05c27b96516fa17d35",
+  "adaptation_code_sha256": "af3676027512a77e7529ee193724ebe84c75f135f23a6955d94d4a57778949b4",
+  "rung_checkpoint_sha256": null,
+  "onnx_sha256": "12ecca45409fc2f5314e54c906f6a9e03e1ec345200beec8c89624cb15fc631a",
+  "pytorch_onnx_max_abs_error_random_probe": 7.152557373046875e-07,
+  "policy_sha256": "6e6f73d6f22a62d72f1b15899aa06934bc9b0027588f02a9dfd5da5acf2ded9b",
+  "policy": {
+    "thresholds": [
+      0.6207290954189375,
+      0.7259758326108567,
+      1.962224612943828,
+      3.1464964956976473
+    ],
+    "head_threshold": 0.0020978664979338646,
+    "temperature": 1.7481602659525308,
+    "calibration_cohort": "deepdrid_validation",
+    "target_sensitivity": 0.92
+  },
+  "training_pool": [
+    "deepdrid_training",
+    "idrid_train",
+    "eyeq_train"
+  ],
+  "selection_cohorts": [
+    "deepdrid_validation",
+    "eyeq_test"
+  ],
+  "note": "Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant."
+}
