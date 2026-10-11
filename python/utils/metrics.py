@@ -1,16 +1,22 @@
 import numpy as np
+from utils.validation import grades
+
+
+def ratio(numerator, denominator):
+    """Undefined rates are NaN internally and JSON null in published artifacts."""
+    return float(numerator / denominator) if denominator else float('nan')
 
 def quadratic_weighted_kappa(y_true, y_pred):
     """
     Calculates the Quadratic Weighted Kappa (QWK) from scratch.
     """
-    y_true = np.asarray(y_true)
-    y_pred = np.asarray(y_pred)
+    y_true = grades(y_true, 'y_true')
+    y_pred = grades(y_pred, 'y_pred')
 
     if y_true.size != y_pred.size:
         raise ValueError('y_true and y_pred must have the same length')
     if y_true.size == 0:
-        return 0.0
+        return float('nan')
 
     if not (np.isfinite(y_true).all() and np.isfinite(y_pred).all()):
         raise ValueError('ratings must be finite numbers')
@@ -26,7 +32,7 @@ def quadratic_weighted_kappa(y_true, y_pred):
     # A constant, perfectly matching batch has no disagreement.  Handling it
     # explicitly avoids division by zero in the weight matrix below.
     if num_ratings == 1:
-        return 1.0
+        return float('nan')
     
     conf_mat = np.zeros((num_ratings, num_ratings))
     for a, p in zip(y_true, y_pred):
@@ -51,7 +57,7 @@ def quadratic_weighted_kappa(y_true, y_pred):
     den = np.sum(weight_mat * expected_mat)
     
     if den == 0:
-        return 1.0
+        return float('nan')
     
     return 1.0 - (num / den)
 
@@ -62,6 +68,9 @@ def compute_metrics(confusion_matrix):
     confusion_matrix = np.asarray(confusion_matrix)
     if confusion_matrix.ndim != 2 or confusion_matrix.shape[0] != confusion_matrix.shape[1]:
         raise ValueError('confusion_matrix must be a square 2-D array')
+    if not np.isfinite(confusion_matrix).all() or (confusion_matrix < 0).any() or (
+            confusion_matrix != np.floor(confusion_matrix)).any():
+        raise ValueError('confusion_matrix must contain nonnegative integer counts')
 
     metrics = {}
     num_classes = confusion_matrix.shape[0]
@@ -77,10 +86,10 @@ def compute_metrics(confusion_matrix):
         fp = np.sum(confusion_matrix[:, i]) - tp
         tn = np.sum(confusion_matrix) - (tp + fp + fn)
         
-        sensitivity = tp / (tp + fn + 1e-7)
-        specificity = tn / (tn + fp + 1e-7)
-        precision = tp / (tp + fp + 1e-7)
-        f1 = 2 * (precision * sensitivity) / (precision + sensitivity + 1e-7)
+        sensitivity = ratio(tp, tp + fn)
+        specificity = ratio(tn, tn + fp)
+        precision = ratio(tp, tp + fp)
+        f1 = ratio(2 * tp, 2 * tp + fp + fn)
         
         sensitivities.append(sensitivity)
         specificities.append(specificity)
@@ -98,6 +107,7 @@ def referable_dr_metrics(y_true, y_pred):
     """
     Binary metrics for level 0-1 vs 2-4.
     """
+    y_true, y_pred = grades(y_true, 'y_true'), grades(y_pred, 'y_pred')
     if len(y_true) != len(y_pred):
         raise ValueError('y_true and y_pred must have the same length')
 
@@ -109,11 +119,11 @@ def referable_dr_metrics(y_true, y_pred):
     fp = sum([1 for yt, yp in zip(y_true_binary, y_pred_binary) if yt == 0 and yp == 1])
     fn = sum([1 for yt, yp in zip(y_true_binary, y_pred_binary) if yt == 1 and yp == 0])
     
-    sensitivity = tp / (tp + fn + 1e-7)
-    specificity = tn / (tn + fp + 1e-7)
-    precision = tp / (tp + fp + 1e-7)
-    accuracy = (tp + tn) / (tp + tn + fp + fn + 1e-7)
-    f1 = 2 * (precision * sensitivity) / (precision + sensitivity + 1e-7)
+    sensitivity = ratio(tp, tp + fn)
+    specificity = ratio(tn, tn + fp)
+    precision = ratio(tp, tp + fp)
+    accuracy = ratio(tp + tn, tp + tn + fp + fn)
+    f1 = ratio(2 * tp, 2 * tp + fp + fn)
     
     return {
         'sensitivity': sensitivity,

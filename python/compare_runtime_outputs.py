@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from utils.validation import grades, image_ids, ordinal_thresholds, probabilities
 
 
 PYTHON_DIR = Path(__file__).resolve().parent
@@ -66,7 +67,7 @@ def _load_export(path, runtime):
     frame = pd.read_csv(path, dtype={'id_code': str})
     if 'id_code' not in frame:
         raise ValueError(f'{runtime} CSV is missing id_code')
-    frame['id_code'] = frame['id_code'].astype(str).str.strip()
+    frame['id_code'] = image_ids(frame['id_code']).to_numpy()
     if frame['id_code'].eq('').any():
         raise ValueError(f'{runtime} CSV contains an empty id_code')
     duplicates = frame.loc[frame['id_code'].duplicated(), 'id_code'].tolist()
@@ -99,6 +100,9 @@ def compare_runtime_outputs(python_csv, matlab_csv, thresholds=None,
                             probability_tolerance=0.05,
                             threshold_edge_tolerance=0.05):
     """Return a machine-readable summary and per-image comparison table."""
+    if not np.isfinite([probability_tolerance, threshold_edge_tolerance]).all() or min(
+            probability_tolerance, threshold_edge_tolerance) < 0:
+        raise ValueError('Tolerances must be finite and nonnegative')
     python_frame = _load_export(python_csv, 'Python')
     matlab_frame = _load_export(matlab_csv, 'MATLAB')
 
@@ -130,12 +134,15 @@ def compare_runtime_outputs(python_csv, matlab_csv, thresholds=None,
     py = py.loc[compared_ids]
     ml = ml.loc[compared_ids]
 
-    if thresholds is None:
-        threshold_values = np.load(DEFAULT_THRESHOLDS).astype(float)
-    else:
-        threshold_values = np.asarray(thresholds, dtype=float)
-    if threshold_values.shape != (4,) or not np.all(np.diff(threshold_values) > 0):
-        raise ValueError('Expected four strictly increasing ordinal thresholds')
+    threshold_values = ordinal_thresholds(
+        np.load(DEFAULT_THRESHOLDS) if thresholds is None else thresholds)
+
+    for frame, runtime, raw_prefix, calibrated_prefix in (
+            (py, 'Python', 'prob_grade_', 'calibrated_prob_grade_'),
+            (ml, 'MATLAB', 'raw_prob_grade_', 'prob_grade_')):
+        for prefix in (raw_prefix, calibrated_prefix):
+            probabilities(frame[[f'{prefix}{i}' for i in range(5)]].to_numpy(),
+                          name=f'{runtime} {prefix}')
 
     details = pd.DataFrame({'id_code': compared_ids})
     exact_summary = {}
@@ -145,8 +152,8 @@ def compare_runtime_outputs(python_csv, matlab_csv, thresholds=None,
             python_values = _boolean_series(py[python_column], f'Python {python_column}')
             matlab_values = _boolean_series(ml[matlab_column], f'MATLAB {matlab_column}')
         elif kind == 'integer':
-            python_values = pd.to_numeric(py[python_column], errors='raise').astype(int)
-            matlab_values = pd.to_numeric(ml[matlab_column], errors='raise').astype(int)
+            python_values = pd.Series(grades(py[python_column], python_column), index=py.index)
+            matlab_values = pd.Series(grades(ml[matlab_column], matlab_column), index=ml.index)
         else:
             python_values = py[python_column].astype(str).str.strip()
             matlab_values = ml[matlab_column].astype(str).str.strip()
@@ -166,6 +173,12 @@ def compare_runtime_outputs(python_csv, matlab_csv, thresholds=None,
     for label, (python_column, matlab_column) in CONTINUOUS_FIELDS.items():
         python_values = pd.to_numeric(py[python_column], errors='coerce').to_numpy(float)
         matlab_values = pd.to_numeric(ml[matlab_column], errors='coerce').to_numpy(float)
+        if not (np.isfinite(python_values).all() and np.isfinite(matlab_values).all()):
+            raise ValueError(f'Nonfinite or invalid {label} on successful rows')
+        upper = 4 if label == 'continuous_score' else 1
+        if ((python_values < 0) | (python_values > upper)
+                | (matlab_values < 0) | (matlab_values > upper)).any():
+            raise ValueError(f'{label} outside [0, {upper}]')
         differences = np.abs(python_values - matlab_values)
         numerical_differences[label] = differences
         details[f'python_{label}'] = python_values
@@ -207,10 +220,11 @@ def compare_runtime_outputs(python_csv, matlab_csv, thresholds=None,
         }
     ]
     probability_max = max(
-        numerical_summary[field]['max_abs_difference'] or 0.0
+        numerical_summary[field]['max_abs_difference']
         for field in probability_fields)
-    all_matlab_rows_matched = not matlab_only
-    all_compared = len(compared_ids) == len(matlab_frame)
+    all_matlab_rows_matched = not matlab_only and not python_only
+    all_compared = len(compared_ids) == len(matlab_frame) == len(python_frame)
+    cohort_valid = all_matlab_rows_matched and all_compared and np.all(exact_arrays['true_grade'])
     screening_fields = (
         grade_referable_match,
         exact_arrays['referable_head_prediction'],
@@ -218,10 +232,10 @@ def compare_runtime_outputs(python_csv, matlab_csv, thresholds=None,
         exact_arrays['triage_action'],
     )
     screening_pass = bool(
-        all_matlab_rows_matched and all_compared
+        cohort_valid
         and all(np.all(values) for values in screening_fields))
     strict_grade_pass = bool(
-        all_matlab_rows_matched and all_compared
+        cohort_valid
         and np.all(exact_arrays['predicted_grade']))
 
     summary = {
@@ -260,7 +274,7 @@ def compare_runtime_outputs(python_csv, matlab_csv, thresholds=None,
         'gates': {
             'screening_decision_parity_pass': screening_pass,
             'strict_five_grade_parity_pass': strict_grade_pass,
-            'probability_tolerance_pass': bool(probability_max <= probability_tolerance),
+            'probability_tolerance_pass': bool(cohort_valid and probability_max <= probability_tolerance),
         },
         'interpretation': (
             'Screening parity covers grade-derived referability, the independent '
@@ -310,7 +324,8 @@ def main():
     print(json.dumps(summary['gates'], indent=2))
     print(f'Wrote {csv_path}')
     print(f'Wrote {json_path}')
+    return 0 if all(summary['gates'].values()) else 1
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

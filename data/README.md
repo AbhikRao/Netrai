@@ -11,6 +11,7 @@ does not grant rights to dataset images, labels or derived model artifacts.
 | IDRiD | Indian-domain grading, lesions and landmarks | `data/idrid/` with grading/segmentation manifests | [IDRiD data](https://idrid.grand-challenge.org/Data/) |
 | DRIVE | Vessel-mask benchmark | `data/drive/training/`, `test/` | [DRIVE dataset](https://drive.grand-challenge.org/) |
 | Messidor-2 | Potential camera/domain robustness research | `data/messidor2/` | [Official Messidor-2 source](https://www.adcis.net/en/third-party/messidor2/) |
+| DeepDRiD v1.1 | Patient-grouped development; reserved public evaluation | `data/DRiD/DeepDRiD-master/regular_fundus_images/` | [Authors' release](https://github.com/deepdrdoc/DeepDRiD/tree/v1.1) |
 
 ## Evaluation boundaries
 
@@ -29,6 +30,17 @@ does not grant rights to dataset images, labels or derived model artifacts.
   The acquired public test package has images/FOV masks without manual vessel labels.
 - **Messidor-2:** the acquired 1,748-image release and eye-pair metadata contain
   no official DR grades. Images alone cannot establish grading accuracy.
+- **DeepDRiD:** 1,200/400/400 regular-fundus images from 300/100/100 author
+  patients. The final evaluation labels remain reserved pending reviewed overlap
+  and a frozen protocol/model/policy. Four training patients have filename/eye
+  annotation conflicts; all 16 images are retained and quarantined from
+  development. Grade 5 means ungradable, with unknown disease truth; it is never
+  mapped to grade 4 or a negative. Patient grouping is required for split and
+  uncertainty calculations. This Chinese public dataset does not establish
+  prospective performance in rural India. Keep its authors' separate terms.
+  Identity review also found a validation/evaluation repeat and one inconclusive
+  prior-source pair. The predeclared primary evaluation identity subset holds
+  two patient groups (8 images); all 400 original records remain accounted for.
 
 See the [benchmark index](../results/README.md) for split-integrity audits,
 quality robustness, native-mask metrics and grading evidence.

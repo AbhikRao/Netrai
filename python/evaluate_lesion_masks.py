@@ -38,17 +38,6 @@ def resolve(base: Path, value: str) -> Path:
     return path if path.is_absolute() else base / path
 
 
-def transform_mask(mask: np.ndarray, target_size: int = 512) -> np.ndarray:
-    h, w = mask.shape[:2]
-    scale = target_size / max(h, w)
-    resized = cv2.resize(mask, (int(w*scale), int(h*scale)), interpolation=cv2.INTER_NEAREST)
-    top = (target_size-resized.shape[0])//2
-    bottom = target_size-resized.shape[0]-top
-    left = (target_size-resized.shape[1])//2
-    right = target_size-resized.shape[1]-left
-    return cv2.copyMakeBorder(resized, top, bottom, left, right, cv2.BORDER_CONSTANT) > 0
-
-
 def metrics(prediction: np.ndarray, truth: np.ndarray) -> dict[str, float]:
     pred = prediction.astype(bool); gt = truth.astype(bool)
     tp = int(np.logical_and(pred, gt).sum())
@@ -56,41 +45,50 @@ def metrics(prediction: np.ndarray, truth: np.ndarray) -> dict[str, float]:
     fn = int(np.logical_and(~pred, gt).sum())
     pixel_metrics = {
         "tp": tp, "fp": fp, "fn": fn,
-        "pixel_precision": tp/max(tp+fp, 1),
-        "pixel_recall": tp/max(tp+fn, 1),
-        "pixel_dice": 2*tp/max(2*tp+fp+fn, 1),
-        "pixel_iou": tp/max(tp+fp+fn, 1),
+        "pixel_precision": ratio(tp, tp+fp),
+        "pixel_recall": ratio(tp, tp+fn),
+        "pixel_dice": ratio(2*tp, 2*tp+fp+fn),
+        "pixel_iou": ratio(tp, tp+fp+fn),
     }
     return {**pixel_metrics, **component_metrics(pred, gt)}
 
 
 def component_metrics(prediction: np.ndarray, truth: np.ndarray, iou_threshold=0.10) -> dict[str, float]:
-    """One-to-one lesion-component matching using an IoU threshold."""
+    """Maximum one-to-one IoU matching, using a vectorized overlap table."""
+    from scipy.sparse import csr_matrix
+    from scipy.sparse.csgraph import maximum_bipartite_matching
+    if prediction.shape != truth.shape:
+        raise ValueError('Prediction and annotation coordinates must match')
     pred_count, pred_labels = cv2.connectedComponents(prediction.astype(np.uint8), 8)
     truth_count, truth_labels = cv2.connectedComponents(truth.astype(np.uint8), 8)
-    pred_ids = list(range(1, pred_count)); truth_ids = list(range(1, truth_count))
-    candidates = []
-    for pred_id in pred_ids:
-        pred_mask = pred_labels == pred_id
-        overlapping = np.unique(truth_labels[pred_mask])
-        for truth_id in overlapping[overlapping > 0]:
-            truth_mask = truth_labels == truth_id
-            intersection = np.logical_and(pred_mask, truth_mask).sum()
-            union = np.logical_or(pred_mask, truth_mask).sum()
-            iou = intersection/max(union, 1)
-            if iou >= iou_threshold:
-                candidates.append((iou, pred_id, int(truth_id)))
-    matched_pred, matched_truth = set(), set()
-    for _, pred_id, truth_id in sorted(candidates, reverse=True):
-        if pred_id not in matched_pred and truth_id not in matched_truth:
-            matched_pred.add(pred_id); matched_truth.add(truth_id)
-    tp = len(matched_truth); fp = len(pred_ids)-tp; fn = len(truth_ids)-tp
-    return {
-        "lesion_tp": tp, "lesion_fp": fp, "lesion_fn": fn,
-        "lesion_precision": tp/max(tp+fp, 1),
-        "lesion_recall": tp/max(tp+fn, 1),
-        "lesion_f1": 2*tp/max(2*tp+fp+fn, 1),
-    }
+    pred_area = np.bincount(pred_labels.ravel(), minlength=pred_count)
+    truth_area = np.bincount(truth_labels.ravel(), minlength=truth_count)
+    overlap = np.bincount((pred_labels.astype(np.int64)*truth_count+truth_labels).ravel(),
+                          minlength=pred_count*truth_count).reshape(pred_count, truth_count)
+    p, t = np.nonzero(overlap[1:, 1:])
+    union = pred_area[p+1]+truth_area[t+1]-overlap[p+1, t+1]
+    accepted = overlap[p+1, t+1]/np.maximum(union, 1) >= iou_threshold
+    if pred_count > 1 and truth_count > 1:
+        graph = csr_matrix((np.ones(int(accepted.sum())), (p[accepted], t[accepted])),
+                           shape=(pred_count-1, truth_count-1))
+        tp = int(np.sum(maximum_bipartite_matching(graph, perm_type='column') >= 0))
+    else:
+        tp = 0
+    fp, fn = pred_count-1-tp, truth_count-1-tp
+    return {'lesion_tp': tp, 'lesion_fp': fp, 'lesion_fn': fn,
+            'lesion_precision': ratio(tp, tp+fp), 'lesion_recall': ratio(tp, tp+fn),
+            'lesion_f1': ratio(2*tp, 2*tp+fp+fn)}
+
+
+def restore_native_mask(prediction, shape):
+    """Undo analysis padding and integer resize; never downsample tiny truth lesions."""
+    height, width = shape
+    size = prediction.shape[0]
+    scale = size/max(height, width)
+    resized_width, resized_height = int(width*scale), int(height*scale)
+    left, top = (size-resized_width)//2, (size-resized_height)//2
+    cropped = prediction[top:top+resized_height, left:left+resized_width].astype(np.uint8)
+    return cv2.resize(cropped, (width, height), interpolation=cv2.INTER_NEAREST).astype(bool)
 
 
 def load_union_mask(base: Path, item: dict, columns: tuple[str, ...]) -> np.ndarray | None:
@@ -103,14 +101,14 @@ def load_union_mask(base: Path, item: dict, columns: tuple[str, ...]) -> np.ndar
         raw = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
         if raw is None:
             raise FileNotFoundError(path)
-        masks.append(transform_mask(raw))
+        masks.append(raw > 0)
     if not masks:
         return None
     return np.logical_or.reduce(masks)
 
 
 def ratio(numerator: float, denominator: float) -> float:
-    return float(numerator / max(denominator, 1))
+    return float(numerator / denominator) if denominator > 0 else float('nan')
 
 
 def aggregate_counts(frame: pd.DataFrame) -> dict[str, float]:
@@ -136,7 +134,7 @@ def bootstrap_intervals(
     rng = np.random.default_rng(seed)
     rows = []
     metric_names = list(aggregate_counts(output.iloc[:1]).keys())
-    for lesion, group in output.groupby("lesion", sort=True):
+    for (split, lesion), group in output.groupby(["split", "lesion"], sort=True):
         samples = {metric: [] for metric in metric_names}
         for _ in range(replicates):
             indices = rng.integers(0, len(group), size=len(group))
@@ -144,20 +142,29 @@ def bootstrap_intervals(
             for metric in metric_names:
                 samples[metric].append(metrics_row[metric])
         point = aggregate_counts(group)
-        row = {"lesion": lesion, "images": len(group)}
+        row = {"split": split, "lesion": lesion, "images": len(group)}
         for metric in metric_names:
-            low, high = np.percentile(samples[metric], [2.5, 97.5])
+            finite = np.asarray(samples[metric], dtype=float)
+            finite = finite[np.isfinite(finite)]
+            low, high = np.percentile(finite, [2.5, 97.5]) if len(finite) else (np.nan, np.nan)
             row[metric] = point[metric]
             row[f"{metric}_ci95_low"] = float(low)
             row[f"{metric}_ci95_high"] = float(high)
+            row[f"{metric}_bootstrap_defined"] = len(finite)
         rows.append(row)
     return pd.DataFrame(rows)
 
 
 def main(args: argparse.Namespace) -> None:
     manifest = pd.read_csv(args.manifest)
-    if "image_path" not in manifest:
-        raise ValueError("manifest requires image_path")
+    if not {'image_path', 'split'}.issubset(manifest):
+        raise ValueError('manifest requires image_path and explicit split')
+    if manifest['split'].isna().any() or manifest.image_path.duplicated().any():
+        raise ValueError('Missing split or duplicate image path')
+    if args.split != 'all':
+        manifest = manifest.loc[manifest['split'].eq(args.split)].copy()
+    if manifest.empty:
+        raise ValueError('No images selected for requested split')
     available = {
         lesion: tuple(column for column in columns if column in manifest.columns)
         for lesion, columns in MASK_GROUPS.items()
@@ -196,13 +203,19 @@ def main(args: argparse.Namespace) -> None:
             truth = load_union_mask(base, item_dict, columns)
             if truth is None:
                 continue
+            if truth.shape != rgb.shape[:2]:
+                raise ValueError(f'Annotation/image size mismatch: {image_path}')
             rows.append({
+                "split": item.split,
                 "image_path": str(image_path),
                 "annotation_columns": "+".join(columns),
                 "lesion": lesion,
-                **metrics(predictions[lesion], truth),
+                "evaluation_space": "native_annotation_v2",
+                **metrics(restore_native_mask(predictions[lesion], truth.shape), truth),
             })
     output = pd.DataFrame(rows)
+    if output.empty:
+        raise ValueError('No annotated cases; missing annotations are not negatives')
     args.output.mkdir(parents=True, exist_ok=True)
     output.to_csv(args.output / "lesion_mask_per_image.csv", index=False)
     aggregate = bootstrap_intervals(
@@ -214,6 +227,7 @@ def main(args: argparse.Namespace) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument('--split', choices=('train', 'test', 'all'), default='test')
     parser.add_argument("--output", type=Path, default=Path("results/lesion_mask_validation"))
     parser.add_argument("--bootstrap-replicates", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)

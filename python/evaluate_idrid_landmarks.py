@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 from modules.segmentation import localize_fovea, localize_optic_disc
 from utils.preprocessing import preprocess_fundus
+from utils.artifacts import atomic_json, json_value
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,10 +33,16 @@ def to_analysis_coordinates(x: float, y: float, width: int, height: int) -> tupl
     resized_height = int(height * scale)
     left = (512 - resized_width) // 2
     top = (512 - resized_height) // 2
-    return x * scale + left, y * scale + top, scale
+    return ((x + 0.5) * resized_width / width - 0.5 + left,
+            (y + 0.5) * resized_height / height - 0.5 + top, scale)
 
 
 def bootstrap_summary(values: np.ndarray, replicates: int, rng: np.random.Generator) -> dict:
+    total = len(values)
+    values = values[np.isfinite(values)]
+    if not len(values):
+        return {'images': total, 'localized': 0, 'unlocalized': total,
+                'mean': None, 'median': None, 'p90': None}
     means, medians, p90s = [], [], []
     for _ in range(replicates):
         sample = values[rng.integers(0, len(values), size=len(values))]
@@ -43,7 +50,7 @@ def bootstrap_summary(values: np.ndarray, replicates: int, rng: np.random.Genera
         medians.append(np.median(sample))
         p90s.append(np.percentile(sample, 90))
     return {
-        'images': int(len(values)),
+        'images': total, 'localized': int(len(values)), 'unlocalized': total-len(values),
         'mean': float(np.mean(values)),
         'mean_ci95': [float(v) for v in np.percentile(means, [2.5, 97.5])],
         'median': float(np.median(values)),
@@ -70,6 +77,8 @@ def main(args: argparse.Namespace) -> None:
     ]
     rows = []
     for split, folder, od_csv, fovea_csv in specifications:
+        if args.split != 'all' and args.split != split:
+            continue
         od_truth = read_coordinates(od_csv)
         fovea_truth = read_coordinates(fovea_csv)
         image_dir = localization / '1. Original Images' / folder
@@ -90,8 +99,15 @@ def main(args: argparse.Namespace) -> None:
             ):
                 truth_x, truth_y, scale = to_analysis_coordinates(
                     float(truth.x), float(truth.y), width, height)
+                if prediction is None:
+                    prediction = (float('nan'), float('nan'))
                 error_analysis = float(np.hypot(
                     prediction[0] - truth_x, prediction[1] - truth_y))
+                scale_x = int(width * scale) / width
+                scale_y = int(height * scale) / height
+                native_error = float(np.hypot(
+                    (prediction[0] - truth_x) / scale_x,
+                    (prediction[1] - truth_y) / scale_y))
                 rows.append({
                     'split': split,
                     'image_id': image_id,
@@ -101,27 +117,27 @@ def main(args: argparse.Namespace) -> None:
                     'true_x_analysis': truth_x,
                     'true_y_analysis': truth_y,
                     'error_analysis_pixels': error_analysis,
-                    'error_native_pixels': error_analysis / scale,
+                    'error_native_pixels': native_error,
                     'error_fraction_image_diagonal': (
-                        (error_analysis / scale) / np.hypot(width, height)),
+                        native_error / np.hypot(width, height)),
                 })
     frame = pd.DataFrame(rows)
-    if len(frame) != 1032:
-        raise RuntimeError(f'Expected 1,032 landmark rows, found {len(frame)}')
+    if frame.empty:
+        raise ValueError('No landmark cases found')
     rng = np.random.default_rng(args.seed)
     summary = {
-        landmark: {
+        f'{split}/{landmark}': {
             metric: bootstrap_summary(
                 group[metric].to_numpy(float), args.bootstrap_replicates, rng)
             for metric in (
                 'error_analysis_pixels', 'error_native_pixels',
                 'error_fraction_image_diagonal')
         }
-        for landmark, group in frame.groupby('landmark')
+        for (split, landmark), group in frame.groupby(['split', 'landmark'])
     }
     payload = {
-        'schema_version': 1,
-        'dataset': 'IDRiD localization set (516 images)',
+        'schema_version': 2,
+        'dataset': 'IDRiD localization; development-exposed; splits reported separately',
         'summary': summary,
         'limitation': (
             'Classical landmark localization has not been clinically accepted; '
@@ -129,14 +145,14 @@ def main(args: argparse.Namespace) -> None:
     }
     args.output.mkdir(parents=True, exist_ok=True)
     frame.to_csv(args.output / 'idrid_landmarks_per_image.csv', index=False)
-    (args.output / 'idrid_landmark_metrics.json').write_text(
-        json.dumps(payload, indent=2, allow_nan=False) + '\n', encoding='utf-8')
-    print(json.dumps(payload, indent=2, allow_nan=False))
+    atomic_json(args.output / 'idrid_landmark_metrics.json', payload)
+    print(json.dumps(json_value(payload), indent=2, allow_nan=False))
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dataset', type=Path, default=DEFAULT_IDRID)
+    parser.add_argument('--split', choices=('train', 'test', 'all'), default='test')
     parser.add_argument(
         '--output', type=Path,
         default=ROOT / 'results/idrid_landmark_validation')

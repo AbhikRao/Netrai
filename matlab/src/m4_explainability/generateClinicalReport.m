@@ -29,6 +29,8 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
     
     % Layout
     t = tiledlayout(2, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
+    % Reserve space for provenance so the footer cannot overlap chart labels.
+    t.OuterPosition = [0 0.075 1 0.925];
     title(t, 'NetrAI Research Screening Report - Not a Diagnosis', 'FontSize', 20, 'FontWeight', 'bold');
     
     % Panel 1: Enhanced Fundus
@@ -52,6 +54,9 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
         axis image off;
         if isfield(gradcamQC,'shortcut_flag') && gradcamQC.shortcut_flag
             title('Referral-logit Grad-CAM - QC FLAG');
+            text(0.5, 0.025, char(gradcamStatus), 'Units','normalized', ...
+                'HorizontalAlignment','center','Color','white','BackgroundColor','black', ...
+                'Interpreter','none','FontSize',8);
         else
             title('Referral-logit Grad-CAM');
         end
@@ -103,7 +108,14 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
     ylabel('Probability');
     
     % Annotation
-    annotation('textbox', [0, 0, 1, 0.05], 'String', sprintf('AI-assisted | Requires ophthalmologist validation | Generated: %s', datestr(now)), 'EdgeColor', 'none', 'HorizontalAlignment', 'center');
+    footer = sprintf('AI-assisted | Requires ophthalmologist validation | Generated: %s',datestr(now));
+    if isfield(safety,'deploymentIdentity') && isfield(safety,'inputSha256')
+        identity=safety.deploymentIdentity;
+        footer=sprintf('%s\nModel SHA256: %.12s | Input SHA256: %.12s | Input contract: %s', ...
+            footer,identity.model_sha256,safety.inputSha256,identity.preprocessing_version);
+    end
+    annotation('textbox',[0,0,1,0.055],'String',footer,'EdgeColor','none', ...
+        'HorizontalAlignment','center','Interpreter','none','FontSize',9);
     
     % Save
     try

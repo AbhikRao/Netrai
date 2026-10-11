@@ -1,0 +1,171 @@
+{
+  "schema_version": 2,
+  "model_sha256": "12ecca45409fc2f5314e54c906f6a9e03e1ec345200beec8c89624cb15fc631a",
+  "config_sha256": "d64254f380ee31546b4e5f6e75c172b62e5eb6f218aac7045c503fe98abcc230",
+  "labels_sha256": "b2a3479695922e62c83c94a1a9ef669b4b6d68cc26a1d7090ebedecdd7dd79a5",
+  "selection_sha256": "3ad83c789e1c8b1b96f023827479a796266fd5ae8873defc4dfdf40c0b6a715f",
+  "mode": "model",
+  "preprocess_sha256": "a67bb76fb9ba6261ed2d615b9644c58f3f8ebc82753dc938609f92d7e2a4c646",
+  "source_sha256": "f3f35fd6894e2f12d900a938796f2e6b013d435012f887bcaba4166d28a79007",
+  "source_files": [
+    {
+      "path": "aggregateValidationRuns.m",
+      "sha256": "0f259766a407ad7416d2fabaf8923131288a084e276e4253bb1a6a8aa43b9d22"
+    },
+    {
+      "path": "main_pipeline.m",
+      "sha256": "39b4547c2cb82a723e0a9522f12ee62f2fcd059512ff84b28e10877c41dc5b3e"
+    },
+    {
+      "path": "src/m1_quality/assessImageQuality.m",
+      "sha256": "d6e0160101ef0f348854c5b2b62f861ef34795485d9756061267a8d86cd830c1"
+    },
+    {
+      "path": "src/m1_quality/enhanceFundusImage.m",
+      "sha256": "922b6373f5495b8bd54f9f6a6a8e6c8c2a25ffd280f6a079d051739743f95c32"
+    },
+    {
+      "path": "src/m1_quality/generateRecaptureFeedback.m",
+      "sha256": "77f80a9a0223cba6d4df83e4805dd42de193f73b186ac40602f1e21e8b9f2646"
+    },
+    {
+      "path": "src/m1_quality/loadQualityModel.m",
+      "sha256": "f931baca13a1fd6c9e5a9d03adf792c342becd08ed382d1bf067c166f85e3fc5"
+    },
+    {
+      "path": "src/m1_quality/predictImageQuality.m",
+      "sha256": "7eb1f40571c89445787e36f356115ff5d6721717d42a7e3bd9c2ffa36081b625"
+    },
+    {
+      "path": "src/m1_quality/preprocessQualityModelInput.m",
+      "sha256": "6230d9aeb69135c52baa5fd0db8c8e245d57b79a5581cc93248c2eb129fcef31"
+    },
+    {
+      "path": "src/m2_segmentation/detectExudates.m",
+      "sha256": "ab6fb23420b7e01742368f0099615bbcc9ce076ae54789ec56fa5fe9f5763af2"
+    },
+    {
+      "path": "src/m2_segmentation/detectHemorrhages.m",
+      "sha256": "2ae3d3533c7fa9f1d683e88a063e0cfe60bd1a5ba87c11d9e70ae8ebb533c5c5"
+    },
+    {
+      "path": "src/m2_segmentation/detectMicroaneurysms.m",
+      "sha256": "8d9ef6f8292f4113e92e3d18b807865608d396c34442c7049bdbada33306ac24"
+    },
+    {
+      "path": "src/m2_segmentation/detectNeovascularization.m",
+      "sha256": "8f285d627e971d601a634b332ba3bdb109df2ca2c985d04ea14c32181ff7d9e2"
+    },
+    {
+      "path": "src/m2_segmentation/localizeFovea.m",
+      "sha256": "4c77a4ff76da447323638320643bf3000bc7bf02cfab480b1a8371eb2be81420"
+    },
+    {
+      "path": "src/m2_segmentation/localizeOpticDisc.m",
+      "sha256": "2dfa17a860efb25bdf2f4a50ed53e057095d9c5374503f2d2bff09548818ce79"
+    },
+    {
+      "path": "src/m2_segmentation/segmentVessels.m",
+      "sha256": "02b8edcd6f380e9986fb49057a72852b4830496c93a45dfcab43955f4e1779ed"
+    },
+    {
+      "path": "src/m3_grading/extractClinicalFeatures.m",
+      "sha256": "106875b6e06282857f275d2fa21ca7a34f666c65a8307cb1034d0e74b8109a01"
+    },
+    {
+      "path": "src/m3_grading/loadNetrAIModel.m",
+      "sha256": "08ee6088ae8152b7855ffc9dc837056e258ac23115cbb0fefc95ffde1dc8c9ed"
+    },
+    {
+      "path": "src/m3_grading/predictDRGrade.m",
+      "sha256": "9919370d96d1c9fac1b26b85b79d71f1c609c1703a819fd401b9a40020ec4617"
+    },
+    {
+      "path": "src/m3_grading/preprocessModelInput.m",
+      "sha256": "a67bb76fb9ba6261ed2d615b9644c58f3f8ebc82753dc938609f92d7e2a4c646"
+    },
+    {
+      "path": "src/m3_grading/verifyDeploymentBundle.m",
+      "sha256": "8031109396c6d6585624258246a7d2728086a2c1ff347ce56b525cf06caf70ea"
+    },
+    {
+      "path": "src/m4_explainability/assessGradCAMQuality.m",
+      "sha256": "545f802b665083d136119b8f7d4787c148807a546a4d9be252376c750c388325"
+    },
+    {
+      "path": "src/m4_explainability/calibrateConfidence.m",
+      "sha256": "99473b0c26e69209a17b5c0a245dcc1dfd8fbb927ed5f38b508598fff2f97611"
+    },
+    {
+      "path": "src/m4_explainability/generateClinicalReport.m",
+      "sha256": "fcb8f8b272a45cd42e1d1c4d391a7d5533024481ed50907948c41484472b9e0f"
+    },
+    {
+      "path": "src/m4_explainability/generateEvidenceChecklist.m",
+      "sha256": "87d92f2df0da8142f510820ded65036b62b15da97e5909f9c6706437c053b6a7"
+    },
+    {
+      "path": "src/m4_explainability/generateGradCAM.m",
+      "sha256": "287be6950cd3d80f295cd601541a7af3745e621e1fdf56ee6e43c729acc874bc"
+    },
+    {
+      "path": "src/m4_explainability/generateLesionOverlay.m",
+      "sha256": "80d8c84dcd9f5c3b9a4286d8947ede11208c029835a0c6021230a650afe6387d"
+    },
+    {
+      "path": "src/m5_simulink/runSimulinkScenarioSweep.m",
+      "sha256": "8a8f3ba525372feec57c991cd8d6b92ccb1b70eb6ea773fd35e9f44dce3555bf"
+    },
+    {
+      "path": "src/m5_simulink/setupSimulinkModel.m",
+      "sha256": "f23c232b32bb504d92938ee21d6f08dad1420c864c241589518b4cbaf68f5721"
+    },
+    {
+      "path": "src/utils/assignScreeningTriage.m",
+      "sha256": "583ccd99088a2c277bfb1cc57f0713770442447a97671f6a58731cbeb10e8d82"
+    },
+    {
+      "path": "src/utils/buildValidationIdentity.m",
+      "sha256": "12f8aa2cf891b5b01d537255a52b002d8c523749d017a6875df48b352b004f0c"
+    },
+    {
+      "path": "src/utils/computeMetrics.m",
+      "sha256": "650ef662f9a58020cdfdb61714d2889bd81f15ebf69df58c3f87ad6ab77989e2"
+    },
+    {
+      "path": "src/utils/computeQuadrantStats.m",
+      "sha256": "43d72b393f1492f365e0f2a2575a00740d266cf98a066680a7befbfbc2b6d009"
+    },
+    {
+      "path": "src/utils/createCircularMask.m",
+      "sha256": "ddbf82a0a3c9666c34293b5bc4e7c8fa18792edea5fefb44977f2bc52e7ac34c"
+    },
+    {
+      "path": "src/utils/fileSHA256.m",
+      "sha256": "2ce5d7171f81ae1a0852b9bd7ca960163bedb61153a48bb949ebd2b86c1c689d"
+    },
+    {
+      "path": "src/utils/preprocessFundusImage.m",
+      "sha256": "408dcddbbf1ab8da6743608f825751d252d5514383d72042c753dd11ab4bd4a6"
+    },
+    {
+      "path": "src/utils/readBoundValidationImage.m",
+      "sha256": "ee6d9f2f4a34173555f58469f1232413e44ecff1d0d9b9d1333694be803a87cb"
+    },
+    {
+      "path": "src/utils/refineSubpixelPeak.m",
+      "sha256": "d870cb3789f720df033fcdde1d2d5144c1f7e035ca26db32312838237efaf530"
+    },
+    {
+      "path": "src/utils/sha256Bytes.m",
+      "sha256": "073899d4d58b22a61730e1aae91e6728ee9c458dcadffa50977f72f2bb24ba90"
+    },
+    {
+      "path": "validatePipeline.m",
+      "sha256": "0757dd30b35c3cdfb9620936c8a781e39ea0b80a90c1fb4d4f5ebb2b1cc0aa2b"
+    }
+  ],
+  "expected_cohort_count": 733,
+  "run_identity_sha256": "21d0ba6b2fe4f0d3059ce523b9ca8bb1bc9d240b16385d66a3c8c071afa0cf47",
+  "historical_source_scope": "Exact full-run sources archived locally before subsequent decoder/M2/M4/M5 changes. These later changes were not part of the 733-image model-only run."
+}

@@ -131,7 +131,7 @@ class SegmentationTests(unittest.TestCase):
 class MetricTests(unittest.TestCase):
     def test_qwk_perfect_and_constant(self):
         self.assertAlmostEqual(quadratic_weighted_kappa([0, 1, 2, 3, 4], [0, 1, 2, 3, 4]), 1.0)
-        self.assertAlmostEqual(quadratic_weighted_kappa([2, 2], [2, 2]), 1.0)
+        self.assertTrue(np.isnan(quadratic_weighted_kappa([2, 2], [2, 2])))
 
     def test_qwk_rejects_mismatched_lengths(self):
         with self.assertRaises(ValueError):

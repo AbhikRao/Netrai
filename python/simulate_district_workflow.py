@@ -149,7 +149,7 @@ def simulate_scenario(scenario: Scenario, seed: int) -> dict:
     escalated_censored = censored_wait > scenario.escalation_threshold_seconds
     escalations = int(escalated_started.sum() + escalated_censored.sum())
 
-    completed = auto_cleared + reviewed + recaptures
+    completed = auto_cleared + reviewed
     expected_review_demand = expected_arrivals * (
         1 - scenario.quality_reject_rate
     ) * (scenario.refer_rate + scenario.uncertain_rate)
@@ -159,6 +159,7 @@ def simulate_scenario(scenario: Scenario, seed: int) -> dict:
     ))
 
     result = {
+        'endpoint_version': 2,
         **asdict(scenario),
         'seed': seed,
         'expected_arrivals': expected_arrivals,
@@ -171,7 +172,8 @@ def simulate_scenario(scenario: Scenario, seed: int) -> dict:
         'unfinished_at_stop': expected_arrivals - completed,
         'completion_rate': completed / expected_arrivals,
         'review_rate': reviewed / max(completed, 1),
-        'recapture_rate_observed': recaptures / max(completed, 1),
+        'recapture_rate_observed': recaptures / expected_arrivals,
+        'recapture_pending': recaptures,
         'clinician_utilization': _utilization(
             review_start, review_finish, ANNUAL_SECONDS, scenario.clinicians),
         'acquisition_utilization': _utilization(
@@ -237,6 +239,8 @@ def compare_with_simulink(
         matlab_row = matlab_rows.get(scenario_id)
         if matlab_row is None:
             raise ValueError(f'SimEvents result missing scenario {scenario_id}')
+        if int(matlab_row.get('endpoint_version', 1)) != python_row.get('endpoint_version', 1):
+            raise ValueError('M5 endpoint versions differ; rerun SimEvents rather than reuse legacy rates')
         comparison = {'scenario_id': scenario_id}
         passed = True
         for field in rate_fields:
@@ -282,11 +286,12 @@ def main() -> None:
     args.output.mkdir(parents=True, exist_ok=True)
     _write_csv(args.output / 'python_scenario_sweep.csv', rows)
     payload = {
-        'schema_version': 1,
+        'schema_version': 2,
         'implementation': 'independent Python patient-level deterministic-FCFS reference',
         'scenario_count': len(rows),
         'results': rows,
         'limitations': [
+            'Recapture requests remain unresolved; retry/return behavior is not yet simulated.',
             'Routing probabilities are planning assumptions pending external validation.',
             'Review escalation is reported at a 24-hour threshold; it is not a clinical SLA.',
             'Continuous annual operating time abstracts away nights, weekends, and outages.',

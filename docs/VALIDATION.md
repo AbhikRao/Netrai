@@ -6,29 +6,48 @@ not a percentage of clinical readiness or completion of all challenge requiremen
 
 ## MATLAB grading
 
-The recorded model-only evaluation processed all 733 legacy APTOS Fold-0 images
-with zero errors:
+The September 28, 2026 model-mode evaluation processed all 733 legacy APTOS
+Fold-0 images with zero errors and verified complete expected-cohort coverage:
 
 | Metric | Value |
 | --- | ---: |
-| Referable-DR sensitivity | 94.97% |
-| Referable-DR specificity | 93.33% |
-| Quadratic weighted kappa | 0.9297 |
-| Referable AUC | 0.9841 |
-| Mean model time | 1.55 s/image |
+| Referable-DR sensitivity | 94.63% |
+| Referable-DR specificity | 94.02% |
+| Quadratic weighted kappa | 0.9330 |
+| Referable AUC | 0.9842 |
+| Mean model-mode time on CPU | 2.33 s/image |
 
-[Aggregate metrics](../results/benchmarks/matlab_grading/aggregate_metrics.json)
+[Aggregate metrics](../results/benchmarks/matlab_runtime_2026-09-28/combined_metrics.json)
+
+The per-image timer includes image-byte verification/decoding, native quality
+assessment, preprocessing, inference, calibration and routing. It excludes
+retinal analysis, Grad-CAM, report generation, clinician review and the initial
+model import. Timing is from this development run on the tested CPU host.
+[Run metrics](../results/benchmarks/matlab_runtime_2026-09-28/matlab_run_metrics.json)
 
 The cohort informed checkpoint/policy selection. A later exact-content audit found
 35 evaluation images with training counterparts; these figures are development
 evidence and cannot establish independent accuracy. No amount of metric inflation
 has been estimated. [Overlap audit](../results/benchmarks/split_integrity/legacy_aptos_overlap.json)
 
-Timing excludes report generation and clinician review. The fixed ONNX fixture
-passes, but it does not establish whole-pipeline equivalence. The recorded
-733-case comparison matched 717 grades and 724 triage actions; numerical and
-exact-decision acceptance gates remain failed.
-[Runtime comparison](../results/benchmarks/runtime_comparison/runtime_comparison.json)
+The matched comparison passes all three declared gates: exact five-grade outputs,
+screening decisions and probability tolerance. All 733 grades, grade-derived
+referral decisions, referral-head decisions, disagreement flags and triage actions
+match. The maximum absolute probability difference is 2.82 × 10⁻⁶, below the
+unchanged 0.05 tolerance; probabilities are not bit-identical.
+[Current runtime comparison](../results/benchmarks/matlab_runtime_2026-09-28/runtime_comparison.json)
+
+The repair reproduces `legacy-area-v1` preprocessing through area resampling,
+fixed-point uint8 Gaussian filtering and integer illumination blending. All 41
+synthetic operator cases and two identical decoded real arrays match the reference
+operations exactly. Model weights, calibration and routing policy are unchanged.
+[Operator verification](../results/benchmarks/matlab_runtime_2026-09-28/operator_verification.json)
+
+This closes model-mode runtime consistency on the recorded cohort. It does not
+establish quality-gate, retinal-analysis or report equivalence, independent
+accuracy, portable-camera robustness or clinical safety. The earlier comparison
+with 717/733 grades and 724/733 triage actions remains
+[historical failed evidence](../results/benchmarks/runtime_comparison/runtime_comparison.json).
 
 ## External-domain development evidence
 
@@ -48,21 +67,60 @@ constitutes fresh external or prospective clinical validation.
 
 ## SimEvents capacity scenarios
 
-The endpoint-v2 sweep covers 18 combinations of bandwidth, clinician count and
-quality-rejection assumptions, with 100,000 intended annual patients and 100,001
-scheduled arrivals. Completion means automatically routed or clinician-reviewed;
-recapture requests remain unresolved.
+The September 28 endpoint-v3 sweep completed all 18 combinations of 0.25/1/5 Mbps,
+one/two reviewers and 5%/10%/20% assumed quality rejection. A rejected patient
+returns to the same acquisition queue with the same identity, with at most two
+recaptures. Completion counts disjoint original patients automatically routed or
+reviewed; abandonment, exhausted retries and patients still in the system remain
+unfinished. This completion endpoint does not measure correct diagnosis.
 
-| One clinician, 10% assumed quality rejection | Simulated completion |
-| --- | ---: |
-| 0.25 Mbps | 32.14% |
-| 1 Mbps | 89.99% |
+All 18 native MATLAB scenarios satisfy
+`generated = auto_cleared + reviewed + abandoned + quality_exhausted + in_system`,
+with in-system counts checked against independent queue/server occupancy sums.
+Attempt and return counters have separate denominators.
+[Conservation checks](../results/benchmarks/matlab_workflow_2026-09-28/annual_conservation_checks.json)
 
-[Scenario JSON](../results/benchmarks/capacity_simulation/simulink_scenario_sweep.json) · [Scenario CSV](../results/benchmarks/capacity_simulation/simulink_scenario_sweep.csv)
+The annual horizon is 250 × 8 working-hour-equivalent hours, with a 72-second
+arrival interval: 100,000 target patients and 100,001 observed arrivals including
+the start and cutoff. Each patient uploads two 3.5 MB images (56 Mb total).
+Acquisition takes 45 seconds per attempt, the return delay is 120 seconds,
+inference takes 3.5 seconds and review takes 30 seconds. Initial and retry
+rejection probabilities are equal; dropout is explicitly zero. Referral and
+uncertain routing probabilities are 8% and 1.23%, respectively. These are
+configured assumptions, not fitted field measurements.
 
-The simulation assumes acquisition, transfer, inference and review service times.
-It does not demonstrate field benefit or cost savings. A recapture-return loop,
-timed escalation and field-derived assumptions remain future work.
+| One reviewer, 10% assumed rejection | Completed / generated | Quality-exhausted | In system at cutoff | Completion |
+| --- | ---: | ---: | ---: | ---: |
+| 0.25 Mbps | 32,142 / 100,001 | 87 | 67,772 | 32.14% |
+| 1 Mbps | 99,893 / 100,001 | 105 | 3 | 99.89% |
+| 5 Mbps | 99,904 / 100,001 | 95 | 2 | 99.90% |
+
+[Scenario JSON](../results/benchmarks/matlab_workflow_2026-09-28/simulink_scenario_sweep.json) · [Scenario CSV](../results/benchmarks/matlab_workflow_2026-09-28/simulink_scenario_sweep.csv)
+
+At 0.25 Mbps, the 224-second upload service exceeds the 72-second arrival interval;
+the upload backlog dominates, and adding a second reviewer does not increase
+completed throughput. Under the assumed 30-second review and 9.23% review demand,
+reviewer utilization is low. It cannot establish real staffing requirements.
+Each annual scenario uses different seeds, so small differences at adequate
+bandwidth are not paired causal effects or estimates of uncertainty across seeds.
+
+Verification has three distinct scopes. Seven deterministic native fixtures cover
+no rejection, zero retries, successful return, retry exhaustion, abandonment,
+a return pending at cutoff and review congestion. Their counts, return occupancy,
+mean queue wait and cutoff utilization match a separate event-calendar reference.
+Three native stochastic smoke runs verify identical-seed repeatability and that
+changing only the routing seed preserves upstream quality events. The 18 annual
+scenarios were checked for native conservation; they were not compared against
+an independent annual runtime.
+[Fixture summary](../results/benchmarks/matlab_workflow_2026-09-28/fixture_summary.json) · [Independent fixture comparison](../results/benchmarks/matlab_workflow_2026-09-28/independent_fixture_comparison.json) · [Repeatability summary](../results/benchmarks/matlab_workflow_2026-09-28/repeatability_summary.json)
+
+Mean review queue wait covers patients who started review and is separate from
+service time; it is not a patient wait percentile. Censored waiting patients stay
+in the in-system count. The model does not implement closed hours, shifts, outages
+or timed escalation, and does not demonstrate field benefit or cost savings.
+The [endpoint-v2 sweep](../results/benchmarks/capacity_simulation/simulink_scenario_sweep.json)
+and its [earlier reference comparison](../results/benchmarks/capacity_simulation/reference_crosscheck.json)
+remain historical; their unresolved-recapture definition is different.
 
 ## Retinal analysis and image quality
 
@@ -97,9 +155,9 @@ warnings; clinician explanation usefulness remains unmeasured.
 - Portable-camera quality validation and factor-specific robustness.
 - Reliable annotated lesion evaluation, including appropriate subtype/NV labels.
 - Fresh, identity-reviewed external grading and severe-grade recall.
-- Complete runtime comparison with fixed case coverage and numerical gates.
+- Broader full-image runtime checks, including quality and retinal analysis.
 - Clinician explanation usefulness and measured review time.
-- Recapture-return and referral-escalation workflow validation.
+- Field-derived recapture-return assumptions, shift/outage modeling and timed referral escalation.
 
 Candidate masks are not confirmed diagnoses. Grad-CAM is model attribution,
 not validated lesion localization. Disagreement-to-review is an implemented rule;

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "matlab_release": "R2026a Update 5",
+  "scope": "MATLAB numerical contract and correctness checks; no new clinical validation.",
+  "regression_test_count": 70,
+  "regression_failed": 0,
+  "regression_incomplete": 0,
+  "synthetic_operator_fixture_count": 41,
+  "identical_decoded_real_array_count": 2,
+  "maximum_operator_input_difference": 0.0,
+  "onnx_fixture_max_logit_difference": 4.29e-06,
+  "real_demo_preprocessing_max_logit_difference": 1.9073486328125e-06,
+  "previous_demo_preprocessing_max_logit_difference": 0.220992,
+  "model_weights_changed": false,
+  "grading_policy_changed": false,
+  "reference_runtime": "OpenCV 5.0.0",
+  "full_cohort_parity": "passed",
+  "deployment_bundle_sha256": "e6427512f4e06a21a3b0156104c0925ea8861c6e25a3d2f4deec29bf57d75181",
+  "matlab_ci": "workflow prepared and locally structure-checked; remote execution not performed",
+  "full_cohort": {
+    "successful": 733,
+    "errors": 0,
+    "grades_matched": 733,
+    "triage_actions_matched": 733,
+    "probability_absolute_tolerance": 0.05,
+    "maximum_probability_abs_difference": 2.8209962408820566e-06,
+    "evidence_scope": "Same historical, selection-exposed legacy APTOS cohort with exact training overlap; runtime consistency only."
+  }
+}

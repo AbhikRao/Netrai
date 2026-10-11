@@ -114,8 +114,9 @@ def embeddings(frame, image_dir, model, cache_path, batch_size, workers):
         digest.update(name.encode())
         digest.update(value.detach().cpu().numpy().tobytes())
     for row, path in zip(frame.itertuples(), paths):
-        stat = path.stat()
-        digest.update(f'{row.image}|{row.quality}|{path.resolve()}|{stat.st_size}|{stat.st_mtime_ns}'.encode())
+        digest.update(f'{row.image}|{row.quality}|{file_sha256(path)}'.encode())
+    digest.update(file_sha256(Path(__file__).parent / 'models/quality_model.py').encode())
+    digest.update(str(torch.__version__).encode())
     signature = digest.hexdigest()
     features = np.empty((0, 576), np.float32)
     if cache_path.exists():
@@ -184,7 +185,7 @@ def fit_temperature(logits, labels):
 
 
 def wilson_lower_bound(successes, total, confidence=.95):
-    """Return a one-sided Wilson lower confidence bound for a binomial rate."""
+    """Diagnostic image-level binomial bound; not used for M1 policy selection."""
     if not 0 <= successes <= total or total < 1 or not .5 < confidence < 1:
         raise ValueError('Invalid binomial confidence-bound inputs')
     z = NormalDist().inv_cdf(confidence)
@@ -195,26 +196,44 @@ def wilson_lower_bound(successes, total, confidence=.95):
     return float((centre - margin) / denominator)
 
 
-def select_reject_threshold(probabilities, labels):
+def select_reject_threshold(probabilities, labels, patients, seed=42, replicates=1000):
     """Choose a conservative Reject threshold on calibration patients only.
 
-    Requiring the one-sided 95% Wilson lower bound, rather than only the point
-    estimate, to exceed 0.80 adds a pre-deployment safety margin for sampling
-    uncertainty. Macro-F1 breaks ties among thresholds satisfying that rule.
+    Require a one-sided patient-cluster bootstrap 95% lower bound >=0.80.
+    This retains both eyes together when estimating calibration uncertainty.
+    Macro-F1 breaks ties among thresholds satisfying that rule.
     """
     best, trials = None, []
     labels = np.asarray(labels, dtype=int)
-    reject_total = int(np.sum(labels == 2))
+    patients = np.asarray(patients, dtype=str)
+    probabilities = np.asarray(probabilities)
+    if len(labels) != len(patients) or len(labels) != len(probabilities):
+        raise ValueError('Policy inputs must be aligned')
+    if replicates < 100:
+        raise ValueError('At least 100 cluster-bootstrap replicates are required')
+    reject_patients, patient_index = np.unique(patients[labels == 2], return_inverse=True)
+    if not len(reject_patients):
+        raise ValueError('Calibration requires Reject examples')
+    reject_counts = np.bincount(patient_index, minlength=len(reject_patients))
+    draws = np.random.default_rng(seed).integers(
+        len(reject_patients), size=(replicates, len(reject_patients)))
+    sampled_total = reject_counts[draws].sum(axis=1)
     for threshold in np.linspace(.15, .85, 29):
         predictions = quality_decisions(probabilities, float(threshold))
         summary, _ = metrics(labels, predictions)
         reject_hits = int(np.sum((labels == 2) & (predictions == 2)))
-        lower_bound = wilson_lower_bound(reject_hits, reject_total)
+        hits_by_patient = np.bincount(
+            patient_index, weights=(predictions[labels == 2] == 2).astype(int),
+            minlength=len(reject_patients))
+        sampled_recall = hits_by_patient[draws].sum(axis=1) / sampled_total
+        lower_bound = float(np.percentile(sampled_recall, 5))
         score = (lower_bound >= .8,
                  summary['macro_f1'], summary['per_class_recall']['reject'])
         trial = {
             'reject_threshold': float(threshold),
-            'reject_recall_one_sided_95_wilson_lower': lower_bound,
+            'reject_recall_patient_cluster_bootstrap_95_lower': lower_bound,
+            'reject_hits': reject_hits,
+            'reject_total': int(reject_counts.sum()),
             'metrics': summary,
         }
         trials.append(trial)
@@ -276,9 +295,14 @@ def run(args):
     torch.manual_seed(args.seed)
     cv2.setNumThreads(1)
     output = args.output.resolve()
+    if (output / 'quality_model_metrics.json').exists():
+        raise FileExistsError('Completed evidence exists; choose a new output directory')
     output.mkdir(parents=True, exist_ok=True)
-    train = read_labels(args.eyeq / 'data/Label_EyeQ_train.csv')
-    test = read_labels(args.eyeq / 'data/Label_EyeQ_test.csv')
+    from calibrate_quality import resolve_eyeq_labels
+    train_labels = resolve_eyeq_labels(args.eyeq, 'train')
+    test_labels = resolve_eyeq_labels(args.eyeq, 'test')
+    train = read_labels(train_labels)
+    test = read_labels(test_labels)
     fit, selection, calibration = grouped_split(train, test, args.seed)
     manifest = train[['image', 'patient_id', 'quality']].copy()
     manifest['partition'] = 'fit'
@@ -298,10 +322,10 @@ def run(args):
         'train_test_patient_overlap': 0,
         'internal_partition_patient_overlap': 0,
         'seed': args.seed,
-        'train_labels_sha256': file_sha256(args.eyeq / 'data/Label_EyeQ_train.csv'),
-        'test_labels_sha256': file_sha256(args.eyeq / 'data/Label_EyeQ_test.csv'),
+        'train_labels_sha256': file_sha256(train_labels),
+        'test_labels_sha256': file_sha256(test_labels),
         'exact_duplicate_audit': 'exact_duplicate_audit.json',
-        'limitation': 'Filename identity and exact-file checks; perceptual near-duplicates are not audited.',
+        'limitation': 'Filename identity and exact-file hashes do not establish same-retina independence; inspect the separate perceptual-overlap audit.',
     }
     save_json(output / 'split_audit.json', split_audit)
     model = QualityModel(pretrained=True).eval()
@@ -321,15 +345,18 @@ def run(args):
     temperature = fit_temperature(calibration_logits, labels[calibration])
     calibration_probabilities = softmax(calibration_logits / temperature, axis=1)
     selected_policy, policy_trials = select_reject_threshold(
-        calibration_probabilities, labels[calibration])
+        calibration_probabilities, labels[calibration],
+        train.iloc[calibration].patient_id, args.seed, args.bootstrap_replicates)
     save_json(output / 'selection.json', {
         'model_selection_scope': 'patient-separated official-train selection partition',
         'model_selection_rule': 'maximize macro-F1, then Reject recall',
         'selected_model': selected_model, 'model_trials': model_trials,
         'policy_selection_scope': 'separate patient-grouped calibration partition',
         'policy_selection_rule': (
-            'Require one-sided 95% Wilson lower bound for Reject recall >=0.80, '
+            'Require one-sided 95% patient-cluster bootstrap lower bound for Reject recall >=0.80, '
             'then maximize macro-F1 and Reject recall'),
+        'policy_bootstrap_seed': args.seed,
+        'policy_bootstrap_replicates': args.bootstrap_replicates,
         'temperature': temperature,
         'selected_policy': selected_policy, 'policy_trials': policy_trials,
     })
@@ -391,14 +418,29 @@ def run(args):
         'limitations': ['Frozen ImageNet features; no retinal fine-tuning yet.',
                        'Test split has been examined for prior baseline development.',
                        'No portable-camera validation or factor-specific quality labels.',
-                       'Cross-dataset content duplicates have not been audited.'],
+                       'Filename grouping and exact-file hashing do not exclude transformed cross-split images.'],
     }
-    save_json(output / 'quality_model_metrics.json', result)
     rows = test[['image', 'patient_id', 'quality']].copy()
     rows['prediction'] = predictions
     for index, name in enumerate(CLASS_NAMES):
         rows[f'probability_{name}'] = probabilities[:, index]
     rows.to_csv(output / 'test_predictions.csv', index=False)
+    if args.overlap_impact.is_file():
+        overlap = json.loads(args.overlap_impact.read_text(encoding='utf-8'))
+        source_hashes = overlap['sources_sha256']
+        if (source_hashes['training_labels'] != split_audit['train_labels_sha256']
+                or source_hashes['test_labels'] != split_audit['test_labels_sha256']
+                or source_hashes['test_predictions'] != file_sha256(output / 'test_predictions.csv')):
+            result['overlap_impact_status'] = 'historical impact metrics do not apply to this run; recompute separately'
+        result['confirmed_cross_split_image_overlap'] = {
+            'audit': str(args.overlap_impact.resolve().relative_to(ROOT)),
+            'same_retina_train_test_pairs': overlap['confirmed_cross_split_same_retina_pairs'],
+            'historical_post_hoc_exclusion_metrics': overlap['after_excluding_confirmed_test_images'],
+            'interpretation': 'Official test is not strictly image-independent; exclusion is diagnostic only.',
+        }
+        result['limitations'].append(
+            'Five visually confirmed same-retina images cross official EyeQ train/test despite distinct filename IDs; other overlaps may remain.')
+    save_json(output / 'quality_model_metrics.json', result)
     pd.DataFrame(matrix, index=CLASS_NAMES, columns=CLASS_NAMES).to_csv(
         output / 'test_confusion_matrix.csv', index_label='true_class')
     print(json.dumps(result, indent=2), flush=True)
@@ -413,4 +455,6 @@ if __name__ == '__main__':
     parser.add_argument('--threads', type=int, default=2)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--bootstrap-replicates', type=int, default=1000)
+    parser.add_argument('--overlap-impact', type=Path,
+                        default=ROOT / 'results/verification_2026-09-24/perceptual_overlap/overlap_impact.json')
     run(parser.parse_args())
