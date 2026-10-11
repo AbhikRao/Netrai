@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "endpoint_version": 3,
+  "model_file": "NetrAI_Telemedicine_Model.slx",
+  "model_sha256": "20d1b98a79ac8254e88e991a50083cd2e7779fb877897f46250e0f5c6060928e",
+  "source_identity": {
+    "schema_version": 1,
+    "endpoint_version": 3,
+    "builder_sha256": "84d58278490c2dfa8b34cbb8bdfc1e8a3af48a81dbd5b742918769963190486e",
+    "source_sha256": "fab35fa6bdf35477ffbc55a40996f579a46efdd447fdf343e90355e53c0effeb",
+    "source_files": [
+      {
+        "path": "src/m5_simulink/defaultTelemedicineParameters.m",
+        "sha256": "9b4762a6a925bbbca1be34d79a0a220e316b97d25562c4d6d104592740b00bcc"
+      },
+      {
+        "path": "src/m5_simulink/recordTelemedicineEvent.m",
+        "sha256": "a4129bd752532bd04ac9878989bcdce413eeb298dee676be1a7945e334a5ef6b"
+      },
+      {
+        "path": "src/m5_simulink/runSimulinkScenarioSweep.m",
+        "sha256": "181d58d3ac9d7696543eae2f7b7b98abdcfc78ca70109139f430ad9445a4ce44"
+      },
+      {
+        "path": "src/m5_simulink/runTelemedicineScenario.m",
+        "sha256": "bbe1304a13024b27ae71664e5daa088a3002cb73679709c8cd9194dead3fdd8f"
+      },
+      {
+        "path": "src/m5_simulink/setupSimulinkModel.m",
+        "sha256": "84d58278490c2dfa8b34cbb8bdfc1e8a3af48a81dbd5b742918769963190486e"
+      },
+      {
+        "path": "src/m5_simulink/telemedicineSourceIdentity.m",
+        "sha256": "3177cad0846df30ef18d3eef6424a2e8ed5f30fb5225867fe648e5474a75b82e"
+      },
+      {
+        "path": "src/utils/fileSHA256.m",
+        "sha256": "2ce5d7171f81ae1a0852b9bd7ca960163bedb61153a48bb949ebd2b86c1c689d"
+      },
+      {
+        "path": "src/utils/sha256Bytes.m",
+        "sha256": "073899d4d58b22a61730e1aae91e6728ee9c458dcadffa50977f72f2bb24ba90"
+      }
+    ]
+  },
+  "default_parameters": {
+    "totalPatients": 100000,
+    "workingDays": 250,
+    "operatingHoursPerDay": 8,
+    "imagesPerPatient": 2,
+    "imageSizeMB": 3.5,
+    "bandwidthMbps": 1,
+    "simulationDuration": 7.2E+6,
+    "interarrivalTime": 72,
+    "queueCapacity": 100002,
+    "acquisitionTime": 45,
+    "recaptureTime": 120,
+    "uploadTime": 56,
+    "aiInferenceTime": 3.5,
+    "reviewTimePerPatient": 30,
+    "clinicianCount": 1,
+    "qualityRejectRate": 0.1,
+    "retryQualityRejectRate": 0.1,
+    "maxRecaptureRetries": 2,
+    "recaptureAbandonRate": 0,
+    "referRate": 0.08,
+    "uncertainRate": 0.0123,
+    "autoClearRate": 0.9077,
+    "qualityRandomSeed": 4201,
+    "triageRandomSeed": 5201,
+    "traceEnabled": false
+  },
+  "assumption_scope": "Configured engineering assumptions; not fitted population rates."
+}

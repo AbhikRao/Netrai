@@ -61,10 +61,8 @@ function summaryTable = batchProcess(folderPath, outputCsvPath, varargin)
                     triageAction(i) = result.triageAction;
                 end
             else
-                img = imread(imagePath);
-                if ndims(img)==2, img=repmat(img,1,1,3); end
-                if size(img,3)==4, img=img(:,:,1:3); end
-                [iqs(i),~] = assessImageQuality(im2uint8(img));
+                img = readScreeningImage(imagePath);
+                [iqs(i),~] = assessImageQuality(img);
                 input = preprocessModelInput(img,config);
                 [grade(i),rawProbabilities,isReferable(i),continuousScore(i),~, ...
                     referableHeadProbability(i),referableHeadPositive,headDisagreement(i)] = ...

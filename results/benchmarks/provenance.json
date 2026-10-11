@@ -254,6 +254,125 @@
       "source_sha256": "e7c3af85a9b4f7c5c49e021ac79f90f6faad423c156b63fadfca229cad8e4e9b",
       "published_sha256": "e7c3af85a9b4f7c5c49e021ac79f90f6faad423c156b63fadfca229cad8e4e9b",
       "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_runtime_2026-09-28/runtime_comparison.json",
+      "source_path": "results/engineering_2026-09-28/preprocessing_parity/runtime_comparison/runtime_comparison.json",
+      "evidence_date": "2026-09-28",
+      "scope": "MATLAB numerical runtime verification on exposed legacy APTOS development cohort; unchanged model and policy, not clinical validation",
+      "source_sha256": "9a138a5afa211f2ebe99a4d31a213c172fbe52f49048cb9ae4a20fce39eefb9a",
+      "published_sha256": "974beb4e5884e780cc05c68774ca19bd9426b8e2222cc867c70735a1365a24aa",
+      "paths_normalized": true
+    },
+    {
+      "path": "results/benchmarks/matlab_runtime_2026-09-28/combined_metrics.json",
+      "source_path": "results/engineering_2026-09-28/preprocessing_parity/combined_733/aggregate_metrics.json",
+      "evidence_date": "2026-09-28",
+      "scope": "MATLAB numerical runtime verification on exposed legacy APTOS development cohort; unchanged model and policy, not clinical validation",
+      "source_sha256": "ec733cf22f82b14e2cedcdf420fba80f9f9a6fde3d74f48020817d21b07f95fd",
+      "published_sha256": "6140f0ed5e92cb0b93d91d89aa58c8c1bf1851ecbb333a562720f5d8802d5228",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_runtime_2026-09-28/matlab_run_metrics.json",
+      "source_path": "results/engineering_2026-09-28/preprocessing_parity/matlab_fold0_733/aggregate_metrics.json",
+      "evidence_date": "2026-09-28",
+      "scope": "MATLAB numerical runtime verification on exposed legacy APTOS development cohort; unchanged model and policy, not clinical validation",
+      "source_sha256": "a764753fae666fc405e399323cd46fd4b2225f1ba463e590e52ae9e58ec45b3b",
+      "published_sha256": "9adff9000a7a6ccff4f0b2cbb858cbb888195156dfd9b14fe350a6d8086cd530",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_runtime_2026-09-28/operator_verification.json",
+      "source_path": "results/engineering_2026-09-28/preprocessing_parity/operator_verification.json",
+      "evidence_date": "2026-09-28",
+      "scope": "MATLAB numerical runtime verification on exposed legacy APTOS development cohort; unchanged model and policy, not clinical validation",
+      "source_sha256": "c1edea9a1e0a2231f4244ac35348679038d1906abb664e2cd736cecd7495ffbf",
+      "published_sha256": "c1edea9a1e0a2231f4244ac35348679038d1906abb664e2cd736cecd7495ffbf",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_runtime_2026-09-28/run_identity_summary.json",
+      "source_path": "results/engineering_2026-09-28/preprocessing_parity/matlab_fold0_733/run_identity.json",
+      "evidence_date": "2026-09-28",
+      "scope": "Full-run source and cohort content identities; image rows stay local",
+      "source_sha256": "21d0ba6b2fe4f0d3059ce523b9ca8bb1bc9d240b16385d66a3c8c071afa0cf47",
+      "published_sha256": "35eebaf0ec41c315c8154334e7d2dc072abc808883eeccf7a401cd1195815037",
+      "paths_normalized": false,
+      "cohort_rows_summarized": true
+    },
+    {
+      "path": "results/benchmarks/matlab_workflow_2026-09-28/simulink_scenario_sweep.json",
+      "source_path": "results/engineering_2026-09-28/m5_endpoint3_annual_sweep/simulink_scenario_sweep.json",
+      "evidence_date": "2026-09-28",
+      "scope": "Native MATLAB endpoint-v3 18-scenario annual assumption sweep; no cross-runtime or field-calibration claim",
+      "source_sha256": "2d03045486a70a00b3067b865b3674b349c3bb517b01b53936e5d4eafcd6e80d",
+      "published_sha256": "2d03045486a70a00b3067b865b3674b349c3bb517b01b53936e5d4eafcd6e80d",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_workflow_2026-09-28/simulink_scenario_sweep.csv",
+      "source_path": "results/engineering_2026-09-28/m5_endpoint3_annual_sweep/simulink_scenario_sweep.csv",
+      "evidence_date": "2026-09-28",
+      "scope": "Native MATLAB endpoint-v3 18-scenario annual assumption sweep; no cross-runtime or field-calibration claim",
+      "source_sha256": "aa70dfc49b1045175a6f7011aa003d3a899b0f41fba9d32987df8c9c43409221",
+      "published_sha256": "aa70dfc49b1045175a6f7011aa003d3a899b0f41fba9d32987df8c9c43409221",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_workflow_2026-09-28/annual_conservation_checks.json",
+      "source_path": "results/engineering_2026-09-28/m5_endpoint3_annual_sweep/simulink_scenario_sweep.json",
+      "evidence_date": "2026-09-28",
+      "scope": "Independent post-run recomputation of all 18 native aggregate conservation/occupancy counts and rates",
+      "source_sha256": "2d03045486a70a00b3067b865b3674b349c3bb517b01b53936e5d4eafcd6e80d",
+      "published_sha256": "bb5d340bd02c8fa53ca522dbc11b2acf17302885e8438723a8017553028d77be",
+      "paths_normalized": false,
+      "aggregate_extraction_or_derived_checks": true
+    },
+    {
+      "path": "results/benchmarks/matlab_workflow_2026-09-28/fixture_summary.json",
+      "source_path": "results/engineering_2026-09-28/m5_endpoint3_fixtures/fixture_results.json",
+      "evidence_date": "2026-09-28",
+      "scope": "Seven native deterministic fixtures; aggregate counters only, with three saved-artifact guards",
+      "source_sha256": "16d083e43d49d8bcd0b618f08e2cc27c706295e66833de4d4606f4fea40dea69",
+      "published_sha256": "91399af702b40c7a29eec6d9de8aaf3ef441e1f832f7256be7f499624fb8d2a2",
+      "paths_normalized": false,
+      "aggregate_extraction_or_derived_checks": true
+    },
+    {
+      "path": "results/benchmarks/matlab_workflow_2026-09-28/independent_fixture_comparison.json",
+      "source_path": "results/engineering_2026-09-28/m5_endpoint3_fixtures/deterministic_reference_comparison.json",
+      "evidence_date": "2026-09-28",
+      "scope": "Seven deterministic fixtures match a separate event-calendar reference; not annual stochastic agreement",
+      "source_sha256": "e5f0a9f53f8016493a4ff81376b9fc72cfbd6763674d8e848e3f4a791a0778bb",
+      "published_sha256": "e5f0a9f53f8016493a4ff81376b9fc72cfbd6763674d8e848e3f4a791a0778bb",
+      "paths_normalized": false
+    },
+    {
+      "path": "results/benchmarks/matlab_workflow_2026-09-28/repeatability_summary.json",
+      "source_path": "results/engineering_2026-09-28/m5_endpoint3_repeatability.json",
+      "evidence_date": "2026-09-28",
+      "scope": "Three native seeded engineered runs; repeatability and upstream/routing seed independence, no patient ledger publication",
+      "source_sha256": "993abf35d1421ebdf8751172f05fc6b8fe579be43b957ab5a8d6504e14c57a28",
+      "published_sha256": "47944468569f02f0824f98df45e41a8a8c08e75316524c26cf22027fc3b3c849",
+      "paths_normalized": false,
+      "aggregate_extraction_or_derived_checks": true
+    },
+    {
+      "path": "results/benchmarks/matlab_workflow_2026-09-28/workflow_evidence_summary.json",
+      "source_path": "results/engineering_2026-09-28/m5_endpoint3_annual_sweep/simulink_scenario_sweep.json",
+      "evidence_date": "2026-09-28",
+      "scope": "Aggregate evidence summary and declared capacity assumptions; source-bound engineering evidence, not field validation",
+      "source_sha256": "2d03045486a70a00b3067b865b3674b349c3bb517b01b53936e5d4eafcd6e80d",
+      "published_sha256": "8c6ae8194db77377abda840798e53b8f5eaba952ff06d81da8fa2cd9af9fe2df",
+      "paths_normalized": false,
+      "aggregate_extraction_or_derived_checks": true,
+      "additional_source_sha256": {
+        "results/engineering_2026-09-28/m5_endpoint3_fixtures/fixture_results.json": "16d083e43d49d8bcd0b618f08e2cc27c706295e66833de4d4606f4fea40dea69",
+        "results/engineering_2026-09-28/m5_endpoint3_fixtures/deterministic_reference_comparison.json": "e5f0a9f53f8016493a4ff81376b9fc72cfbd6763674d8e848e3f4a791a0778bb",
+        "results/engineering_2026-09-28/m5_endpoint3_repeatability.json": "993abf35d1421ebdf8751172f05fc6b8fe579be43b957ab5a8d6504e14c57a28",
+        ".project-notes/m5-endpoint-v3/curate_evidence.py": "eeb434ddfcd342f146b8041b9933e3c319dadc2ca06bb392e12edb381b00689a"
+      }
     }
   ]
 }

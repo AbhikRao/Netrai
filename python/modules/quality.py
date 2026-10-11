@@ -13,6 +13,12 @@ def assess_image_quality(image):
         return (0.0, {'focus': 0.0, 'illumination': 0.0, 'fov': 0.0, 'iqs': 0.0})
 
     h, w = image.shape[:2]
+    if (min(h, w) < 2 or image.dtype != np.uint8
+            or image.ndim not in (2, 3)
+            or (image.ndim == 3 and image.shape[2] != 3)
+            or np.ptp(image.astype(np.int16), axis=(0, 1)).max() == 0):
+        return (0.0, {'focus': 0.0, 'illumination': 0.0, 'fov': 0.0, 'iqs': 0.0,
+                      'invalid_input': True})
     metrics = {}
     
     if len(image.shape) == 3:
@@ -67,6 +73,8 @@ def enhance_fundus(image):
 def generate_recapture_feedback(metrics):
     """Generate actionable operator instructions based on metrics."""
     feedback = []
+    if metrics.get('invalid_input'):
+        return ['Input is constant, malformed, or unsupported; recapture a fundus image.']
     if metrics['iqs'] >= 0.7:
         feedback.append("Good quality image.")
         return feedback

@@ -38,26 +38,21 @@ function results = main_pipeline(imagePath, varargin)
         mkdir(outDir);
     end
 
-    rawImg = imread(imagePath);
-    if ndims(rawImg) == 2
-        rawImg = repmat(rawImg, 1, 1, 3);
-    elseif size(rawImg, 3) == 4
-        rawImg = rawImg(:, :, 1:3);
-    end
-    rawImg = im2uint8(rawImg);
+    imageDigest = fileSHA256(imagePath);
+    [rawImg, ~, imageCleanup] = readBoundValidationImage(imagePath,imageDigest); %#ok<NASGU>
 
     [iqs, qualityMetrics] = assessImageQuality(rawImg);
     qualityFeedback = generateRecaptureFeedback(qualityMetrics);
     if enforceQuality && iqs < 0.3
         results = struct( ...
-            'status', "rejected", 'imagePath', imagePath, 'iqs', iqs, ...
+            'status', "rejected", 'imagePath', imagePath, 'input_sha256', imageDigest, 'iqs', iqs, ...
             'qualityMetrics', qualityMetrics, 'qualityFeedback', qualityFeedback, ...
             'grade', NaN, 'probabilities', nan(1, 5), 'rawProbabilities', nan(1, 5), ...
             'confidence', NaN, 'isReferable', false, 'continuousScore', NaN, ...
             'referableHeadProbability', NaN, 'referableHeadPositive', false, ...
             'headDisagreement', false, 'triageAction', "recapture", ...
             'segResults', struct(), 'gradcamStatus', "not run", 'gradcamQC', struct(), ...
-            'reportPath', "");
+            'reportPath', "", 'researchOnly',true);
         if verbose
             fprintf('Rejected: IQS %.3f. %s\n', iqs, qualityFeedback);
         end
@@ -117,7 +112,13 @@ function results = main_pipeline(imagePath, varargin)
     if ~isempty(heatmap)
         gradcamQC = assessGradCAMQuality(heatmap, modelFov);
         if gradcamQC.shortcut_flag
-            gradcamStatus = "available - QC FLAG: review corner/FOV attention";
+            if gradcamQC.status == "zero_attribution"
+                gradcamStatus = "QC FLAG: no attribution signal";
+            elseif gradcamQC.status == "insufficient_spatial_grid"
+                gradcamStatus = "QC FLAG: insufficient attribution resolution";
+            else
+                gradcamStatus = "available - QC FLAG: review corner/FOV attention";
+            end
         end
     end
     checklist = generateEvidenceChecklist(segResults, grade, calProbs);
@@ -127,7 +128,8 @@ function results = main_pipeline(imagePath, varargin)
     if generateReport
         safety = struct('referableHeadProbability', referableHeadProbability, ...
             'referableHeadPositive', referableHeadPositive, ...
-            'headDisagreement', headDisagreement, 'triageAction', triageAction);
+            'headDisagreement', headDisagreement, 'triageAction', triageAction, ...
+            'deploymentIdentity',config.deployment_identity,'inputSha256',imageDigest);
         reportPath = string(generateClinicalReport(procImg, segResults, grade, ...
             calProbs, checklist, heatmap, overlayImg, outDir, gradcamStatus, ...
             gradcamQC, safety, modelDisplay));
@@ -145,7 +147,8 @@ function results = main_pipeline(imagePath, varargin)
     end
 
     results = struct( ...
-        'status', "success", 'imagePath', imagePath, 'iqs', iqs, ...
+        'status', "success", 'imagePath', imagePath, 'input_sha256',imageDigest, ...
+        'deployment_identity',config.deployment_identity, 'iqs', iqs, ...
         'qualityMetrics', qualityMetrics, 'qualityFeedback', qualityFeedback, ...
         'grade', grade, 'probabilities', calProbs, 'rawProbabilities', rawProbs, ...
         'confidence', confidence, 'isReferable', isReferable, ...
@@ -175,7 +178,11 @@ function showResults(procImg, overlayImg, heatmap, gradcamStatus, probabilities,
         imshow(modelDisplay); hold on;
         h = imagesc(imresize(heatmap, size(modelDisplay, [1 2])));
         colormap(gca, jet); alpha(h, 0.4); axis image off;
-        title('Genuine Grad-CAM Attention');
+        if contains(string(gradcamStatus),"QC FLAG")
+            title('Referral-logit Grad-CAM - QC FLAG');
+        else
+            title('Referral-logit Grad-CAM');
+        end
     end
     nexttile;
     b = bar(0:4, probabilities); b.FaceColor = 'flat';

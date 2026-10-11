@@ -62,7 +62,7 @@ function report = verifyMatlabPackage()
         reference = jsondecode(fileread(preprocessingReferencePath));
         smokePath = fullfile(fileparts(baseDir), reference.image_relative_to_project);
         if isfile(smokePath)
-            smokeImage = imread(smokePath);
+            smokeImage = readScreeningImage(smokePath);
             smokeInput = preprocessModelInput(smokeImage, config);
             [smokeGrade, ~, ~, ~, smokeLogits, smokeReferableProbability] = ...
                 predictDRGrade(net, smokeInput, config.grade_thresholds, ...

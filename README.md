@@ -2,7 +2,7 @@
 
 **Explainable diabetic retinopathy screening for rural care settings**
 
-SIH 2026 · Problem Statement 26038 · Team Biscuit · MathWorks-sponsored challenge
+SIH 2026 · Problem Statement SIH26038 · Team Biscuit · MathWorks-sponsored challenge
 
 NetrAI combines a MATLAB screening pipeline with a SimEvents model of district
 screening capacity. The prototype helps an operator assess image quality, produces
@@ -29,7 +29,7 @@ flowchart TD
 | Retinal analysis | Optic-disc/fovea localization, vessels and lesion candidate overlays |
 | DR grading | Trained EfficientNet-B4 ONNX inference with five-grade and referral output heads |
 | Explanation report | Referral-targeted Grad-CAM, evidence checklist and PDF report |
-| District simulation | SimEvents acquisition, upload, processing and review queues |
+| District simulation | SimEvents acquisition, bounded recapture returns, upload, processing and review queues |
 
 The grade and referral heads share a backbone. Disagreeing outputs route to
 human review. The capacity simulation is a separate planning model.
@@ -41,19 +41,28 @@ a research prototype and has not been clinically validated.
 
 | Evaluation | Recorded result | Interpretation |
 | --- | --- | --- |
-| MATLAB model execution | 733/733 images processed; zero processing errors | Internal development run |
-| Internal referable-DR grading | Sensitivity 94.97%, specificity 93.33%, QWK 0.9297 | Training overlap affects this cohort; not independent accuracy evidence |
-| Model execution time | Mean 1.55 s/image | Model-only CPU timing; excludes report generation and clinician review |
-| SimEvents capacity analysis | 18 bandwidth/staffing/quality scenarios | Simulated outcomes under declared assumptions |
+| MATLAB model execution | 733/733 images processed; zero processing errors | September 28 internal development run |
+| Internal referable-DR grading | Sensitivity 94.63%, specificity 94.02%, QWK 0.9330 | Training overlap affects this cohort; not independent accuracy evidence |
+| Model runtime comparison | 733/733 grades and screening routes match; maximum probability difference 2.82 × 10⁻⁶ | Passes the fixed model-mode gates; not full-image or clinical validation |
+| Model-mode execution time | Mean 2.33 s/image on CPU | Includes byte verification/decoding, quality assessment and grading; excludes retinal analysis, Grad-CAM, report generation and review |
+| SimEvents workflow verification | 18 annual conservation checks; 7 independent deterministic fixture comparisons; 3 native seeded runs | Engineering verification under declared assumptions; no field calibration |
 
 The internal cohort includes **35 images with exact-content counterparts in
 training** and informed model/policy selection. External-domain development
 results remain below screening acceptance targets. See the
 [validation report](docs/VALIDATION.md) for sample sizes, artifact links and open gates.
 
-In the one-clinician scenario with 10% assumed quality rejection, simulated
-completion was 32.14% at 0.25 Mbps and 89.99% at 1 Mbps. Recapture requests remain
-unresolved. These figures describe simulation behavior, not observed field impact.
+The MATLAB preprocessing repair reproduces the released model input contract.
+Model weights, calibration and routing policy are unchanged; agreement with the
+reference runtime closes a numerical defect rather than establishing new accuracy.
+
+The endpoint-v3 simulation now returns rejected patients to the shared acquisition
+queue, with at most two recaptures. Under the one-reviewer, 10% rejection,
+zero-dropout assumptions, simulated completion was 32.14% at 0.25 Mbps and 99.89%
+at 1 Mbps. The slow link creates an upload backlog; an additional reviewer does
+not remove it. These outcomes assume a 56 Mb patient upload and 30-second review;
+they describe model behavior rather than observed field impact.
+[Workflow evidence](results/benchmarks/matlab_workflow_2026-09-28/workflow_evidence_summary.json)
 
 ## Run in MATLAB
 
@@ -73,6 +82,14 @@ result = demo_netrai("/absolute/path/to/fundus.png");
 Supply a local image whose terms permit your intended use. Images and datasets
 are not bundled. Accepted images produce a report; rejected images produce
 recapture feedback. Each demo run uses a new output directory.
+
+Deployment checks bind the model, configuration and inference code by SHA-256,
+including the callable source bytes selected by MATLAB's current path.
+MATLAB validation records the complete selected cohort and evaluated image
+content before inference. New schema-3 chunks also freeze the decision policy;
+merging checks calibration and threshold-derived decisions and rejects missing
+cases, incompatible artifacts and invalid predictions. Validation outputs use
+new directories so earlier evidence is preserved.
 
 To inspect the capacity model:
 
@@ -96,9 +113,9 @@ Command Window; they cannot be entered directly into Bash.
 
 Lesion overlays are candidate detections, and Grad-CAM visualizes model
 attribution. Neither is proof of a confirmed lesion. Portable-camera robustness,
-fresh external grading, full runtime equivalence and clinician explanation/review-time
-studies remain open. Next work focuses on these validation gaps and a complete
-recapture-return workflow in the capacity simulation.
+fresh external grading, broader full-image runtime checks and clinician explanation/review-time
+studies remain open. The capacity model's next steps are field-derived return and
+service assumptions, shift calendars, outages and timed referral escalation.
 
 ## Repository guide
 

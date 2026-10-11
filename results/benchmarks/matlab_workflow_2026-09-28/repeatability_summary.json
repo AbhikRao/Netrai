@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "endpoint_version": 3,
+  "scope": "Seeded engineered stochastic smoke, not field validation",
+  "native_run_count": 3,
+  "identical_seed_repeat_passed": true,
+  "routing_seed_independence_passed": true,
+  "parameters": {
+    "totalPatients": 100,
+    "simulationDuration": 600,
+    "interarrivalTime": 10,
+    "acquisitionTime": 2,
+    "recaptureTime": 4,
+    "uploadTime": 3,
+    "aiInferenceTime": 1,
+    "reviewTimePerPatient": 20,
+    "qualityRejectRate": 0.3,
+    "retryQualityRejectRate": 0.5,
+    "recaptureAbandonRate": 0.1,
+    "maxRecaptureRetries": 2,
+    "autoClearRate": 0.65,
+    "referRate": 0.2,
+    "uncertainRate": 0.15,
+    "qualityRandomSeed": 4201,
+    "triageRandomSeed": 5201,
+    "traceEnabled": true
+  },
+  "changed_routing_seed": 5202,
+  "model_sha256": "20d1b98a79ac8254e88e991a50083cd2e7779fb877897f46250e0f5c6060928e",
+  "source_identity": {
+    "schema_version": 1,
+    "endpoint_version": 3,
+    "builder_sha256": "84d58278490c2dfa8b34cbb8bdfc1e8a3af48a81dbd5b742918769963190486e",
+    "source_sha256": "fab35fa6bdf35477ffbc55a40996f579a46efdd447fdf343e90355e53c0effeb",
+    "source_files": [
+      {
+        "path": "src/m5_simulink/defaultTelemedicineParameters.m",
+        "sha256": "9b4762a6a925bbbca1be34d79a0a220e316b97d25562c4d6d104592740b00bcc"
+      },
+      {
+        "path": "src/m5_simulink/recordTelemedicineEvent.m",
+        "sha256": "a4129bd752532bd04ac9878989bcdce413eeb298dee676be1a7945e334a5ef6b"
+      },
+      {
+        "path": "src/m5_simulink/runSimulinkScenarioSweep.m",
+        "sha256": "181d58d3ac9d7696543eae2f7b7b98abdcfc78ca70109139f430ad9445a4ce44"
+      },
+      {
+        "path": "src/m5_simulink/runTelemedicineScenario.m",
+        "sha256": "bbe1304a13024b27ae71664e5daa088a3002cb73679709c8cd9194dead3fdd8f"
+      },
+      {
+        "path": "src/m5_simulink/setupSimulinkModel.m",
+        "sha256": "84d58278490c2dfa8b34cbb8bdfc1e8a3af48a81dbd5b742918769963190486e"
+      },
+      {
+        "path": "src/m5_simulink/telemedicineSourceIdentity.m",
+        "sha256": "3177cad0846df30ef18d3eef6424a2e8ed5f30fb5225867fe648e5474a75b82e"
+      },
+      {
+        "path": "src/utils/fileSHA256.m",
+        "sha256": "2ce5d7171f81ae1a0852b9bd7ca960163bedb61153a48bb949ebd2b86c1c689d"
+      },
+      {
+        "path": "src/utils/sha256Bytes.m",
+        "sha256": "073899d4d58b22a61730e1aae91e6728ee9c458dcadffa50977f72f2bb24ba90"
+      }
+    ]
+  },
+  "checker_sha256": "f83e4ee141ad976e22805aef840220477f383676278ae0c6e9156117b69c5059",
+  "source_evidence_sha256": "993abf35d1421ebdf8751172f05fc6b8fe579be43b957ab5a8d6504e14c57a28",
+  "assertion_scope": "The checker compares all result fields except wall time and the complete identity ledger between two identical-seed runs. A third run changes only routing seed and compares upstream quality events.",
+  "second_run_summary": "Not stored separately; successful checker assertions are recorded in the source evidence.",
+  "first_result": {
+    "generated": 61,
+    "auto_cleared": 29,
+    "reviewed": 15,
+    "completed": 44,
+    "abandoned": 8,
+    "quality_exhausted": 6,
+    "in_system": 3,
+    "unfinished": 17,
+    "conservation_residual": 0,
+    "acquisition_attempts_started": 98,
+    "quality_checks_completed": 97,
+    "recap_requests": 38,
+    "recapture_returns": 37,
+    "recapture_pending": 1,
+    "occupancy_at_stop": {
+      "generatorPending": 0,
+      "acquisitionQueueN": 0,
+      "recaptureQueueN": 0,
+      "uploadQueueN": 0,
+      "aiQueueN": 0,
+      "referralQueueN": 0,
+      "uncertainQueueN": 0,
+      "reviewQueueN": 0,
+      "acquisitionN": 1,
+      "recaptureN": 1,
+      "uploadN": 0,
+      "aiN": 0,
+      "reviewN": 1
+    },
+    "max_review_queue": 2,
+    "review_running_average_wait_seconds": 4.3125,
+    "review_service_running_average_time_seconds": 20,
+    "clinician_utilization": 0.5066666666666667,
+    "completion_rate": 0.7213114754098361,
+    "unfinished_rate": 0.2786885245901639,
+    "identity_checks": {
+      "trace_enabled": true,
+      "unique_generation_ids": true,
+      "terminal_ids_disjoint": true,
+      "same_patient_on_retry": true,
+      "attempts_sequential_and_bounded": true
+    }
+  },
+  "changed_routing_result": {
+    "generated": 61,
+    "auto_cleared": 30,
+    "reviewed": 14,
+    "completed": 44,
+    "abandoned": 8,
+    "quality_exhausted": 6,
+    "in_system": 3,
+    "unfinished": 17,
+    "conservation_residual": 0,
+    "acquisition_attempts_started": 98,
+    "quality_checks_completed": 97,
+    "recap_requests": 38,
+    "recapture_returns": 37,
+    "recapture_pending": 1,
+    "occupancy_at_stop": {
+      "generatorPending": 0,
+      "acquisitionQueueN": 0,
+      "recaptureQueueN": 0,
+      "uploadQueueN": 0,
+      "aiQueueN": 0,
+      "referralQueueN": 0,
+      "uncertainQueueN": 0,
+      "reviewQueueN": 0,
+      "acquisitionN": 1,
+      "recaptureN": 1,
+      "uploadN": 0,
+      "aiN": 0,
+      "reviewN": 1
+    },
+    "max_review_queue": 1,
+    "review_running_average_wait_seconds": 2.466666666666667,
+    "review_service_running_average_time_seconds": 20,
+    "clinician_utilization": 0.47333333333333333,
+    "completion_rate": 0.7213114754098361,
+    "unfinished_rate": 0.2786885245901639,
+    "identity_checks": {
+      "trace_enabled": true,
+      "unique_generation_ids": true,
+      "terminal_ids_disjoint": true,
+      "same_patient_on_retry": true,
+      "attempts_sequential_and_bounded": true
+    }
+  }
+}

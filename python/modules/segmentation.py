@@ -103,15 +103,15 @@ def localize_optic_disc(image):
     return (int(w * 0.75), int(h * 0.5)), int(min_dimension * 0.08)
 
 
-def localize_fovea(green_ch, od_center, od_radius):
+def localize_fovea(green_ch, od_center, od_radius, fov_mask=None):
     """
     Locates fovea ~2.5 disc diameters temporal to optic disc.
     Searches for darkest region in the expected area.
     """
     h, w = green_ch.shape
 
-    if od_center is None:
-        return (w // 2, h // 2)
+    if od_center is None or od_radius is None or od_radius <= 0:
+        return None
 
     # Determine temporal direction
     if od_center[0] < w // 2:
@@ -131,11 +131,15 @@ def localize_fovea(green_ch, od_center, od_radius):
     y_max = min(h, search_y + win)
 
     if x_min < x_max and y_min < y_max:
-        region = smoothed[y_min:y_max, x_min:x_max]
-        min_idx = np.unravel_index(np.argmin(region), region.shape)
-        return (x_min + min_idx[1], y_min + min_idx[0])
+        region = smoothed[y_min:y_max, x_min:x_max].astype(float)
+        valid_fov = green_ch > 10 if fov_mask is None else np.asarray(fov_mask) > 0
+        valid = valid_fov[y_min:y_max, x_min:x_max]
+        if valid.any():
+            region[~valid] = np.inf
+            min_idx = np.unravel_index(np.argmin(region), region.shape)
+            return (int(x_min + min_idx[1]), int(y_min + min_idx[0]))
 
-    return (w // 2, h // 2)
+    return None
 
 
 def segment_vessels(green_ch, fov_mask=None):
@@ -190,7 +194,8 @@ def segment_vessels(green_ch, fov_mask=None):
 
 
 def detect_microaneurysms(green_ch, vessel_mask, fov_mask=None,
-                          od_center=None, od_radius=None):
+                          od_center=None, od_radius=None, threshold_sigma=3.0,
+                          return_scores=False):
     """
     Detects microaneurysms using multi-scale morphological top-hat + matched filter.
     Returns (ma_mask, ma_count, ma_centroids). Centroids are floating-point
@@ -219,7 +224,9 @@ def detect_microaneurysms(green_ch, vessel_mask, fov_mask=None,
     # A stricter threshold is intentionally used here.  At 512 px the old
     # 2.5-sigma/3-pixel rule classified sensor noise and FOV-edge pixels as
     # microaneurysms on healthy APTOS images.
-    thresh = mu + 3.0 * std
+    if threshold_sigma <= 0 or not np.isfinite(threshold_sigma):
+        raise ValueError('threshold_sigma must be positive and finite')
+    thresh = mu + threshold_sigma * std
     ma_binary = (filtered > thresh).astype(np.uint8) * 255
 
     # Subtract dilated vessels
@@ -243,6 +250,7 @@ def detect_microaneurysms(green_ch, vessel_mask, fov_mask=None,
     num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(ma_binary, connectivity=8)
     ma_mask = np.zeros_like(ma_binary)
     ma_centroids = []
+    ma_scores = []
 
     for i in range(1, num_labels):
         area = stats[i, cv2.CC_STAT_AREA]
@@ -266,7 +274,10 @@ def detect_microaneurysms(green_ch, vessel_mask, fov_mask=None,
                         peak_x = int(component_pixels[1][peak_index])
                         ma_centroids.append(refine_subpixel_peak(
                             filtered, peak_x, peak_y))
+                        ma_scores.append(float((filtered[peak_y, peak_x] - mu) / max(std, 1e-12)))
 
+    if return_scores:
+        return ma_mask, len(ma_centroids), ma_centroids, ma_scores
     return ma_mask, len(ma_centroids), ma_centroids
 
 
@@ -418,9 +429,7 @@ def detect_exudates(image, green_ch, fovea_center, od_center, od_radius,
         dists = [np.linalg.norm(np.array(c) - fc) for c in hard_centroids]
         nearest_px = min(dists)
         if od_radius and od_radius > 0:
-            nearest_dist = nearest_px / od_radius
-        else:
-            nearest_dist = nearest_px / 50
+            nearest_dist = nearest_px / (2 * od_radius)
 
     return ex_mask, hard_count, soft_count, nearest_dist
 
@@ -525,15 +534,23 @@ def extract_clinical_features(seg_results):
         ma_count = seg_results.get('ma_count', 0)
         features[0:4] = min(ma_count / 4 / 50, 1.0)
 
-    # [4-7]: Hemorrhage area ratio (simplified)
+    # [4-7]: Per-image-quadrant candidate area / valid retinal area.
     hem_mask = seg_results.get('hem_mask', None)
     if hem_mask is not None:
-        total = max(hem_mask.size, 1)
-        features[4:8] = np.sum(hem_mask > 0) / total
+        h, w = hem_mask.shape
+        fov = seg_results.get('fov_mask')
+        fov = np.ones_like(hem_mask, dtype=bool) if fov is None else fov > 0
+        quadrants = ((slice(h//2, h), slice(w//2, w)),
+                     (slice(h//2, h), slice(0, w//2)),
+                     (slice(0, h//2), slice(0, w//2)),
+                     (slice(0, h//2), slice(w//2, w)))
+        for index, region in enumerate(quadrants):
+            features[4 + index] = np.sum((hem_mask[region] > 0) & fov[region]) / max(
+                np.sum(fov[region]), 1)
 
     # [8]: Hard exudate foveal distance (normalized 0-1)
     fovea_dist = seg_results.get('fovea_dist', -1)
-    if fovea_dist > 0:
+    if fovea_dist >= 0:
         features[8] = min(fovea_dist / 5.0, 1.0)
     else:
         features[8] = 1.0

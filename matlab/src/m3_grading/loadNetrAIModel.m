@@ -14,6 +14,8 @@ function [net, config] = loadNetrAIModel(modelPath, configPath)
     if ~isfile(configPath)
         error('NetrAI:ConfigNotFound', 'Deployment config not found: %s', configPath);
     end
+    [bundle, modelDigest] = verifyDeploymentBundle(modelPath, configPath);
+    verifyRuntimeDeploymentSources(bundle);
     if exist('importNetworkFromONNX', 'file') ~= 2
         error('NetrAI:ONNXImporterMissing', [ ...
             'importNetworkFromONNX is unavailable. Use MATLAB R2023b or newer ' ...
@@ -24,7 +26,8 @@ function [net, config] = loadNetrAIModel(modelPath, configPath)
     config = jsondecode(fileread(configPath));
     required = {'input_size', 'imagenet_mean', 'imagenet_std', ...
         'grade_thresholds', 'confidence_temperature', ...
-        'referable_head_threshold', 'head_disagreement_action'};
+        'referable_head_threshold', 'head_disagreement_action', ...
+        'preprocessing_version', 'black_crop_threshold', 'ben_graham_sigma'};
     for i = 1:numel(required)
         if ~isfield(config, required{i})
             error('NetrAI:InvalidConfig', 'Missing config field: %s', required{i});
@@ -45,21 +48,44 @@ function [net, config] = loadNetrAIModel(modelPath, configPath)
         error('NetrAI:UnsafeConfig', ...
             'Head disagreement must route to uncertain_human_review.');
     end
+    if string(config.preprocessing_version) ~= "legacy-area-v1" || ...
+            ~isscalar(config.black_crop_threshold) || config.black_crop_threshold ~= 7 || ...
+            ~isscalar(config.ben_graham_sigma) || config.ben_graham_sigma ~= 10
+        error('NetrAI:InvalidConfig','Unsupported released preprocessing contract.');
+    end
 
-    persistent cachedNet cachedModelPath cachedStamp
-    modelInfo = dir(modelPath);
-    stamp = [modelInfo.datenum, modelInfo.bytes]; %#ok<DATNM>
-    if isempty(cachedNet) || cachedModelPath ~= modelPath || ~isequal(cachedStamp, stamp)
+    if ~isscalar(config.input_size) || config.input_size ~= 512 || ...
+            numel(config.imagenet_mean) ~= 3 || any(~isfinite(config.imagenet_mean)) || ...
+            numel(config.imagenet_std) ~= 3 || ...
+            any(~isfinite(config.imagenet_std) | config.imagenet_std <= 0) || ...
+            numel(config.grade_thresholds) ~= 4 || ...
+            any(~isfinite(config.grade_thresholds)) || any(diff(config.grade_thresholds) <= 0)
+        error('NetrAI:InvalidConfig', 'Invalid input normalization or ordinal thresholds.');
+    end
+
+    persistent cachedNet cachedModelPath cachedDigest
+    if isempty(cachedNet) || cachedModelPath ~= modelPath || ~strcmp(cachedDigest,modelDigest)
         try
-            cachedNet = importNetworkFromONNX(modelPath, ...
+            importedNet = importNetworkFromONNX(modelPath, ...
                 'InputDataFormats','BCSS', 'OutputDataFormats','BC');
         catch ME
             error('NetrAI:ONNXImportFailed', ...
                 'Could not import %s. Install the ONNX converter support package. Original error: %s', ...
                 modelPath, ME.message);
         end
+        if ~strcmp(fileSHA256(modelPath),modelDigest)
+            error('NetrAI:BundleIntegrity', 'Model changed during ONNX import.');
+        end
+        % Import may take minutes; source resolution must still match before
+        % the imported network can enter the reusable deployment cache.
+        verifyRuntimeDeploymentSources(bundle);
+        cachedNet = importedNet;
         cachedModelPath = modelPath;
-        cachedStamp = stamp;
+        cachedDigest = modelDigest;
     end
     net = cachedNet;
+    config.deployment_identity = struct('bundle_schema_version',bundle.schema_version, ...
+        'model_sha256',modelDigest, ...
+        'config_sha256',bundle.artifacts(strcmp({bundle.artifacts.role},'config')).sha256, ...
+        'preprocessing_version',config.preprocessing_version);
 end

@@ -54,10 +54,17 @@ class LearnedQualityTests(unittest.TestCase):
         self.assertGreater(temperature, 0)
         probabilities = np.exp(logits / temperature)
         probabilities /= probabilities.sum(axis=1, keepdims=True)
-        selected, trials = select_reject_threshold(probabilities, labels)
+        patients = np.array([f'p{i // 2}' for i in range(len(labels))])
+        selected, trials = select_reject_threshold(
+            probabilities, labels, patients, seed=3, replicates=200)
         self.assertTrue(0 < selected['reject_threshold'] < 1)
-        self.assertIn('reject_recall_one_sided_95_wilson_lower', selected)
+        self.assertIn('reject_recall_patient_cluster_bootstrap_95_lower', selected)
         self.assertEqual(len(trials), 29)
+
+    def test_reject_threshold_requires_aligned_patients(self):
+        probabilities = np.full((2, 3), 1 / 3)
+        with self.assertRaises(ValueError):
+            select_reject_threshold(probabilities, [0, 2], ['a'])
 
     def test_wilson_lower_bound_is_conservative(self):
         self.assertLess(wilson_lower_bound(80, 100), .80)

@@ -43,8 +43,17 @@ def preprocess_fundus(image, target_size=512):
     return padded, green_channel, fov_mask
 
 
-def preprocess_for_model(image_rgb, size=512):
-    """Apply the exact crop, Ben Graham enhancement, and normalization used in training."""
+PREPROCESSING_VERSIONS = ('legacy-area-v1', 'training-linear-v2')
+
+
+def preprocess_for_model(image_rgb, size=512, version='legacy-area-v1'):
+    """Versioned model input; legacy stays default to preserve released scores.
+
+    training-linear-v2 reproduces the notebook's validation resize semantics.
+    It is an experimental contract until a model/policy bundle is validated.
+    """
+    if version not in PREPROCESSING_VERSIONS:
+        raise ValueError(f'Unknown preprocessing contract: {version}')
     if image_rgb is None or not hasattr(image_rgb, 'shape') or image_rgb.size == 0:
         raise ValueError('image_rgb must be a non-empty image')
 
@@ -53,6 +62,8 @@ def preprocess_for_model(image_rgb, size=512):
         image = np.stack([image] * 3, axis=-1)
     if image.ndim != 3 or image.shape[2] != 3:
         raise ValueError('image_rgb must have shape (H, W, 3)')
+    if image.dtype != np.uint8:
+        raise ValueError('Model input must be uint8 RGB in [0, 255]')
 
     foreground = image.max(axis=2) > 7
     if foreground.any():
@@ -64,7 +75,8 @@ def preprocess_for_model(image_rgb, size=512):
         col_max = int(len(cols) - cols[::-1].argmax())
         image = image[row_min:row_max, col_min:col_max]
 
-    image = cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
+    interpolation = cv2.INTER_AREA if version == 'legacy-area-v1' else cv2.INTER_LINEAR
+    image = cv2.resize(image, (size, size), interpolation=interpolation)
     image = cv2.addWeighted(
         image, 4, cv2.GaussianBlur(image, (0, 0), 10), -4, 128
     )

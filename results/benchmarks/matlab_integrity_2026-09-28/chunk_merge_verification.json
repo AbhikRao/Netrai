@@ -1,0 +1,25 @@
+{
+  "requested": 2,
+  "successful": 2,
+  "errors": 0,
+  "expected_cohort_verified": true,
+  "decision_policy_verified": true,
+  "scope": "schema-3 real two-image/two-chunk engineering smoke on an exposed development cohort; not accuracy acceptance",
+  "identity_schema_version": 3,
+  "model_sha256": "12ecca45409fc2f5314e54c906f6a9e03e1ec345200beec8c89624cb15fc631a",
+  "config_sha256": "d64254f380ee31546b4e5f6e75c172b62e5eb6f218aac7045c503fe98abcc230",
+  "decision_policy": {
+    "grade_thresholds": [
+      0.5421875,
+      1.4859374999999995,
+      2.5546875,
+      3.3031249999999996
+    ],
+    "referable_head_threshold": 0.5,
+    "confidence_temperature": 0.8390771170135317
+  },
+  "source_sha256": "41df8554e0d3aa8aea6b29b1dc35f821e97913e2037b2f9a2f1efbdcf2d540de",
+  "selection_sha256": "70a49a1b6091a35037dae8e11296205ddb16711032716c11a22abc877600f261",
+  "run_identity_sha256": "80a7ca3d4cbb95a020e4f0672b8f6a2e8b1d0e43c1ce42c347e4b6635b206eb8",
+  "clinical_validation": false
+}

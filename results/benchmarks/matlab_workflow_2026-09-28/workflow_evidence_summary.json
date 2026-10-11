@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "endpoint_version": 3,
+  "evidence_date": "2026-09-28",
+  "runtime": "MATLAB R2026a Update 5 / SimEvents",
+  "verification": {
+    "native_annual_scenarios": 18,
+    "all_annual_conservation_checks_passed": true,
+    "independent_deterministic_reference_fixtures": 7,
+    "all_reference_fixtures_passed": true,
+    "native_seeded_repeatability_runs": 3,
+    "repeatability_and_routing_seed_independence_passed": true,
+    "annual_independent_runtime_agreement_claimed": false,
+    "field_calibration_claimed": false
+  },
+  "calendar_assumption": {
+    "working_days_equivalent": 250,
+    "operating_hours_per_day_equivalent": 8,
+    "horizon_seconds": 7200000.0,
+    "closed_hours_or_shifts_modeled": false
+  },
+  "payload_assumption": {
+    "images_per_patient": 2,
+    "image_size_mb": 3.5,
+    "upload_megabits_per_patient": 56
+  },
+  "retry_assumption": {
+    "max_recapture_retries": 2,
+    "return_delay_seconds": 120,
+    "retry_rejection_equals_initial_rejection": true,
+    "dropout_probability_per_permitted_retry": 0,
+    "dropout_assessed_before_return_delay": true
+  },
+  "service_and_routing_assumptions": {
+    "regular_arrival_interval_seconds": 72,
+    "acquisition_seconds_per_attempt": 45,
+    "inference_seconds_per_patient": 3.5,
+    "review_seconds_per_patient": 30,
+    "referral_probability": 0.08,
+    "uncertain_probability": 0.0123,
+    "auto_route_probability": 0.9077
+  },
+  "scenario_random_seeds": [
+    {
+      "scenario_id": 1,
+      "quality_seed": 4201,
+      "routing_seed": 5201
+    },
+    {
+      "scenario_id": 2,
+      "quality_seed": 4202,
+      "routing_seed": 5202
+    },
+    {
+      "scenario_id": 3,
+      "quality_seed": 4203,
+      "routing_seed": 5203
+    },
+    {
+      "scenario_id": 4,
+      "quality_seed": 4204,
+      "routing_seed": 5204
+    },
+    {
+      "scenario_id": 5,
+      "quality_seed": 4205,
+      "routing_seed": 5205
+    },
+    {
+      "scenario_id": 6,
+      "quality_seed": 4206,
+      "routing_seed": 5206
+    },
+    {
+      "scenario_id": 7,
+      "quality_seed": 4207,
+      "routing_seed": 5207
+    },
+    {
+      "scenario_id": 8,
+      "quality_seed": 4208,
+      "routing_seed": 5208
+    },
+    {
+      "scenario_id": 9,
+      "quality_seed": 4209,
+      "routing_seed": 5209
+    },
+    {
+      "scenario_id": 10,
+      "quality_seed": 4210,
+      "routing_seed": 5210
+    },
+    {
+      "scenario_id": 11,
+      "quality_seed": 4211,
+      "routing_seed": 5211
+    },
+    {
+      "scenario_id": 12,
+      "quality_seed": 4212,
+      "routing_seed": 5212
+    },
+    {
+      "scenario_id": 13,
+      "quality_seed": 4213,
+      "routing_seed": 5213
+    },
+    {
+      "scenario_id": 14,
+      "quality_seed": 4214,
+      "routing_seed": 5214
+    },
+    {
+      "scenario_id": 15,
+      "quality_seed": 4215,
+      "routing_seed": 5215
+    },
+    {
+      "scenario_id": 16,
+      "quality_seed": 4216,
+      "routing_seed": 5216
+    },
+    {
+      "scenario_id": 17,
+      "quality_seed": 4217,
+      "routing_seed": 5217
+    },
+    {
+      "scenario_id": 18,
+      "quality_seed": 4218,
+      "routing_seed": 5218
+    }
+  ],
+  "one_reviewer_10pct_quality_rejection": [
+    {
+      "bandwidth_mbps": 0.25,
+      "generated": 100001,
+      "completed": 32142,
+      "abandoned": 0,
+      "quality_exhausted": 87,
+      "in_system": 67772,
+      "completion_rate": 0.32141678583214167,
+      "max_upload_queue": 67769,
+      "clinician_utilization_at_stop": 0.012420833333333334
+    },
+    {
+      "bandwidth_mbps": 1,
+      "generated": 100001,
+      "completed": 99893,
+      "abandoned": 0,
+      "quality_exhausted": 105,
+      "in_system": 3,
+      "completion_rate": 0.998920010799892,
+      "max_upload_queue": 2,
+      "clinician_utilization_at_stop": 0.037925
+    },
+    {
+      "bandwidth_mbps": 5,
+      "generated": 100001,
+      "completed": 99904,
+      "abandoned": 0,
+      "quality_exhausted": 95,
+      "in_system": 2,
+      "completion_rate": 0.999030009699903,
+      "max_upload_queue": 1,
+      "clinician_utilization_at_stop": 0.03871666666666667
+    }
+  ],
+  "interpretation": [
+    "At 0.25 Mbps, the configured 56 Mb patient upload takes 224 seconds, exceeding the 72-second arrival interval; upload backlog dominates. Adding a second reviewer does not relieve that bottleneck.",
+    "At 1 or 5 Mbps, the configured workload completes approximately 99.89% or 99.90% in the one-reviewer/10% rejection scenarios. Remaining quality-exhausted and cutoff cases are unresolved.",
+    "Low reviewer utilization follows the assumed 30-second service and 9.23% review probability; it cannot establish real staffing needs.",
+    "Each scenario uses different seeds. Small differences at adequate bandwidth are not paired causal effects or multi-seed uncertainty estimates."
+  ],
+  "annual_model_sha256": "20d1b98a79ac8254e88e991a50083cd2e7779fb877897f46250e0f5c6060928e",
+  "fixture_model_sha256": "83c002d5dd7c55f76becafe90a5135ade88260d5dcaa009443030ccd46d1835d",
+  "shared_workflow_source_sha256": "fab35fa6bdf35477ffbc55a40996f579a46efdd447fdf343e90355e53c0effeb",
+  "model_identity_note": "Separate fixture and annual saved SLX builds have different byte identities and the same content-bound workflow source identity.",
+  "limitations": [
+    "Quality rejection, retry rejection, dropout and routing are unfitted scenario assumptions.",
+    "Zero dropout is an explicit scenario assumption, not an observed return rate.",
+    "Patient outcomes and attempt counters have different denominators.",
+    "Mean review queue wait covers patients that started review; censored waiting cases remain in-system.",
+    "No patient wait percentile is reported; no shift calendar or overdue-review escalation is modeled.",
+    "Endpoint-v2 results remain historical and are not interchangeable with endpoint-v3 outcomes."
+  ],
+  "curation_source_sha256": "eeb434ddfcd342f146b8041b9933e3c319dadc2ca06bb392e12edb381b00689a"
+}

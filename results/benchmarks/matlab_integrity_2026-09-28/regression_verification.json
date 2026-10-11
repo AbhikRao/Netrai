@@ -1,0 +1,245 @@
+{
+  "passed": 114,
+  "failed": 0,
+  "incomplete": 0,
+  "duration_seconds": 25.355739999999997,
+  "scope": "native MATLAB regression including schema-3 policy and runtime-resolved source guards",
+  "source_sha256": "41df8554e0d3aa8aea6b29b1dc35f821e97913e2037b2f9a2f1efbdcf2d540de",
+  "source_files": [
+    {
+      "path": "aggregateValidationRuns.m",
+      "sha256": "0d08d63c758c6675c7e35c250b7ce7d5f411cbcdc5d9ce4692406aeb62f402cf"
+    },
+    {
+      "path": "main_pipeline.m",
+      "sha256": "937f103889480930c995369ea6d78ca4c47b235516e94e519f6db40d18e7f66a"
+    },
+    {
+      "path": "src/m1_quality/assessImageQuality.m",
+      "sha256": "d6e0160101ef0f348854c5b2b62f861ef34795485d9756061267a8d86cd830c1"
+    },
+    {
+      "path": "src/m1_quality/enhanceFundusImage.m",
+      "sha256": "922b6373f5495b8bd54f9f6a6a8e6c8c2a25ffd280f6a079d051739743f95c32"
+    },
+    {
+      "path": "src/m1_quality/generateRecaptureFeedback.m",
+      "sha256": "77f80a9a0223cba6d4df83e4805dd42de193f73b186ac40602f1e21e8b9f2646"
+    },
+    {
+      "path": "src/m1_quality/loadQualityModel.m",
+      "sha256": "f931baca13a1fd6c9e5a9d03adf792c342becd08ed382d1bf067c166f85e3fc5"
+    },
+    {
+      "path": "src/m1_quality/predictImageQuality.m",
+      "sha256": "7eb1f40571c89445787e36f356115ff5d6721717d42a7e3bd9c2ffa36081b625"
+    },
+    {
+      "path": "src/m1_quality/preprocessQualityModelInput.m",
+      "sha256": "6230d9aeb69135c52baa5fd0db8c8e245d57b79a5581cc93248c2eb129fcef31"
+    },
+    {
+      "path": "src/m2_segmentation/detectExudates.m",
+      "sha256": "ab6fb23420b7e01742368f0099615bbcc9ce076ae54789ec56fa5fe9f5763af2"
+    },
+    {
+      "path": "src/m2_segmentation/detectHemorrhages.m",
+      "sha256": "2ae3d3533c7fa9f1d683e88a063e0cfe60bd1a5ba87c11d9e70ae8ebb533c5c5"
+    },
+    {
+      "path": "src/m2_segmentation/detectMicroaneurysms.m",
+      "sha256": "8d9ef6f8292f4113e92e3d18b807865608d396c34442c7049bdbada33306ac24"
+    },
+    {
+      "path": "src/m2_segmentation/detectNeovascularization.m",
+      "sha256": "8f285d627e971d601a634b332ba3bdb109df2ca2c985d04ea14c32181ff7d9e2"
+    },
+    {
+      "path": "src/m2_segmentation/localizeFovea.m",
+      "sha256": "4c77a4ff76da447323638320643bf3000bc7bf02cfab480b1a8371eb2be81420"
+    },
+    {
+      "path": "src/m2_segmentation/localizeOpticDisc.m",
+      "sha256": "4f2009dc8c369f6ab1b8cb7fc16446374a829f7dde89e5c414d6e750bb9bbbe1"
+    },
+    {
+      "path": "src/m2_segmentation/segmentVessels.m",
+      "sha256": "02b8edcd6f380e9986fb49057a72852b4830496c93a45dfcab43955f4e1779ed"
+    },
+    {
+      "path": "src/m3_grading/extractClinicalFeatures.m",
+      "sha256": "106875b6e06282857f275d2fa21ca7a34f666c65a8307cb1034d0e74b8109a01"
+    },
+    {
+      "path": "src/m3_grading/loadNetrAIModel.m",
+      "sha256": "531e09bad99c69c8ee9fed34d83ce7936d1310539bd1deb368e63d0fb3ee9ec1"
+    },
+    {
+      "path": "src/m3_grading/predictDRGrade.m",
+      "sha256": "9919370d96d1c9fac1b26b85b79d71f1c609c1703a819fd401b9a40020ec4617"
+    },
+    {
+      "path": "src/m3_grading/preprocessModelInput.m",
+      "sha256": "a67bb76fb9ba6261ed2d615b9644c58f3f8ebc82753dc938609f92d7e2a4c646"
+    },
+    {
+      "path": "src/m3_grading/verifyDeploymentBundle.m",
+      "sha256": "3caa99e6efa27f8a9c1c192760a09c682c04e0cb89e2a255558f23650ea77396"
+    },
+    {
+      "path": "src/m3_grading/verifyRuntimeDeploymentSources.m",
+      "sha256": "ec8c32a4e2d80b46722695248b958207317abb24781d90f891aa4e5ea36080e8"
+    },
+    {
+      "path": "src/m4_explainability/assessGradCAMQuality.m",
+      "sha256": "2acc1667fcef7bf6a086ae6e1771e5d06c4b715a643867cca833d3a5839e697b"
+    },
+    {
+      "path": "src/m4_explainability/calibrateConfidence.m",
+      "sha256": "99473b0c26e69209a17b5c0a245dcc1dfd8fbb927ed5f38b508598fff2f97611"
+    },
+    {
+      "path": "src/m4_explainability/generateClinicalReport.m",
+      "sha256": "2c9bfba06cceed93a36a001f127629010275a96d3920dbef5b0b6ae9ea745cdd"
+    },
+    {
+      "path": "src/m4_explainability/generateEvidenceChecklist.m",
+      "sha256": "87d92f2df0da8142f510820ded65036b62b15da97e5909f9c6706437c053b6a7"
+    },
+    {
+      "path": "src/m4_explainability/generateGradCAM.m",
+      "sha256": "287be6950cd3d80f295cd601541a7af3745e621e1fdf56ee6e43c729acc874bc"
+    },
+    {
+      "path": "src/m4_explainability/generateLesionOverlay.m",
+      "sha256": "80d8c84dcd9f5c3b9a4286d8947ede11208c029835a0c6021230a650afe6387d"
+    },
+    {
+      "path": "src/m5_simulink/defaultTelemedicineParameters.m",
+      "sha256": "9b4762a6a925bbbca1be34d79a0a220e316b97d25562c4d6d104592740b00bcc"
+    },
+    {
+      "path": "src/m5_simulink/recordTelemedicineEvent.m",
+      "sha256": "a4129bd752532bd04ac9878989bcdce413eeb298dee676be1a7945e334a5ef6b"
+    },
+    {
+      "path": "src/m5_simulink/runSimulinkScenarioSweep.m",
+      "sha256": "181d58d3ac9d7696543eae2f7b7b98abdcfc78ca70109139f430ad9445a4ce44"
+    },
+    {
+      "path": "src/m5_simulink/runTelemedicineScenario.m",
+      "sha256": "bbe1304a13024b27ae71664e5daa088a3002cb73679709c8cd9194dead3fdd8f"
+    },
+    {
+      "path": "src/m5_simulink/setupSimulinkModel.m",
+      "sha256": "84d58278490c2dfa8b34cbb8bdfc1e8a3af48a81dbd5b742918769963190486e"
+    },
+    {
+      "path": "src/m5_simulink/telemedicineSourceIdentity.m",
+      "sha256": "3177cad0846df30ef18d3eef6424a2e8ed5f30fb5225867fe648e5474a75b82e"
+    },
+    {
+      "path": "src/utils/assignScreeningTriage.m",
+      "sha256": "583ccd99088a2c277bfb1cc57f0713770442447a97671f6a58731cbeb10e8d82"
+    },
+    {
+      "path": "src/utils/buildValidationIdentity.m",
+      "sha256": "3cd514f8db902e3844dab71e544d04e62da2acc84a8e6260e227dee4fcd63f61"
+    },
+    {
+      "path": "src/utils/computeMetrics.m",
+      "sha256": "650ef662f9a58020cdfdb61714d2889bd81f15ebf69df58c3f87ad6ab77989e2"
+    },
+    {
+      "path": "src/utils/computeQuadrantStats.m",
+      "sha256": "43d72b393f1492f365e0f2a2575a00740d266cf98a066680a7befbfbc2b6d009"
+    },
+    {
+      "path": "src/utils/createCircularMask.m",
+      "sha256": "ddbf82a0a3c9666c34293b5bc4e7c8fa18792edea5fefb44977f2bc52e7ac34c"
+    },
+    {
+      "path": "src/utils/fileSHA256.m",
+      "sha256": "2ce5d7171f81ae1a0852b9bd7ca960163bedb61153a48bb949ebd2b86c1c689d"
+    },
+    {
+      "path": "src/utils/preprocessFundusImage.m",
+      "sha256": "408dcddbbf1ab8da6743608f825751d252d5514383d72042c753dd11ab4bd4a6"
+    },
+    {
+      "path": "src/utils/readBoundValidationImage.m",
+      "sha256": "a086f48e36635525b674b5effb5e7697446c477d28b89a087df3a4de617457ae"
+    },
+    {
+      "path": "src/utils/readScreeningImage.m",
+      "sha256": "f13f2c1937b45541df8c8551ac0511397241c16499ab3b7f996bc5d8f4bbcf78"
+    },
+    {
+      "path": "src/utils/refineSubpixelPeak.m",
+      "sha256": "d870cb3789f720df033fcdde1d2d5144c1f7e035ca26db32312838237efaf530"
+    },
+    {
+      "path": "src/utils/sha256Bytes.m",
+      "sha256": "073899d4d58b22a61730e1aae91e6728ee9c458dcadffa50977f72f2bb24ba90"
+    },
+    {
+      "path": "validatePipeline.m",
+      "sha256": "c34b7a00f1208cc52ba18cbf411d5972d6df6fd42c0e2d209f3b2dd9596ef722"
+    }
+  ],
+  "remote_ci_executed": false,
+  "tests": [
+    {
+      "path": "matlab/tests/fixtures/preprocessing_operators.json",
+      "sha256": "f9e49f378561f6629c85493b301c6c2c5c6d2adbca14eb53f789ce0240a37a20"
+    },
+    {
+      "path": "matlab/tests/fixtures/preprocessing_operators.mat",
+      "sha256": "1dace50208623e03476bac48e96b63c53dae32fb5c61caa7e322838135b20474"
+    },
+    {
+      "path": "matlab/tests/testAggregateValidationRuns.m",
+      "sha256": "90b15529758ab607f6225c093f9af3400e40feea022fc5dfb404f2732af70b65"
+    },
+    {
+      "path": "matlab/tests/testAssessGradCAMQuality.m",
+      "sha256": "3a5322589d6cb6343ace372d88e1b129ad60eb717014e95e394dd90ae6d649fd"
+    },
+    {
+      "path": "matlab/tests/testComputeMetrics.m",
+      "sha256": "9658a40005adf1b72fde692ff16dca5019febe367d341e38b68ad9d6698f1221"
+    },
+    {
+      "path": "matlab/tests/testDeploymentBundle.m",
+      "sha256": "fb3d13380a0b09b72b88b7fdd8c33ae2be033a9f60a63295d06f269a9bb4ee5b"
+    },
+    {
+      "path": "matlab/tests/testLocalizeOpticDiscFOV.m",
+      "sha256": "330a0a671d43e6dcfd0447d8b8a94cc6dc8cec9e7b142917833de3a596bdf7f2"
+    },
+    {
+      "path": "matlab/tests/testPreprocessModelInput.m",
+      "sha256": "cbf5ceefffc0b3e5fccf045d6aefae63144a8a3e6a3131557212a63fb0a8694c"
+    },
+    {
+      "path": "matlab/tests/testReadScreeningImage.m",
+      "sha256": "cbf9f48d024197de64c98b4122739a6a5fb3a41d07d4b64750f696ab250d5690"
+    },
+    {
+      "path": "matlab/tests/testRuntimeDeploymentSources.m",
+      "sha256": "22ad2804941f413894975438174aa670d39834274c628fb8251ad02d5e3c54da"
+    },
+    {
+      "path": "matlab/tests/testSegmentVessels.m",
+      "sha256": "f82ce94a1d25bee7109e9fd36b51784ec2046b644a4f8c7f7129bdac9a453849"
+    },
+    {
+      "path": "matlab/tests/testValidationIdentity.m",
+      "sha256": "697625131ddd430a3a73683052263914b5178c999df5b5c0f943992cfaeb114d"
+    },
+    {
+      "path": "matlab/tests/testValidationInputs.m",
+      "sha256": "1aed8ee997945a9b79594313bd9b7bac9a97924c564cd745022bdfb73f8f8c2c"
+    }
+  ]
+}

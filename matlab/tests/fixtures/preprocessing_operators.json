@@ -1,0 +1,15 @@
+{
+  "scope": "Synthetic, nonmedical uint8 arrays and independently generated numerical reference values.",
+  "reference_runtime": "OpenCV 5.0.0",
+  "contract": "legacy-area-v1",
+  "seed": 20260928,
+  "cases": 41,
+  "operators": [
+    "INTER_AREA",
+    "GaussianBlur uint8 sigma=10 BORDER_REFLECT_101",
+    "addWeighted 4/-4/128 uint8",
+    "float32 ImageNet normalization",
+    "INTER_NEAREST foreground mask"
+  ],
+  "original_fixture_generation": "Own seeded synthetic arrays; no dataset images or model outputs are included."
+}

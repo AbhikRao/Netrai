@@ -1,0 +1,35 @@
+name: MATLAB correctness
+
+on:
+  push:
+    paths:
+      - 'matlab/**'
+      - '.github/workflows/matlab.yml'
+  pull_request:
+    paths:
+      - 'matlab/**'
+      - '.github/workflows/matlab.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  numerical-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Set up MATLAB R2026a
+        uses: matlab-actions/setup-matlab@f9e43010f1ae678f7cfa0542fe2a4f60f7d1ad8d # v3
+        with:
+          release: R2026a
+          products: Image_Processing_Toolbox Statistics_and_Machine_Learning_Toolbox
+      - name: Run synthetic and validation-contract tests
+        uses: matlab-actions/run-tests@214a16e600ef2c705a4b2dd6c0794dc6957682a9 # v3
+        with:
+          source-folder: matlab
+          select-by-folder: matlab/tests
+          test-results-junit: .codex-build/matlab-test-results.xml
+          use-parallel: false

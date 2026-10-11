@@ -58,6 +58,28 @@ def _matlab_row(image_id='case', grade=2, score=2.56):
 
 
 class RuntimeComparisonTests(unittest.TestCase):
+    def test_python_only_case_fails_every_gate(self):
+        with tempfile.TemporaryDirectory() as directory:
+            paths = self._write_frames([_python_row(), _python_row('missing')], [_matlab_row()], directory)
+            summary, _ = compare_runtime_outputs(*paths, thresholds=[0.5, 1.5, 2.5, 3.5])
+            self.assertFalse(any(summary['gates'].values()))
+
+    def test_nan_probability_never_passes(self):
+        row = _matlab_row()
+        row['raw_prob_grade_0'] = np.nan
+        with tempfile.TemporaryDirectory() as directory:
+            paths = self._write_frames([_python_row()], [row], directory)
+            with self.assertRaises(ValueError):
+                compare_runtime_outputs(*paths, thresholds=[0.5, 1.5, 2.5, 3.5])
+
+    def test_ground_truth_disagreement_fails_every_gate(self):
+        row = _matlab_row()
+        row['true_grade'] = 1
+        with tempfile.TemporaryDirectory() as directory:
+            paths = self._write_frames([_python_row()], [row], directory)
+            summary, _ = compare_runtime_outputs(*paths, thresholds=[0.5, 1.5, 2.5, 3.5])
+            self.assertFalse(any(summary['gates'].values()))
+
     def _write_frames(self, python_rows, matlab_rows, directory):
         python_path = Path(directory) / 'python.csv'
         matlab_path = Path(directory) / 'matlab.csv'

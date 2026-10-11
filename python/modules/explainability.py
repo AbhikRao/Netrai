@@ -9,24 +9,37 @@ import numpy as np
 from utils.calibration import temperature_scale_probabilities
 
 
-def generate_gradcam(model, image, target_class):
-    """Real Grad-CAM using pytorch-grad-cam library."""
+def generate_gradcam(model, image, target_class='referral', preprocessing_version='legacy-area-v1'):
+    """Model-space attribution for an explicitly named target, not lesion proof."""
     try:
         from pytorch_grad_cam import GradCAM
-        from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
         import torch
+        from utils.preprocessing import preprocess_for_model
 
         target_layers = [model.backbone.conv_head]
-        cam = GradCAM(model=model, target_layers=target_layers)
-        targets = [ClassifierOutputTarget(target_class)]
+        class BothHeads(torch.nn.Module):
+            def __init__(self, network):
+                super().__init__()
+                self.network = network
 
-        if not isinstance(image, torch.Tensor):
-            input_tensor = torch.tensor(image).unsqueeze(0).permute(0, 3, 1, 2).float() / 255.0
-        else:
-            input_tensor = image
+            def forward(self, inputs):
+                logits, referral = self.network(inputs)
+                return torch.cat([logits, referral[:, None]], dim=1)
 
-        grayscale_cam = cam(input_tensor=input_tensor, targets=targets)[0, :]
-        return grayscale_cam
+        def target(output):
+            if target_class == 'referral':
+                return output[5]
+            if target_class == 'ordinal':
+                return (output[:5].softmax(0) * torch.arange(5, device=output.device)).sum()
+            if isinstance(target_class, int) and 0 <= target_class <= 4:
+                return output[target_class]
+            raise ValueError('Target must be referral, ordinal, or a class index 0–4')
+
+        array = preprocess_for_model(image, version=preprocessing_version)
+        input_tensor = torch.from_numpy(array.transpose(2, 0, 1)[None]).float().to(
+            next(model.parameters()).device)
+        with GradCAM(model=BothHeads(model).eval(), target_layers=target_layers) as cam:
+            return cam(input_tensor=input_tensor, targets=[target])[0]
     except Exception as e:
         import warnings
         warnings.warn(f'Grad-CAM failed: {e}')
@@ -105,7 +118,8 @@ def assess_gradcam_quality(heatmap, fov_mask=None, border_fraction=0.10):
             'top5_border_fraction': 0.0,
             'outside_fov_attention_fraction': 0.0,
             'top20_outside_fov_fraction': 0.0,
-            'shortcut_flag': False,
+            'shortcut_flag': True,
+            'informative': False,
         }
 
     h, w = cam.shape
@@ -150,6 +164,7 @@ def assess_gradcam_quality(heatmap, fov_mask=None, border_fraction=0.10):
         'outside_fov_attention_fraction': outside_fraction,
         'top20_outside_fov_fraction': top20_outside,
         'shortcut_flag': shortcut_flag,
+        'informative': True,
     }
 
 
@@ -159,74 +174,26 @@ def generate_evidence_checklist(seg_results, grade, probs):
     Returns list of dicts with 'criterion', 'status', 'detail'.
     """
     checklist = []
-
-    # Microaneurysms
-    ma_count = seg_results.get('ma_count', 0)
-    checklist.append({
-        'criterion': 'Microaneurysms',
-        'status': 'FOUND' if ma_count > 0 else 'ABSENT',
-        'detail': f'{ma_count} detected' if ma_count > 0 else 'None detected'
-    })
-
-    # Hemorrhages
-    hem_count = seg_results.get('hem_count', 0)
-    hem_stats = seg_results.get('hem_stats', {})
-    dot = hem_stats.get('dot_count', 0)
-    blot = hem_stats.get('blot_count', 0)
-    checklist.append({
-        'criterion': 'Hemorrhages',
-        'status': 'FOUND' if hem_count > 0 else 'ABSENT',
-        'detail': f'{hem_count} ({dot} dot, {blot} blot)' if hem_count > 0 else 'None detected'
-    })
-
-    # Hard Exudates
-    hard_count = seg_results.get('hard_count', 0)
-    checklist.append({
-        'criterion': 'Hard Exudates',
-        'status': 'FOUND' if hard_count > 0 else 'ABSENT',
-        'detail': f'{hard_count} clusters' if hard_count > 0 else 'None detected'
-    })
-
-    # Soft Exudates (Cotton Wool Spots)
-    soft_count = seg_results.get('soft_count', 0)
-    checklist.append({
-        'criterion': 'Soft Exudates (CWS)',
-        'status': 'FOUND' if soft_count > 0 else 'ABSENT',
-        'detail': f'{soft_count} detected' if soft_count > 0 else 'None detected'
-    })
-
-    # DME Risk
-    fovea_dist = seg_results.get('fovea_dist', -1)
-    if fovea_dist >= 0 and fovea_dist < 1.0:
-        dme_status = 'HIGH'
-        dme_detail = f'Exudates within {fovea_dist:.2f} DD of fovea - DME risk'
-    elif fovea_dist >= 0:
-        dme_status = 'LOW'
-        dme_detail = f'Exudates {fovea_dist:.2f} DD from fovea'
-    else:
-        dme_status = 'ABSENT'
-        dme_detail = 'No exudates near fovea'
-    checklist.append({
-        'criterion': 'Macular Edema Risk',
-        'status': dme_status,
-        'detail': dme_detail
-    })
-
-    # Neovascularization
-    nv = seg_results.get('nv_detected', False)
-    checklist.append({
-        'criterion': 'Neovascularization',
-        'status': 'FOUND' if nv else 'ABSENT',
-        'detail': 'Abnormal vessel growth detected' if nv else 'Not detected'
-    })
-
-    # ICDR Grade Concordance
-    cal_probs = np.array(probs)
-    confidence = cal_probs[grade] * 100
-    checklist.append({
-        'criterion': 'AI Confidence',
-        'status': 'HIGH' if confidence > 60 else 'LOW',
-        'detail': f'{confidence:.1f}% for Grade {grade}'
-    })
-
+    for label, key in (('MA point candidates', 'ma_count'),
+                       ('Hemorrhage candidates', 'hem_count'),
+                       ('Hard exudate candidates', 'hard_count'),
+                       ('Soft exudate candidates', 'soft_count')):
+        count = seg_results.get(key)
+        checklist.append({'criterion': label,
+                          'status': 'UNKNOWN' if count is None else 'CANDIDATE',
+                          'detail': 'Not assessed' if count is None else
+                          f'{count} unverified; zero does not exclude lesions'})
+    distance = seg_results.get('fovea_dist')
+    valid_distance = distance is not None and np.isfinite(distance) and distance >= 0
+    checklist.append({'criterion': 'Exudate–fovea geometry',
+                      'status': 'CANDIDATE' if valid_distance else 'UNKNOWN',
+                      'detail': f'{distance:.2f} disc diameters; not a DME diagnosis'
+                      if valid_distance else 'Not assessable; no DME conclusion'})
+    nv = seg_results.get('nv_detected')
+    checklist.append({'criterion': 'Vessel-proliferation heuristic',
+                      'status': 'UNKNOWN' if nv is None else 'CANDIDATE',
+                      'detail': 'Not assessed' if nv is None else
+                      ('Flagged; needs expert confirmation' if nv else 'Not flagged; NV not excluded')})
+    checklist.append({'criterion': 'Grade attribution', 'status': 'UNVERIFIED',
+                      'detail': f'Grade {grade}; lesion concordance not established'})
     return checklist

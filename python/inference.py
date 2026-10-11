@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NetrAI Inference & Demo — Generate clinical reports with REAL model predictions.
+NetrAI Inference & Demo — Generate research reports with trained model predictions.
 Uses the versioned EfficientNet-B4 deployment artifacts.
 
 Usage:
@@ -11,6 +11,7 @@ Usage:
 import os
 import sys
 import argparse
+from pathlib import Path
 import numpy as np
 import cv2
 import matplotlib
@@ -28,6 +29,8 @@ from modules.segmentation import (localize_optic_disc, localize_fovea, segment_v
                                    detect_microaneurysms, detect_hemorrhages,
                                    detect_exudates, detect_neovascularization,
                                    extract_clinical_features)
+from modules.ma_native import detect_ranked_microaneurysms
+from modules.idrid_probe import predict_idrid_referral_probe
 from modules.explainability import (assess_gradcam_quality, generate_lesion_overlay,
                                      calibrate_confidence, generate_evidence_checklist)
 from utils.preprocessing import (
@@ -35,15 +38,17 @@ from utils.preprocessing import (
     preprocess_for_model)
 from utils.calibration import load_calibration_temperature
 from utils.safety import assign_triage, load_safety_policy
+from utils.artifacts import atomic_json, json_value
+from utils.validation import ordinal_thresholds, probabilities
 
 GRADE_NAMES = ['No DR', 'Mild NPDR', 'Moderate NPDR', 'Severe NPDR', 'Proliferative DR']
 GRADE_COLORS = ['#4CAF50', '#8BC34A', '#FF9800', '#FF5722', '#B71C1C']
 GRADE_ACTIONS = [
-    'Annual routine rescreening',
-    '6-12 month follow-up',
-    'Refer to Ophthalmologist',
-    'Urgent Ophthalmologist Referral',
-    'Emergency Referral (Laser/Anti-VEGF)'
+    'Research result; clinician determines follow-up',
+    'Research result; clinician determines follow-up',
+    'Referable prediction; clinician review required',
+    'High-severity prediction; clinician review required',
+    'High-severity prediction; clinician review required'
 ]
 CALIBRATION_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'weights', 'calibration.json')
@@ -71,7 +76,7 @@ def get_safety_policy():
 # ── Shared Preprocessing ─────────────────────────────────────────────────────
 
 def _preprocess_for_model(image_rgb):
-    """Crop, resize, Ben Graham, normalize — matches Kaggle training exactly."""
+    """Historical legacy-area-v1 input; retained for benchmark reproducibility."""
     return preprocess_for_model(image_rgb, size=512)
 
 
@@ -99,18 +104,19 @@ def _load_model():
 
     device = torch.device('cpu')
     model = NetrAIModel('efficientnet_b4', 5, pretrained=False)
-    ckpt = torch.load(pth_path, map_location=device, weights_only=False)
+    from utils.bundle import load_legacy_checkpoint, verify_bundle
+    bundle = verify_bundle(Path(weights_dir) / 'bundle.json')
+    ckpt = load_legacy_checkpoint(pth_path, device)
     model.load_state_dict(ckpt['model_state_dict'])
+    model._netrai_checkpoint_sha256 = bundle['files']['netrai_fold0_best.pth']
     model.eval()
     model.to(device)
 
-    thresholds = None
-    if os.path.exists(thresh_path):
-        thresholds = np.load(thresh_path)
+    thresholds = ordinal_thresholds(np.load(thresh_path))
 
     qwk = ckpt.get('qwk', None)
     qwk_str = f'{qwk:.4f}' if isinstance(qwk, (int, float)) else 'N/A'
-    print(f"[+] Loaded trained model (QWK={qwk_str}, epoch {ckpt.get('epoch', '?')})")
+    print(f"[+] Loaded legacy model (historical internal QWK={qwk_str}, epoch {ckpt.get('epoch', '?')}; Fold-0 overlaps training)")
     return model, thresholds, device
 
 
@@ -168,7 +174,7 @@ def predict_batch_with_model(images_rgb, batch_size=8):
         details['continuous_scores'])
 
 
-def predict_batch_with_details(images_rgb, batch_size=8):
+def predict_batch_with_details(images_rgb, batch_size=8, *, preprocessing_version='legacy-area-v1'):
     """Run both trained heads and derive explicit disagreement/triage signals."""
     import torch
     import torch.nn.functional as F
@@ -193,7 +199,7 @@ def predict_batch_with_details(images_rgb, batch_size=8):
     all_referable_probs = []
     for start in range(0, len(images_rgb), batch_size):
         batch = images_rgb[start:start + batch_size]
-        arrays = [_preprocess_for_model(image) for image in batch]
+        arrays = [preprocess_for_model(image, version=preprocessing_version) for image in batch]
         tensor = torch.from_numpy(
             np.stack(arrays).transpose(0, 3, 1, 2)
         ).float().to(device)
@@ -203,13 +209,12 @@ def predict_batch_with_details(images_rgb, batch_size=8):
             all_probs.append(F.softmax(grade_logits, dim=1).cpu().numpy())
             all_referable_probs.append(torch.sigmoid(referable_logits).cpu().numpy())
 
-    probs = np.concatenate(all_probs, axis=0)
+    probs = probabilities(np.concatenate(all_probs, axis=0))
     referable_head_probs = np.concatenate(all_referable_probs, axis=0)
     continuous_scores = (probs * np.arange(5)).sum(axis=1)
-    if thresholds is not None:
-        grades = np.digitize(continuous_scores, np.sort(thresholds)).clip(0, 4)
-    else:
-        grades = np.rint(continuous_scores).clip(0, 4)
+    grades = np.digitize(continuous_scores, ordinal_thresholds(thresholds)).clip(0, 4)
+    if not np.isfinite(referable_head_probs).all():
+        raise ValueError('Nonfinite referral probabilities')
 
     policy = get_safety_policy()
     grades = grades.astype(int)
@@ -236,49 +241,11 @@ def predict_batch_with_details(images_rgb, batch_size=8):
     }
 
 
-def generate_real_gradcam(image_rgb):
-    """Generate real Grad-CAM heatmap using pytorch-grad-cam library."""
-    import torch
-
-    model, _, device = _get_model()
-    if model is None:
-        return None
-
-    try:
-        from pytorch_grad_cam import GradCAM
-        from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-
-        img_float = _preprocess_for_model(image_rgb)
-        tensor = torch.from_numpy(img_float.transpose(2, 0, 1)).unsqueeze(0).float().to(device)
-
-        # Wrap model to return only grade_logits for GradCAM
-        class GradeWrapper(torch.nn.Module):
-            def __init__(self, model):
-                super().__init__()
-                self.model = model
-            def forward(self, x):
-                grade_logits, _ = self.model(x)
-                return grade_logits
-
-        wrapper = GradeWrapper(model)
-        wrapper.eval()
-
-        # Target the last conv layer of EfficientNet backbone
-        target_layers = [model.backbone.conv_head]
-        cam = GradCAM(model=wrapper, target_layers=target_layers)
-
-        # Get prediction first to know target class
-        with torch.no_grad():
-            grade_logits, _ = model(tensor)
-            pred_class = grade_logits.argmax(dim=1).item()
-
-        targets = [ClassifierOutputTarget(pred_class)]
-        grayscale_cam = cam(input_tensor=tensor, targets=targets)[0, :]
-        return grayscale_cam
-
-    except Exception as e:
-        print(f"[!] Real Grad-CAM failed: {e}")
-        return None
+def generate_real_gradcam(image_rgb, target='referral'):
+    """Attribution of the referral logit (default) or continuous ordinal score."""
+    from modules.explainability import generate_gradcam
+    model, _, _ = _get_model()
+    return generate_gradcam(model, image_rgb, target_class=target)
 
 
 def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
@@ -294,21 +261,29 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
     checklist = generate_evidence_checklist(seg_results, grade, cal_probs)
     if safety is not None:
         checklist.append({
-            'criterion': 'Independent Referable Head',
+            'criterion': 'Shared-backbone Referral Head',
             'status': 'HIGH' if safety['head_disagreement'] else 'AGREE',
             'detail': (
                 f"{safety['referable_head_probability']*100:.1f}%; "
                 f"{'DISAGREES - human review' if safety['head_disagreement'] else 'agrees with grade policy'}"
             ),
         })
+        research = safety.get('research_referral')
+        if research is not None:
+            checklist.append({
+                'criterion': 'IDRiD Referral Probe',
+                'status': 'CANDIDATE',
+                'detail': (f"{research['probability']*100:.1f}% research score; "
+                           'no triage effect'),
+            })
 
     fig = plt.figure(figsize=(20, 12), facecolor='white')
     gs = gridspec.GridSpec(2, 3, hspace=0.3, wspace=0.25)
 
     # Title banner
-    fig.suptitle('NetrAI Clinical DR Screening Report', fontsize=22, fontweight='bold', y=0.965)
+    fig.suptitle('NetrAI Research Screening Report', fontsize=22, fontweight='bold', y=0.965)
     fig.text(0.5, 0.935, f'Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")} | '
-             f'AI-Assisted - Requires Ophthalmologist Validation',
+             f'Not a diagnosis | Unverified lesion candidates | Requires expert review',
              ha='center', fontsize=10, color='gray')
 
     # Panel 1: Enhanced Fundus
@@ -328,13 +303,15 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
         hm_colored = plt.cm.jet(heatmap)[:, :, :3]
         ax2.imshow(hm_colored, alpha=0.45)
         qc_suffix = ' - QC FLAG' if gradcam_qc and gradcam_qc['shortcut_flag'] else ''
-        ax2.set_title(f'Grad-CAM on Model Input{qc_suffix}', fontsize=13, fontweight='bold')
+        ax2.set_title(f'Referral-logit Grad-CAM{qc_suffix}', fontsize=13, fontweight='bold')
     ax2.axis('off')
 
     # Panel 3: Lesion Overlay
     ax3 = fig.add_subplot(gs[0, 2])
     ax3.imshow(overlay)
-    ax3.set_title('Detected Lesions', fontsize=13, fontweight='bold')
+    ma_candidate = seg_results.get('ma_detector') == 'trained-2048'
+    ax3.set_title('Unverified Lesion Candidates',
+                  fontsize=13, fontweight='bold')
     ax3.axis('off')
     legend_items = [
         ('red', 'Microaneurysms'), ('darkred', 'Hemorrhages'),
@@ -355,7 +332,7 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
         ref_color = '#B71C1C'
         action_text = 'Human review before screening disposition'
     else:
-        ref_text = 'REFERABLE - Specialist Review Required' if is_referable else 'Non-Referable - Routine Screening'
+        ref_text = 'Predicted referable - expert review' if is_referable else 'Predicted non-referable - not clearance'
         ref_color = '#D32F2F' if is_referable else '#388E3C'
         action_text = GRADE_ACTIONS[grade]
 
@@ -365,24 +342,27 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
         (0.5, 0.58, ref_text, 12, ref_color, 'bold'),
         (0.5, 0.42, f'Post-hoc confidence: {cal_probs[grade]*100:.1f}%', 14, '#333', 'normal'),
         (0.5, 0.28, f'Action: {action_text}', 11, '#555', 'normal'),
-        (0.5, 0.14, f'Inference: CPU (~3s) | Model: EfficientNet-B4', 10, '#888', 'normal'),
+        (0.5, 0.14, 'EfficientNet-B4 | Internal post-hoc calibration only', 10, '#888', 'normal'),
     ]
     for x, y, text, size, color, weight in text_lines:
         ax4.text(x, y, text, ha='center', va='center', fontsize=size,
                  color=color, fontweight=weight, transform=ax4.transAxes)
-    ax4.set_title('Diagnosis Summary', fontsize=13, fontweight='bold')
+    ax4.set_title('Research Prediction', fontsize=13, fontweight='bold')
 
     # Panel 5: Evidence Checklist
     ax5 = fig.add_subplot(gs[1, 1])
     ax5.axis('off')
-    ax5.set_title('ICDR Evidence Checklist', fontsize=13, fontweight='bold')
+    ax5.set_title('Unverified Candidate Checklist', fontsize=13, fontweight='bold')
     y_pos = 0.92
+    checklist_step = 0.11 if len(checklist) > 8 else 0.13
     for item in checklist:
-        icon = '[+]' if item['status'] == 'FOUND' else ('[!]' if item['status'] == 'HIGH' else '[-]')
-        status_color = '#D32F2F' if item['status'] in ['FOUND', 'HIGH'] else '#388E3C'
+        icon = ('[?]' if item['status'] == 'CANDIDATE' else
+                ('[+]' if item['status'] == 'FOUND' else
+                 ('[!]' if item['status'] == 'HIGH' else '[-]')))
+        status_color = '#D32F2F' if item['status'] == 'HIGH' else '#806000'
         ax5.text(0.05, y_pos, f"{icon} {item['criterion']}: {item['detail']}",
                  fontsize=9, color=status_color, transform=ax5.transAxes, verticalalignment='top')
-        y_pos -= 0.13
+        y_pos -= checklist_step
 
     # Panel 6: Probability Bar Chart
     ax6 = fig.add_subplot(gs[1, 2])
@@ -405,11 +385,12 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
     plt.savefig(png_path, dpi=200, bbox_inches='tight', facecolor='white')
     plt.savefig(pdf_path, dpi=200, bbox_inches='tight', facecolor='white')
     plt.close()
-    print(f"[✓] Clinical report saved: {png_path}")
+    print(f"[✓] Research screening report saved: {png_path}")
     return png_path
 
 
-def run_pipeline(image_path, output_dir='../results'):
+def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
+                 referral_probe='none'):
     """Run the full NetrAI pipeline on a single image."""
     print(f"\n{'='*60}")
     print(f"  NetrAI — Analyzing: {os.path.basename(image_path)}")
@@ -418,8 +399,7 @@ def run_pipeline(image_path, output_dir='../results'):
     # Load image
     image = cv2.imread(image_path)
     if image is None:
-        print(f"[✗] Could not load image: {image_path}")
-        return None
+        raise ValueError(f'Could not decode image: {image_path}')
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     analysis_rgb = image_rgb
 
@@ -432,12 +412,15 @@ def run_pipeline(image_path, output_dir='../results'):
     if iqs < 0.3:
         feedback = generate_recapture_feedback(metrics)
         print(f"     [✗] Image REJECTED — {feedback}")
-        return {
+        result = {
             'status': 'rejected', 'iqs': iqs, 'feedback': feedback,
             'triage_action': assign_triage(
                 quality_rejected=True, grade_referable=False,
                 referable_head_positive=False),
         }
+        result.update(schema_version=2, research_only=True, quality_metrics=metrics)
+        atomic_json(Path(output_dir) / 'result.json', result)
+        return result
 
     if iqs < 0.7:
         print("     [~] Borderline quality — applying adaptive enhancement...")
@@ -452,15 +435,21 @@ def run_pipeline(image_path, output_dir='../results'):
     print(f"     Optic Disc: center=({od_center[0]:.0f}, {od_center[1]:.0f}), radius={od_radius:.0f}")
 
     fovea_center = localize_fovea(green_ch, od_center, od_radius)
-    print(f"     Fovea: ({fovea_center[0]:.0f}, {fovea_center[1]:.0f})")
+    print(f'     Fovea candidate: {fovea_center}')
 
     vessel_mask = segment_vessels(green_ch, fov_mask)
     vessel_pct = (vessel_mask > 0).sum() / max((fov_mask > 0).sum(), 1) * 100
     print(f"     Vessels: {vessel_pct:.1f}% coverage")
 
-    ma_mask, ma_count, ma_centroids = detect_microaneurysms(
-        green_ch, vessel_mask, fov_mask, od_center, od_radius)
-    print(f"     Microaneurysms: {ma_count} detected")
+    if ma_detector == 'trained-2048':
+        ma_mask, ma_count, ma_centroids = detect_ranked_microaneurysms(image)
+        print(f"     MA research candidates: {ma_count} (IDRiD-trained; not clinical evidence)")
+    elif ma_detector == 'classic':
+        ma_mask, ma_count, ma_centroids = detect_microaneurysms(
+            green_ch, vessel_mask, fov_mask, od_center, od_radius)
+        print(f"     Microaneurysms: {ma_count} detected")
+    else:
+        raise ValueError(f'Unsupported MA detector: {ma_detector}')
 
     hem_mask, hem_count, hem_stats = detect_hemorrhages(
         green_ch, vessel_mask, ma_mask, fov_mask, od_center, od_radius)
@@ -471,7 +460,7 @@ def run_pipeline(image_path, output_dir='../results'):
     print(f"     Exudates: {hard_count} hard, {soft_count} soft, fovea dist: {fovea_dist:.2f} DD")
 
     nv_mask, nv_detected = detect_neovascularization(green_ch, vessel_mask, od_center, od_radius, fov_mask=fov_mask)
-    print(f"     Neovascularization: {'DETECTED' if nv_detected else 'None'}")
+    print(f"     Neovascularization heuristic: {'CANDIDATE' if nv_detected else 'No candidate; absence unverified'}")
 
     seg_results = {
         'od_center': od_center, 'od_radius': od_radius, 'fovea_center': fovea_center,
@@ -480,6 +469,7 @@ def run_pipeline(image_path, output_dir='../results'):
         'hem_stats': hem_stats, 'ex_mask': ex_mask, 'hard_count': hard_count,
         'soft_count': soft_count, 'fovea_dist': fovea_dist, 'nv_mask': nv_mask,
         'nv_detected': nv_detected, 'fov_mask': fov_mask,
+        'ma_detector': ma_detector,
     }
 
     clinical_features = extract_clinical_features(seg_results)
@@ -488,8 +478,8 @@ def run_pipeline(image_path, output_dir='../results'):
     # Module 3: DR Severity Grading (REAL MODEL)
     print("[M3] DR Severity Grading (EfficientNet-B4)...")
     # Model grading always uses the original RGB image.  The model's own
-    # preprocessing exactly matches training; M1 enhancement is for M2/report
-    # visibility and must not shift the model input distribution.
+    # Legacy-area-v1 preprocessing reproduces the published inference path;
+    # the old notebook's training resize differed. M1 enhancement is for M2/report.
     prediction = predict_with_model_details(image_rgb)
     grade = int(prediction['grades'])
     probs = prediction['grade_probabilities']
@@ -500,11 +490,20 @@ def run_pipeline(image_path, output_dir='../results'):
     print(f"     Post-hoc confidence: {calibrated_probs[grade]*100:.1f}% "
           f"(temperature={calibration_temperature:.3f})")
     print(f"     Referable: {'YES' if grade >= 2 else 'No'}")
-    print(f"     Independent referable head: "
+    print(f"     Shared-backbone referable head: "
           f"{prediction['referable_head_probabilities']*100:.1f}%")
     print(f"     Head disagreement: {bool(prediction['head_disagreements'])}")
     print(f"     Triage: {prediction['triage_actions']}")
-    print("     Method: Trained EfficientNet-B4 (QWK=0.93)")
+    print("     Method: Legacy EfficientNet-B4 research checkpoint")
+    research_referral = None
+    if referral_probe == 'idrid':
+        model, _, _ = _get_model()
+        research_referral = predict_idrid_referral_probe(image_rgb, model)
+        print(f"     IDRiD-trained research referral probability: "
+              f"{research_referral['probability']:.3f}; "
+              f"positive={research_referral['positive']} (no triage effect)")
+    elif referral_probe != 'none':
+        raise ValueError(f'Unsupported referral probe: {referral_probe}')
 
     # Module 4: Model attribution and candidate evidence
     print("[M4] Model attribution and candidate evidence...")
@@ -533,6 +532,7 @@ def run_pipeline(image_path, output_dir='../results'):
                 prediction['referable_head_probabilities']),
             'head_disagreement': bool(prediction['head_disagreements']),
             'triage_action': str(prediction['triage_actions']),
+            'research_referral': research_referral,
         })
 
     # Also save individual panels for PPT
@@ -541,7 +541,7 @@ def run_pipeline(image_path, output_dir='../results'):
         gradcam_image=model_display)
 
     print(f"\n[✓] Analysis complete. Results in {output_dir}/")
-    return {
+    result = {
         'status': 'success', 'iqs': iqs, 'grade': grade,
         'grade_name': GRADE_NAMES[grade], 'probs': probs,
         'calibrated_probs': calibrated_probs,
@@ -556,6 +556,7 @@ def run_pipeline(image_path, output_dir='../results'):
             prediction['referable_head_predictions']),
         'head_disagreement': bool(prediction['head_disagreements']),
         'triage_action': str(prediction['triage_actions']),
+        'research_referral': research_referral,
         'real_model': True, 'quality_metrics': metrics,
         'clinical_features': clinical_features, 'gradcam_qc': gradcam_qc,
         'segmentation': {
@@ -565,6 +566,16 @@ def run_pipeline(image_path, output_dir='../results'):
             'vessel_pct': vessel_pct,
         },
     }
+    result.update(schema_version=2, research_only=True,
+                  preprocessing_version='legacy-area-v1',
+                  explanation_target='referral_logit',
+                  explanation_coordinate_frame='classifier_crop_resize',
+                  lesion_evidence_status='unverified_candidates')
+    from utils.artifacts import sha256_file
+    result['bundle_sha256'] = sha256_file(Path(__file__).parent / 'weights/bundle.json')
+    result = json_value(result)
+    atomic_json(Path(output_dir) / 'result.json', result)
+    return result
 
 
 def save_individual_panels(image, vessel_mask, heatmap, overlay, seg_results,
@@ -601,7 +612,7 @@ def save_individual_panels(image, vessel_mask, heatmap, overlay, seg_results,
     # Lesion overlay standalone
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     ax.imshow(overlay)
-    ax.set_title('Detected Retinal Lesions', fontsize=16, fontweight='bold')
+    ax.set_title('Unverified Retinal Lesion Candidates', fontsize=16, fontweight='bold')
     ax.axis('off')
     plt.savefig(os.path.join(output_dir, 'lesion_overlay.png'), dpi=200, bbox_inches='tight')
     plt.close()
@@ -614,6 +625,11 @@ def main():
     parser.add_argument('--image', type=str, help='Path to fundus image')
     parser.add_argument('--demo', action='store_true', help='Run demo on sample image')
     parser.add_argument('--output', type=str, default='../results', help='Output directory')
+    parser.add_argument('--ma-detector', choices=('classic', 'trained-2048'),
+                        default='classic',
+                        help='Experimental IDRiD-trained MA candidate, off by default')
+    parser.add_argument('--referral-probe', choices=('none', 'idrid'), default='none',
+                        help='Experimental IDRiD-trained binary referral score; no triage effect')
     args = parser.parse_args()
 
     if args.demo:
@@ -634,22 +650,27 @@ def main():
                         img_path = os.path.join(aptos_dir, f'{img_id}.png')
                         if os.path.exists(img_path):
                             grade_dir = os.path.join(args.output, f'grade{grade_val}')
-                            run_pipeline(img_path, grade_dir)
+                            run_pipeline(img_path, grade_dir, ma_detector=args.ma_detector,
+                                         referral_probe=args.referral_probe)
                 return
             # If no CSV, just pick first 3 images
             imgs = sorted([f for f in os.listdir(aptos_dir) if f.endswith('.png')])[:3]
             for img_file in imgs:
-                run_pipeline(os.path.join(aptos_dir, img_file), args.output)
+                run_pipeline(os.path.join(aptos_dir, img_file), args.output,
+                             ma_detector=args.ma_detector,
+                             referral_probe=args.referral_probe)
             return
 
         if os.path.exists(sample):
-            run_pipeline(sample, args.output)
+            run_pipeline(sample, args.output, ma_detector=args.ma_detector,
+                         referral_probe=args.referral_probe)
         else:
-            print("[✗] No sample images found. Provide --image path instead.")
+            parser.error('No local sample images found. Provide --image PATH; datasets are not bundled.')
     elif args.image:
-        run_pipeline(args.image, args.output)
+        run_pipeline(args.image, args.output, ma_detector=args.ma_detector,
+                     referral_probe=args.referral_probe)
     else:
-        print("Usage: python inference.py --demo  OR  python inference.py --image path/to/image.jpg")
+        parser.error('Provide --image PATH or --demo')
 
 
 if __name__ == '__main__':

@@ -19,17 +19,17 @@
 function metrics = computeMetrics(confMat)
     
     % Input validation
-    if ~ismatrix(confMat) || size(confMat, 1) ~= size(confMat, 2)
-        error('Input must be a square confusion matrix.');
+    if ~isnumeric(confMat) || ~ismatrix(confMat) || ...
+            size(confMat, 1) ~= size(confMat, 2) || ~isreal(confMat) || ...
+            isempty(confMat) || any(~isfinite(confMat) | confMat<0,'all')
+        error('NetrAI:InvalidConfusionMatrix', ...
+            'Input must be a finite nonnegative square confusion matrix.');
     end
     
     N = size(confMat, 1);
     
     % Overall accuracy
     totalSamples = sum(confMat, 'all');
-    if totalSamples == 0
-        error('Confusion matrix is empty (sum is 0).');
-    end
     
     correctPredictions = sum(diag(confMat));
     metrics.accuracy = correctPredictions / totalSamples;
@@ -69,8 +69,8 @@ function metrics = computeMetrics(confMat)
         end
         
         % F1-Score
-        if ~isnan(metrics.precision(i)) && ~isnan(metrics.sensitivity(i)) && (metrics.precision(i) + metrics.sensitivity(i)) > 0
-            metrics.f1Score(i) = 2 * (metrics.precision(i) * metrics.sensitivity(i)) / (metrics.precision(i) + metrics.sensitivity(i));
+        if (2*TP+FP+FN)>0
+            metrics.f1Score(i) = 2*TP/(2*TP+FP+FN);
         else
             metrics.f1Score(i) = NaN;
         end

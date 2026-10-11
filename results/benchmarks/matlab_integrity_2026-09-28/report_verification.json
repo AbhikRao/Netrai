@@ -1,0 +1,11 @@
+{
+  "scope": "native accepted-image report smoke and visual QA",
+  "report_sha256": "6273ef9b3382a394dbe315a18816515949b5bfa9ee4d15a03078ee4b3d282fad",
+  "review_render_sha256": "6209bb37c60c3800097d56561b1e4432ba3c328e9664d96a1a82bef98fd25f92",
+  "accepted_pipeline_completed": true,
+  "report_pages": 1,
+  "visual_qa": "Referral-logit target, preserved corner/FOV attention QC warning, grade probabilities, unverified candidate checklist and separate provenance footer inspected",
+  "synthetic_empty_frame_recapture": "verified in report_smoke accepted/rejected result MAT",
+  "clinical_validation": false,
+  "presentation_artifacts_edited": false
+}

@@ -6,6 +6,8 @@ confusion matrix, per-grade metrics, and optional segmentation summaries.
 """
 
 import argparse
+import hashlib
+import importlib.metadata
 import json
 import os
 import time
@@ -35,6 +37,9 @@ from utils.metrics import compute_metrics, quadratic_weighted_kappa, referable_d
 from utils.preprocessing import preprocess_fundus
 from utils.calibration import load_calibration_temperature, temperature_scale_probabilities
 from utils.safety import assign_triage
+from utils.validation import grades as validate_grades, probabilities as validate_probabilities, image_ids
+from utils.artifacts import atomic_json, json_value, sha256_file
+from utils.bundle import verify_bundle
 
 
 PYTHON_DIR = Path(__file__).resolve().parent
@@ -79,8 +84,8 @@ def extract_segmentation(image_rgb):
         'od_x': int(od_center[0]),
         'od_y': int(od_center[1]),
         'od_radius': int(od_radius),
-        'fovea_x': int(fovea_center[0]),
-        'fovea_y': int(fovea_center[1]),
+        'fovea_x': int(fovea_center[0]) if fovea_center is not None else None,
+        'fovea_y': int(fovea_center[1]) if fovea_center is not None else None,
         'vessel_density': float(np.sum(vessel_mask > 0) / fov_pixels),
         'ma_count': int(ma_count),
         'hem_count': int(hem_count),
@@ -94,6 +99,9 @@ def extract_segmentation(image_rgb):
 
 
 def confusion_matrix_fixed(y_true, y_pred, num_classes=5):
+    y_true, y_pred = validate_grades(y_true), validate_grades(y_pred)
+    if len(y_true) != len(y_pred):
+        raise ValueError('Truth and predictions must have the same length')
     matrix = np.zeros((num_classes, num_classes), dtype=int)
     for truth, prediction in zip(y_true, y_pred):
         if 0 <= int(truth) < num_classes and 0 <= int(prediction) < num_classes:
@@ -111,8 +119,17 @@ def calculate_aggregate(records):
         row for row in successful
         if row.get('true_grade') is not None and row.get('predicted_grade') is not None
     ]
+    for row in successful:
+        for name in ('referable_probability', 'referable_head_probability',
+                     'calibrated_referable_probability', 'confidence', 'raw_confidence'):
+            if row.get(name) is not None:
+                value = float(row[name])
+                if not np.isfinite(value) or not 0 <= value <= 1:
+                    raise ValueError(f'{name} must be finite and in [0, 1]')
 
     aggregate = {
+        'schema_version': 2,
+        'metric_scope': 'Successful labeled images only; see full_cohort for unresolved cases',
         'counts': {
             'requested': total,
             'successful': len(successful),
@@ -123,11 +140,28 @@ def calculate_aggregate(records):
         'coverage': len(successful) / total if total else 0.0,
         'metrics': {},
     }
+    labeled = [row for row in records if row.get('true_grade') is not None]
+    validate_grades([row['true_grade'] for row in labeled], 'true_grade')
+    resolved = [row for row in labeled if row.get('status') == 'success'
+                and row.get('triage_action') in ('auto_clear', 'refer')]
+    for row in resolved:
+        validate_grades([row['predicted_grade']], 'predicted_grade')
+    aggregate['full_cohort'] = {
+        'labeled': len(labeled),
+        'algorithmically_resolved': len(resolved),
+        'unresolved': len(labeled) - len(resolved),
+        'resolution_coverage': len(resolved) / len(labeled) if labeled else None,
+        'correct_resolved_referral_decisions': sum(
+            (row['true_grade'] >= 2) == (row['predicted_grade'] >= 2) for row in resolved),
+        'missed_referable_auto_clear': sum(
+            row['true_grade'] >= 2 and row['triage_action'] == 'auto_clear' for row in resolved),
+        'interpretation': 'Research routing, not verified clinical screening completion; unresolved is never correct',
+    }
     if not evaluated:
         return aggregate, np.zeros((5, 5), dtype=int), []
 
-    y_true = np.array([int(row['true_grade']) for row in evaluated])
-    y_pred = np.array([int(row['predicted_grade']) for row in evaluated])
+    y_true = validate_grades([row['true_grade'] for row in evaluated])
+    y_pred = validate_grades([row['predicted_grade'] for row in evaluated])
     confusion = confusion_matrix_fixed(y_true, y_pred)
     class_metrics = compute_metrics(confusion)
     referable = referable_dr_metrics(y_true, y_pred)
@@ -137,7 +171,8 @@ def calculate_aggregate(records):
         'accuracy': float(np.mean(y_true == y_pred)),
         'mean_absolute_error': float(np.mean(np.abs(y_true - y_pred))),
         'within_one_grade_accuracy': float(np.mean(np.abs(y_true - y_pred) <= 1)),
-        'macro_f1': float(np.mean(class_metrics['f1'])),
+        'macro_f1': float(np.nanmean(class_metrics['f1'])),
+        'macro_f1_defined_classes': int(np.isfinite(class_metrics['f1']).sum()),
         'referable_sensitivity': float(referable['sensitivity']),
         'referable_specificity': float(referable['specificity']),
         'referable_precision': float(referable['precision']),
@@ -207,7 +242,7 @@ def calculate_aggregate(records):
             'precision': float(class_metrics['precision'][grade]),
             'f1': float(class_metrics['f1'][grade]),
         })
-    return aggregate, confusion, per_grade
+    return json_value(aggregate), confusion, json_value(per_grade)
 
 
 def select_rows(frame, args):
@@ -251,40 +286,114 @@ def flatten_dict(value, prefix=''):
     return rows
 
 
+def batch_identity(frame, args, csv_path, image_dir):
+    """Bind a resumable run to bytes, selected labels, configuration and code."""
+    bundle = verify_bundle(PYTHON_DIR / 'weights' / 'bundle.json')
+    cases = []
+    for index, row in frame.iterrows():
+        path = find_image(image_dir, row[args.id_column])
+        label = row.get(args.label_column)
+        cases.append({'source_index': int(index), 'id_code': str(row[args.id_column]),
+                      'true_grade': int(label) if pd.notna(label) else None,
+                      'image_path': str(path) if path else None,
+                      'sha256': sha256_file(path) if path else None})
+    source_files = [PYTHON_DIR / name for name in ('batch_validate.py', 'inference.py')]
+    for directory in ('models', 'modules', 'utils'):
+        source_files.extend(sorted((PYTHON_DIR / directory).glob('*.py')))
+    identity = {'schema_version': 1, 'input_csv_sha256': sha256_file(csv_path),
+                'bundle': bundle,
+                'configuration': {key: value for key, value in vars(args).items()
+                                  if key not in ('output', 'resume')},
+                'cases': cases,
+                'source_sha256': {str(path.relative_to(PYTHON_DIR)): sha256_file(path)
+                                  for path in source_files},
+                'versions': {name: importlib.metadata.version(name) for name in
+                             ('torch', 'numpy', 'opencv-python-headless', 'timm')}}
+    identity = json_value(identity)
+    encoded = json.dumps(identity, sort_keys=True, allow_nan=False).encode()
+    return identity, hashlib.sha256(encoded).hexdigest()
+
+
+def restore_records(path, identity_sha256, cases):
+    checkpoint = json.loads(Path(path).read_text())
+    if checkpoint.get('identity_sha256') != identity_sha256:
+        raise ValueError('Resume identity changed (data, model, code or configuration); use a new output')
+    expected = {row['id_code']: row for row in cases}
+    restored, seen = [], set()
+    for record in checkpoint['records']:
+        image_id = record['id_code']
+        if image_id not in expected or image_id in seen:
+            raise ValueError('Invalid/duplicate checkpoint image ID')
+        seen.add(image_id)
+        if any(record.get(key) != expected[image_id][key]
+               for key in ('source_index', 'true_grade')):
+            raise ValueError('Checkpoint labels or row order do not match the manifest')
+        if record['status'] in ('success', 'rejected', 'error'):
+            restored.append(record)
+        elif record['status'] != 'pending':
+            raise ValueError('Unknown checkpoint status')
+    return restored, float(checkpoint.get('elapsed_seconds', 0))
+
+
 def run_batch(args):
     csv_path = Path(args.csv).resolve()
     image_dir = Path(args.image_dir).resolve()
     output_dir = Path(args.output).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    frame = pd.read_csv(csv_path)
+    frame = pd.read_csv(csv_path, dtype={args.id_column: str})
     if args.id_column not in frame:
         raise ValueError(f'CSV is missing id column: {args.id_column}')
+    frame[args.id_column] = image_ids(frame[args.id_column]).to_numpy()
+    if args.label_column in frame:
+        validate_grades(frame[args.label_column].dropna().to_numpy(), args.label_column)
     frame = select_rows(frame, args)
     has_labels = args.label_column in frame
     calibration_temperature = load_calibration_temperature(DEFAULT_CALIBRATION)
 
-    records = []
+    identity, identity_sha256 = batch_identity(frame, args, csv_path, image_dir)
+    progress_path = output_dir / 'progress.json'
+    if getattr(args, 'resume', False):
+        records, prior_elapsed = restore_records(progress_path, identity_sha256, identity['cases'])
+    else:
+        if any((output_dir / name).exists() for name in
+               ('progress.json', 'run_identity.json', 'per_image_results.csv', 'aggregate_metrics.json')):
+            raise FileExistsError('Existing batch evidence: use --resume or a new output directory')
+        records, prior_elapsed = [], 0.0
+    completed_ids = {row['id_code'] for row in records}
+    atomic_json(output_dir / 'run_identity.json', {'sha256': identity_sha256, **identity})
     pending_images = []
     pending_record_indices = []
     started = time.perf_counter()
 
-    def flush_predictions():
-        if not pending_images:
-            return
+    def save_progress(complete=False):
+        atomic_json(progress_path, {'identity_sha256': identity_sha256, 'records': records,
+                    'complete': complete,
+                    'elapsed_seconds': prior_elapsed + time.perf_counter() - started})
+
+    save_progress()
+
+    def predict_records(images, record_indices):
         inference_started = time.perf_counter()
         predictions = predict_batch_with_details(
-            pending_images, batch_size=args.batch_size)
-        grades = predictions['grades']
-        probabilities = predictions['grade_probabilities']
+            images, batch_size=args.batch_size)
+        grades = validate_grades(predictions['grades'])
+        probabilities = validate_probabilities(predictions['grade_probabilities'])
+        if any(len(value) != len(images) for value in predictions.values()):
+            raise ValueError('Model output batch length does not match inputs')
         continuous_scores = predictions['continuous_scores']
-        elapsed_each = (time.perf_counter() - inference_started) / len(pending_images)
+        if not np.isfinite(continuous_scores).all():
+            raise ValueError('Nonfinite continuous scores')
+        referral = np.asarray(predictions['referable_head_probabilities'], dtype=float)
+        if not np.isfinite(referral).all() or np.any((referral < 0) | (referral > 1)):
+            raise ValueError('Invalid referral-head probabilities')
+        elapsed_each = (time.perf_counter() - inference_started) / len(images)
         if grades is None:
-            for record_index in pending_record_indices:
+            for record_index in record_indices:
                 records[record_index]['status'] = 'error'
                 records[record_index]['error'] = 'model weights unavailable'
         else:
-            for offset, record_index in enumerate(pending_record_indices):
+            for offset, record_index in enumerate(record_indices):
                 grade = int(grades[offset])
                 probs = probabilities[offset]
                 calibrated_probs = temperature_scale_probabilities(
@@ -316,12 +425,31 @@ def run_batch(args):
                 if record.get('true_grade') is not None:
                     record['correct'] = bool(record['true_grade'] == grade)
                     record['absolute_error'] = abs(record['true_grade'] - grade)
+    def flush_predictions():
+        if not pending_images:
+            return
+        images, indices = pending_images[:], pending_record_indices[:]
         pending_images.clear()
         pending_record_indices.clear()
+        try:
+            predict_records(images, indices)
+        except Exception:
+            # Retry one at a time to isolate a bad item or batch-memory failure.
+            for image, index in zip(images, indices):
+                try:
+                    predict_records([image], [index])
+                except Exception as exc:
+                    records[index].update(status='error', error=f'{type(exc).__name__}: {exc}',
+                                          triage_action='unresolved_error')
+        save_progress()
 
     for source_index, row in tqdm(
             frame.iterrows(), total=len(frame), desc='NetrAI batch validation'):
         image_id = str(row[args.id_column])
+        if image_id in completed_ids:
+            continue
+        if source_index % args.batch_size == 0:
+            save_progress()
         true_grade = int(row[args.label_column]) if has_labels and pd.notna(row[args.label_column]) else None
         record = {
             'source_index': int(source_index),
@@ -382,8 +510,10 @@ def run_batch(args):
             record.update({'status': 'error', 'error': f'{type(exc).__name__}: {exc}'})
 
     flush_predictions()
-    elapsed = time.perf_counter() - started
+    records.sort(key=lambda record: record['source_index'])
+    elapsed = prior_elapsed + time.perf_counter() - started
     aggregate, confusion, per_grade = calculate_aggregate(records)
+    aggregate['run_identity_sha256'] = identity_sha256
     aggregate['runtime'] = {
         'total_seconds': elapsed,
         'images_per_second': len(records) / elapsed if elapsed else 0.0,
@@ -418,8 +548,8 @@ def run_batch(args):
         columns=[f'pred_{grade}' for grade in range(5)],
     ).to_csv(confusion_path, index_label='true_grade')
     pd.DataFrame(per_grade).to_csv(per_grade_path, index=False)
-    with json_path.open('w', encoding='utf-8') as stream:
-        json.dump(aggregate, stream, indent=2, allow_nan=False)
+    atomic_json(json_path, aggregate)
+    save_progress(complete=True)
 
     if not args.skip_segmentation and has_labels and not result_frame.empty:
         segmentation_columns = [
@@ -446,6 +576,8 @@ def build_parser():
     parser.add_argument('--csv', default=str(DEFAULT_CSV), help='Input CSV containing image ids')
     parser.add_argument('--image-dir', default=str(DEFAULT_IMAGE_DIR), help='Directory containing images')
     parser.add_argument('--output', default=str(DEFAULT_OUTPUT_DIR), help='Output directory')
+    parser.add_argument('--resume', action='store_true',
+                        help='Resume only an identical content/configuration-bound run; retain recorded errors')
     parser.add_argument('--id-column', default='id_code', help='CSV image-id column')
     parser.add_argument('--label-column', default='diagnosis', help='CSV ground-truth column')
     parser.add_argument('--batch-size', type=int, default=8, help='Model inference batch size')

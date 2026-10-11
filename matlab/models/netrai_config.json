@@ -43,5 +43,7 @@
     "method": "scalar_temperature_scaling",
     "artifact": "python/weights/calibration.json",
     "applies_to": "grade_logits_for_confidence_only"
-  }
+  },
+  "preprocessing_version": "legacy-area-v1",
+  "matlab_preprocessing_implementation": "area-fixed-gaussian-v1"
 }

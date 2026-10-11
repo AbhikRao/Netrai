@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "class_order": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "preprocessing_version": "legacy-area-v1",
+  "status": "legacy_development_evidence_not_clinical_validation",
+  "files": {
+    "netrai_fold0_best.pth": "edadaddc639a7cfab9fbca4d507195e92792b8a78236e3141a072f66a0606e7b",
+    "fold0_thresholds.npy": "7ebbb68ea37feb5483d90f7b736eb90be8a56f2102a092c235658ebf19a375d8",
+    "calibration.json": "0bddf7789262e01da3d9c1f66457c0115a03fb0bd8e873138c8bf9ed5caacf2f",
+    "safety_policy.json": "13f4d064a7038f59345d171ba5574f653547f40683644a0332bbdc4d75eec84f"
+  }
+}

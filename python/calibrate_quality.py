@@ -28,6 +28,7 @@ from tqdm import tqdm
 
 from modules.quality import assess_image_quality
 from utils.quality_calibration import apply_iqs_thresholds, fit_iqs_thresholds
+from utils.artifacts import atomic_json
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,6 +44,12 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def portable_path(path: Path) -> str:
+    """Record a project-relative path when possible, never a home directory."""
+    path = Path(path).resolve()
+    return path.relative_to(ROOT).as_posix() if path.is_relative_to(ROOT) else path.name
+
+
 def resolve_eyeq_image(image_dir: Path, label_name: str) -> Path | None:
     source = Path(str(label_name))
     candidates = [
@@ -52,6 +59,17 @@ def resolve_eyeq_image(image_dir: Path, label_name: str) -> Path | None:
         image_dir / f'{source.stem}.jpeg',
     ]
     return next((path for path in candidates if path.is_file()), None)
+
+
+def resolve_eyeq_labels(root: Path, split: str) -> Path:
+    name = f'Label_EyeQ_{split}.csv'
+    candidates = [root / name, root / 'data' / name]
+    existing = [path for path in candidates if path.is_file()]
+    if not existing:
+        raise FileNotFoundError(f'Expected {name} under {root} or {root / "data"}')
+    if len(existing) == 2 and file_sha256(existing[0]) != file_sha256(existing[1]):
+        raise ValueError('Conflicting EyeQ label files in the two supported layouts')
+    return existing[0]
 
 
 FEATURE_COLUMNS = [
@@ -113,6 +131,19 @@ def extract_features(labels_path: Path, image_dir: Path, cache_path: Path,
 
     expected_quality = dict(zip(
         labels['image'].astype(str), labels['quality'].astype(int)))
+    source_paths = {str(name): resolve_eyeq_image(image_dir, str(name)) for name in labels.image}
+    signature = {
+        'schema_version': 2, 'labels_sha256': file_sha256(labels_path),
+        'quality_code_sha256': file_sha256(Path(__file__).parent / 'modules/quality.py'),
+        'opencv': cv2.__version__, 'numpy': np.__version__,
+        'images': {name: file_sha256(path) if path else None for name, path in source_paths.items()},
+    }
+    metadata = cache_path.with_suffix('.metadata.json')
+    if cache_path.exists():
+        if not metadata.exists() or json.loads(metadata.read_text()) != signature:
+            raise ValueError('Stale or unbound quality cache; use a new output/cache path')
+    else:
+        atomic_json(metadata, signature)
     completed: dict[str, dict] = {}
     required = set(FEATURE_COLUMNS)
     if cache_path.is_file():
@@ -132,7 +163,7 @@ def extract_features(labels_path: Path, image_dir: Path, cache_path: Path,
         label_name = str(item.image)
         if label_name in completed:
             continue
-        path = resolve_eyeq_image(image_dir, str(item.image))
+        path = source_paths[str(item.image)]
         tasks.append((label_name, int(item.quality), str(path) if path else ''))
 
     cache_path.parent.mkdir(parents=True, exist_ok=True)
@@ -293,9 +324,9 @@ def main(args: argparse.Namespace) -> None:
             'test': factor_diagnostics(test),
         },
         'sources': {
-            'train_labels': str(args.train_labels.resolve()),
+            'train_labels': portable_path(args.train_labels),
             'train_labels_sha256': file_sha256(args.train_labels.resolve()),
-            'test_labels': str(args.test_labels.resolve()),
+            'test_labels': portable_path(args.test_labels),
             'test_labels_sha256': file_sha256(args.test_labels.resolve()),
         },
         'limitation': (

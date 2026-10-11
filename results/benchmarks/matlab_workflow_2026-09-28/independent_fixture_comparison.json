@@ -1,0 +1,61 @@
+{
+  "endpoint_version": 3,
+  "fixture_count": 7,
+  "all_passed": true,
+  "comparison_tolerance": 1e-09,
+  "scope": "Independent deterministic event-calendar reference; not stochastic population agreement or field validation",
+  "matlab_evidence_sha256": "16d083e43d49d8bcd0b618f08e2cc27c706295e66833de4d4606f4fea40dea69",
+  "reference_evidence_sha256": "f7a11654df1283403d0145cc2c57fce19ae5ef01a20b83725d5522be4b0f9661",
+  "reference_source_sha256": "2a8712c964a06116428feed18ff8a5b32f2bdce6ac0077d7e63f97b918de6786",
+  "checks": [
+    {
+      "fixture": "no_reject",
+      "patient_and_attempt_counts_match": true,
+      "cutoff_return_occupancy_matches": true,
+      "review_queue_wait_matches": true,
+      "cutoff_review_utilization_matches": true
+    },
+    {
+      "fixture": "zero_retries",
+      "patient_and_attempt_counts_match": true,
+      "cutoff_return_occupancy_matches": true,
+      "review_queue_wait_matches": true,
+      "cutoff_review_utilization_matches": true
+    },
+    {
+      "fixture": "first_reject_then_success",
+      "patient_and_attempt_counts_match": true,
+      "cutoff_return_occupancy_matches": true,
+      "review_queue_wait_matches": true,
+      "cutoff_review_utilization_matches": true
+    },
+    {
+      "fixture": "repeated_rejection_exhaustion",
+      "patient_and_attempt_counts_match": true,
+      "cutoff_return_occupancy_matches": true,
+      "review_queue_wait_matches": true,
+      "cutoff_review_utilization_matches": true
+    },
+    {
+      "fixture": "dropout",
+      "patient_and_attempt_counts_match": true,
+      "cutoff_return_occupancy_matches": true,
+      "review_queue_wait_matches": true,
+      "cutoff_review_utilization_matches": true
+    },
+    {
+      "fixture": "cutoff_mid_recapture",
+      "patient_and_attempt_counts_match": true,
+      "cutoff_return_occupancy_matches": true,
+      "review_queue_wait_matches": true,
+      "cutoff_review_utilization_matches": true
+    },
+    {
+      "fixture": "clinician_congestion",
+      "patient_and_attempt_counts_match": true,
+      "cutoff_return_occupancy_matches": true,
+      "review_queue_wait_matches": true,
+      "cutoff_review_utilization_matches": true
+    }
+  ]
+}

@@ -10,7 +10,8 @@ function summary = validatePipeline(datasetPath, varargin)
     p = inputParser;
     addRequired(p, 'datasetPath', @(x) ischar(x) || isstring(x));
     addParameter(p, 'Mode', "model", @(x) any(strcmpi(string(x), ["model","full"])));
-    addParameter(p, 'MaxImages', inf, @(x) isnumeric(x) && isscalar(x) && x > 0);
+    addParameter(p, 'MaxImages', inf, @(x) isnumeric(x) && isscalar(x) && x > 0 && ...
+        (isinf(x) || (isfinite(x) && mod(x,1)==0)));
     addParameter(p, 'StartIndex', 1, @(x) isnumeric(x) && isscalar(x) && x >= 1 && mod(x,1)==0);
     addParameter(p, 'SelectionCsv', "", @(x) ischar(x) || isstring(x));
     addParameter(p, 'OutputDir', fullfile(baseDir, 'results', 'validation'), @(x) ischar(x) || isstring(x));
@@ -20,21 +21,26 @@ function summary = validatePipeline(datasetPath, varargin)
 
     datasetPath = string(p.Results.datasetPath);
     mode = lower(string(p.Results.Mode));
-    outputDir = string(p.Results.OutputDir);
+    finalOutputDir = string(p.Results.OutputDir);
     modelPath = string(p.Results.ModelPath);
     configPath = string(p.Results.ConfigPath);
     csvPath = fullfile(datasetPath, 'train.csv');
     imageDir = fullfile(datasetPath, 'train_images');
     if ~isfile(csvPath), error('NetrAI:LabelsNotFound', 'Missing %s', csvPath); end
     if ~isfolder(imageDir), error('NetrAI:ImagesNotFound', 'Missing %s', imageDir); end
-    if ~isfolder(outputDir), mkdir(outputDir); end
+    if isfile(finalOutputDir) || (isfolder(finalOutputDir) && numel(dir(finalOutputDir)) > 2)
+        error('NetrAI:OutputExists','Choose a new OutputDir; existing evidence is not overwritten.');
+    end
     addpath(genpath(fullfile(baseDir, 'src')));
 
-    labels = readtable(csvPath, 'TextType','string', 'VariableNamingRule','preserve');
+    labels = readLabels(csvPath);
     if ~all(ismember({'id_code','diagnosis'}, labels.Properties.VariableNames))
         error('NetrAI:InvalidLabels', 'train.csv must contain id_code and diagnosis.');
     end
-    if any(ismissing(labels.id_code)) || numel(unique(labels.id_code)) ~= height(labels)
+    if any(ismissing(labels.id_code) | strlength(strtrim(labels.id_code))==0) || ...
+            any(contains(labels.id_code,["/","\"])) || ...
+            any(ismember(labels.id_code,[".",".."])) || ...
+            numel(unique(labels.id_code)) ~= height(labels)
         error('NetrAI:InvalidIDs','Image IDs must be nonempty and unique.');
     end
     if any(~isfinite(labels.diagnosis) | labels.diagnosis ~= floor(labels.diagnosis) ...
@@ -43,7 +49,7 @@ function summary = validatePipeline(datasetPath, varargin)
     end
     selectionCsv = string(p.Results.SelectionCsv);
     if strlength(selectionCsv) > 0
-        selection = readtable(selectionCsv, 'TextType','string', 'VariableNamingRule','preserve');
+        selection = readLabels(selectionCsv);
         if ~ismember('id_code', selection.Properties.VariableNames)
             error('NetrAI:InvalidSelection', 'SelectionCsv must contain id_code.');
         end
@@ -55,14 +61,31 @@ function summary = validatePipeline(datasetPath, varargin)
             error('NetrAI:InvalidSelection', '%d selected IDs are absent from train.csv.', nnz(~found));
         end
         labels = labels(positions, :);
+        if ismember('diagnosis',selection.Properties.VariableNames) && ...
+                ~isequal(double(selection.diagnosis),double(labels.diagnosis))
+            error('NetrAI:InvalidSelection','Selection truth labels disagree with train.csv.');
+        end
     end
+    % Identity is captured before any inference, over the entire selection.
+    [provenance, cohortPaths] = buildValidationIdentity(baseDir,modelPath,configPath, ...
+        csvPath,selectionCsv,mode,labels);
     startIndex = p.Results.StartIndex;
     if startIndex > height(labels)
         error('NetrAI:StartIndexOutOfRange', 'StartIndex %d exceeds %d selected rows.', startIndex, height(labels));
     end
     stopIndex = min(height(labels), startIndex + p.Results.MaxImages - 1);
-    labels = labels(startIndex:stopIndex, :);
+    cohortPositions = startIndex:stopIndex;
+    labels = labels(cohortPositions, :);
+    imagePaths = cohortPaths(cohortPositions);
+    imageHashes = string({provenance.expected_cohort(cohortPositions).image_sha256})';
     n = height(labels);
+    outputParent = fileparts(finalOutputDir);
+    if strlength(outputParent)==0, outputParent=string(pwd); end
+    if ~isfolder(outputParent), mkdir(outputParent); end
+    outputDir = fullfile(outputParent,".netrai-staging-"+string(java.util.UUID.randomUUID));
+    mkdir(outputDir);
+    outputCleanup = onCleanup(@() removeStaging(outputDir)); %#ok<NASGU>
+    writeIdentity(outputDir,provenance);
 
     if mode == "model"
         [net, config] = loadNetrAIModel(modelPath, configPath);
@@ -81,17 +104,16 @@ function summary = validatePipeline(datasetPath, varargin)
 
     started = tic;
     for i = 1:n
-        imagePath = resolveImage(imageDir, idCode(i));
+        imagePath = imagePaths(i);
         if strlength(imagePath) == 0
             status(i) = "error"; errorMessage(i) = "image file not found";
             continue;
         end
         itemTimer = tic;
         try
-            img = imread(imagePath);
-            if ndims(img) == 2, img = repmat(img,1,1,3); end
-            if size(img,3) == 4, img = img(:,:,1:3); end
-            [iqs(i), ~] = assessImageQuality(im2uint8(img));
+            [img, boundImagePath, imageCleanup] = ...
+                readBoundValidationImage(imagePath,imageHashes(i));
+            [iqs(i), ~] = assessImageQuality(img);
             if mode == "model"
                 input = preprocessModelInput(img, config);
                 [predictedGrade(i), rawProbabilities(i,:), gradeReferable, ...
@@ -104,7 +126,7 @@ function summary = validatePipeline(datasetPath, varargin)
                 triageAction(i) = assignScreeningTriage( ...
                     false, gradeReferable, referableHeadPrediction(i));
             else
-                result = main_pipeline(imagePath, 'ModelPath',modelPath, 'ConfigPath',configPath, ...
+                result = main_pipeline(boundImagePath, 'ModelPath',modelPath, 'ConfigPath',configPath, ...
                     'Verbose',false, 'GenerateReport',false, 'RunGradCAM',false, 'EnforceQuality',false);
                 predictedGrade(i) = result.grade;
                 rawProbabilities(i,:) = result.rawProbabilities;
@@ -130,6 +152,7 @@ function summary = validatePipeline(datasetPath, varargin)
             status(i) = "error";
             errorMessage(i) = string(ME.identifier) + ": " + string(ME.message);
         end
+        clear imageCleanup;
         elapsedSeconds(i) = toc(itemTimer);
         if mod(i,25) == 0 || i == n
             fprintf('Validated %d/%d (%d errors)\n', i, n, nnz(status=="error"));
@@ -153,18 +176,11 @@ function summary = validatePipeline(datasetPath, varargin)
         'raw_prob_grade_0','raw_prob_grade_1','raw_prob_grade_2','raw_prob_grade_3', ...
         'raw_prob_grade_4','iqs','elapsed_seconds','status','error', ...
         'ma_count','hem_count','hard_exudate_count','soft_exudate_count','nv_detected','vessel_density'});
+    perImage.image_sha256 = imageHashes;
+    assertUnchangedArtifacts(baseDir,modelPath,configPath,csvPath,selectionCsv,provenance);
     writetable(perImage, fullfile(outputDir, 'per_image_results.csv'));
-    provenance = struct('schema_version',1,'model_sha256',fileSHA256(modelPath), ...
-        'config_sha256',fileSHA256(configPath),'labels_sha256',fileSHA256(csvPath), ...
-        'mode',mode,'selection_sha256',"",'preprocess_sha256', ...
-        fileSHA256(fullfile(baseDir,'src','m3_grading','preprocessModelInput.m')));
-    if strlength(selectionCsv)>0, provenance.selection_sha256=fileSHA256(selectionCsv); end
-    fid=fopen(fullfile(outputDir,'run_identity.json'),'w');
-    if fid<0, error('NetrAI:WriteFailed','Cannot write run identity'); end
-    fprintf(fid,'%s\n',jsonencode(provenance)); fclose(fid);
 
     valid = status == "success";
-    if ~any(valid), error('NetrAI:NoValidResults', 'No images completed successfully.'); end
     yTrue = trueGrade(valid); yPred = predictedGrade(valid);
     confMat = zeros(5,5);
     for i = 1:numel(yTrue)
@@ -179,7 +195,7 @@ function summary = validatePipeline(datasetPath, varargin)
     fp = nnz(~refTrue & refPred); fn = nnz(refTrue & ~refPred);
     sensitivity = safeDivide(tp, tp+fn); specificity = safeDivide(tn, tn+fp);
     precision = safeDivide(tp, tp+fp); refAccuracy = (tp+tn)/numel(yTrue);
-    refF1 = safeDivide(2*precision*sensitivity, precision+sensitivity);
+    refF1 = safeDivide(2*tp,2*tp+fp+fn);
     auc = binaryAUC(refTrue, referableProbability(valid));
     independentPred = referableHeadPrediction(valid);
     independentScores = referableHeadProbability(valid);
@@ -232,6 +248,7 @@ function summary = validatePipeline(datasetPath, varargin)
     if fid < 0, error('NetrAI:WriteFailed', 'Cannot create aggregate_metrics.json'); end
     cleaner = onCleanup(@() fclose(fid)); %#ok<NASGU>
     fprintf(fid, '%s\n', jsonencode(summary, 'PrettyPrint',true));
+    clear cleaner;
 
     grade = (0:4)'; support = sum(confMat,2);
     sensitivityGrade = classMetrics.sensitivity'; specificityGrade = classMetrics.specificity';
@@ -239,18 +256,54 @@ function summary = validatePipeline(datasetPath, varargin)
     writetable(table(grade,support,sensitivityGrade,specificityGrade,precisionGrade,f1Grade), ...
         fullfile(outputDir, 'per_grade_metrics.csv'));
     save(fullfile(outputDir, 'validation_results.mat'), 'summary', 'perImage', 'confMat');
+    assertUnchangedArtifacts(baseDir,modelPath,configPath,csvPath,selectionCsv,provenance);
+    if isfile(finalOutputDir) || (isfolder(finalOutputDir) && numel(dir(finalOutputDir)) > 2)
+        error('NetrAI:OutputExists','OutputDir changed during validation; evidence was not overwritten.');
+    end
+    if isfolder(finalOutputDir), rmdir(finalOutputDir); end
+    [moved,message] = movefile(outputDir,finalOutputDir);
+    if ~moved, error('NetrAI:WriteFailed','Cannot publish validation: %s',message); end
     fprintf('QWK %.4f | sensitivity %.2f%% | specificity %.2f%% | AUC %.4f | errors %d\n', ...
         qwk, 100*sensitivity, 100*specificity, auc, nnz(~valid));
 end
 
 
-function path = resolveImage(imageDir, imageId)
-    path = "";
-    extensions = [".png", ".jpg", ".jpeg", ".tif", ".tiff"];
-    for ext = extensions
-        candidate = fullfile(imageDir, imageId + ext);
-        if isfile(candidate), path = string(candidate); return; end
+function writeIdentity(folder,identity)
+    fid=fopen(fullfile(folder,'run_identity.json'),'w');
+    if fid<0, error('NetrAI:WriteFailed','Cannot write run identity.'); end
+    cleanup=onCleanup(@() fclose(fid)); %#ok<NASGU>
+    fprintf(fid,'%s\n',jsonencode(identity));
+end
+
+function labels=readLabels(path)
+    options=detectImportOptions(path,'TextType','string','VariableNamingRule','preserve');
+    if ismember('id_code',options.VariableNames)
+        options=setvartype(options,'id_code','string');
     end
+    labels=readtable(path,options);
+end
+
+function assertUnchangedArtifacts(baseDir,modelPath,configPath,labelsPath,selectionPath,identity)
+    paths = [string(modelPath),string(configPath),string(labelsPath)];
+    digests = string({identity.model_sha256,identity.config_sha256,identity.labels_sha256});
+    if strlength(string(selectionPath))>0
+        paths(end+1)=string(selectionPath); digests(end+1)=string(identity.selection_sha256);
+    end
+    for i=1:numel(paths)
+        if ~strcmp(fileSHA256(paths(i)),digests(i))
+            error('NetrAI:ChangedArtifact','Artifact changed during validation: %s.',paths(i));
+        end
+    end
+    for item=identity.source_files(:)'
+        path=fullfile(baseDir,item.path);
+        if ~isfile(path) || ~strcmp(fileSHA256(path),item.sha256)
+            error('NetrAI:ChangedArtifact','Source changed during validation: %s.',item.path);
+        end
+    end
+end
+
+function removeStaging(folder)
+    if isfolder(folder), rmdir(folder,'s'); end
 end
 
 
