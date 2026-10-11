@@ -32,13 +32,22 @@ from utils.preprocessing import preprocess_for_model
 ROOT = Path(__file__).resolve().parents[1]
 MESSIDOR = ROOT / 'data/messidor2'
 LABELS = MESSIDOR / 'adjudicated_labels_download/messidor_data.csv'
+DDR = ROOT / 'data/DDR/extracted/DDR-dataset/DR_grading'
+DDR_LABELS = DDR / 'test.txt'
+COHORTS = {
+    'messidor2': {'images': MESSIDOR / 'images', 'labels': LABELS, 'cluster': 'exam (left/right pair)'},
+    'ddr_test': {'images': DDR / 'test', 'labels': DDR_LABELS, 'cluster': 'image (no patient ids released)'},
+}
 
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def inventory():
+def inventory(cohort='messidor2'):
+    if cohort == 'ddr_test':
+        images = sorted(p.name for p in DDR.joinpath('test').iterdir())
+        return pd.DataFrame({'image_id': images, 'exam_id': images})
     pairs = pd.read_csv(MESSIDOR / 'messidor-2.csv', sep=';')
     pairs.columns = [c.strip() for c in pairs.columns]
     exam = {}
@@ -61,20 +70,20 @@ def load_model(spec):
     return model.eval()
 
 
-def logits_for(spec, frame, batch=8):
+def logits_for(spec, frame, batch=8, folder=MESSIDOR / 'images'):
     model = load_model(spec)
     outputs = []
     with torch.inference_mode():
         for start in range(0, len(frame), batch):
             arrays = []
             for name in frame.image_id[start:start + batch]:
-                data = np.frombuffer((MESSIDOR / 'images' / name).read_bytes(), np.uint8)
+                data = np.frombuffer((folder / name).read_bytes(), np.uint8)
                 rgb = cv2.cvtColor(cv2.imdecode(data, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
                 arrays.append(preprocess_for_model(rgb).transpose(2, 0, 1))
             grade, referral = model(torch.from_numpy(np.stack(arrays)).float())
             outputs.append(torch.cat([grade, referral[:, None]], 1).numpy())
             if start % 200 == 0:
-                print(f"{spec['id']}: {start}/{len(frame)}", flush=True)
+                print(f"{spec['id']} {folder.parent.name}/{folder.name}: {start}/{len(frame)}", flush=True)
     return np.concatenate(outputs).astype(np.float64)
 
 
@@ -84,31 +93,35 @@ def freeze(args):
     if lock_path.exists():
         raise FileExistsError('A lock may not be overwritten')
     args.output.mkdir(parents=True, exist_ok=True)
-    frame = inventory()
-    frame['sha256'] = [sha(MESSIDOR / 'images' / i) for i in frame.image_id]
-    frame.to_csv(args.output / 'inventory.csv', index=False)
     torch.set_num_threads(args.threads)
-    cache = {}
-    for spec in config['variants']:
-        if spec['kind'] == 'ensemble':
-            continue
-        path = args.output / f"logits_{spec['id']}.npy"
-        if not path.exists():
-            np.save(path, logits_for(spec, frame))
-        cache[spec['id']] = path
-    for spec in config['variants']:
-        if spec['kind'] == 'ensemble':
-            path = args.output / f"logits_{spec['id']}.npy"
-            np.save(path, np.mean([np.load(cache[m]) for m in spec['members']], axis=0))
-            cache[spec['id']] = path
+    cache, inventories = {}, []
+    for cohort, info in COHORTS.items():
+        frame = inventory(cohort)
+        frame['sha256'] = [sha(info['images'] / i) for i in frame.image_id]
+        inv = args.output / f'inventory_{cohort}.csv'
+        frame.to_csv(inv, index=False)
+        inventories.append(inv)
+        for spec in config['variants']:
+            if spec['kind'] == 'ensemble':
+                continue
+            path = args.output / f"logits_{cohort}_{spec['id']}.npy"
+            if not path.exists():
+                np.save(path, logits_for(spec, frame, folder=info['images']))
+            cache[(cohort, spec['id'])] = path
+        for spec in config['variants']:
+            if spec['kind'] == 'ensemble':
+                path = args.output / f"logits_{cohort}_{spec['id']}.npy"
+                np.save(path, np.mean([np.load(cache[(cohort, m)]) for m in spec['members']], axis=0))
+                cache[(cohort, spec['id'])] = path
     bindings = {str(p.relative_to(ROOT)): sha(p) for p in
-                [args.variants, args.output / 'inventory.csv', Path(__file__), args.protocol,
+                [args.variants, *inventories, Path(__file__), args.protocol,
                  ROOT / 'python/utils/preprocessing.py', ROOT / 'python/models/netrai_model.py',
-                 ROOT / 'python/export_adapted_variant.py', LABELS, *cache.values()]
+                 ROOT / 'python/export_adapted_variant.py', LABELS, DDR_LABELS, *cache.values()]
                 + [ROOT / s['checkpoint'] for s in config['variants'] if s.get('checkpoint')]
                 + [ROOT / s['policy'] for s in config['variants'] if s.get('policy')]}
     atomic_json(lock_path, {'schema_version': 1, 'locked_utc': datetime.now(timezone.utc).isoformat(),
-                            'test': 'Messidor-2 (1748 images, 874 exams), Krause 2018 adjudicated grades',
+                            'tests': {'messidor2': 'primary: 1748 images / 874 exams, Krause 2018 adjudicated grades',
+                                      'ddr_test': 'secondary: DDR DR_grading test split, 4105 images, grade 5 = ungradable'},
                             'labels_read': False, 'primary_variant': config['primary'],
                             'reference_variant': config['reference'], 'bootstrap_seed': config['bootstrap_seed'],
                             'bootstrap_replicates': config['bootstrap_replicates'], 'bindings': bindings})
@@ -146,32 +159,39 @@ def metrics(logits, grade, thresholds, head_threshold):
             'head_disagreement_rate': float(np.mean(head != positive))}, positive
 
 
-def evaluate(args):
-    lock = json.loads((args.output / 'lock.json').read_text())
-    for path, digest in lock['bindings'].items():
-        if sha(ROOT / path) != digest:
-            raise ValueError(f'Locked artifact changed: {path}')
-    report_path = args.output / 'report.json'
-    if report_path.exists():
-        raise FileExistsError('This lock has already been evaluated')
-    config = json.loads(args.variants.read_text())
-    frame = pd.read_csv(args.output / 'inventory.csv')
-    labels = pd.read_csv(LABELS)  # first and only read of the reserved labels
-    labels['image_id'] = labels.image_id.str.strip()
-    frame = frame.merge(labels, on='image_id', how='left', validate='one_to_one')
-    if frame.adjudicated_gradable.isna().any():
-        raise ValueError('Label coverage incomplete')
-    gradable = (frame.adjudicated_gradable == 1).to_numpy()
-    grade = frame.adjudicated_dr_grade.to_numpy()[gradable].astype(int)
-    exams = frame.exam_id.to_numpy()[gradable]
-    unique, index = np.unique(exams, return_inverse=True)
+def cohort_labels(cohort, frame):
+    """First and only read of a reserved label file, after lock verification."""
+    if cohort == 'messidor2':
+        labels = pd.read_csv(LABELS)
+        labels['image_id'] = labels.image_id.str.strip()
+        frame = frame.merge(labels, on='image_id', how='left', validate='one_to_one')
+        if frame.adjudicated_gradable.isna().any():
+            raise ValueError('Messidor-2 label coverage incomplete')
+        gradable = (frame.adjudicated_gradable == 1).to_numpy()
+        grade = frame.adjudicated_dr_grade.to_numpy()
+    else:
+        labels = pd.read_csv(DDR_LABELS, sep=' ', header=None, names=['image_id', 'grade'])
+        frame = frame.merge(labels, on='image_id', how='left', validate='one_to_one')
+        if frame.grade.isna().any():
+            raise ValueError('DDR label coverage incomplete')
+        grade = frame.grade.to_numpy()
+        gradable = grade <= 4  # DDR grade 5 = ungradable
+    return frame, gradable, grade
+
+
+def evaluate_cohort(cohort, args, config, lock):
+    frame = pd.read_csv(args.output / f'inventory_{cohort}.csv')
+    frame, gradable, grade_all = cohort_labels(cohort, frame)
+    grade = grade_all[gradable].astype(int)
+    clusters = frame.exam_id.to_numpy()[gradable]
+    unique, index = np.unique(clusters, return_inverse=True)
     rng = np.random.default_rng(lock['bootstrap_seed'])
     draws = rng.integers(len(unique), size=(lock['bootstrap_replicates'], len(unique)))
     weights = np.stack([np.bincount(d, minlength=len(unique)) for d in draws])[:, index]
     truth = grade >= 2
     results, positives = {}, {}
     for spec in config['variants']:
-        logits = np.load(args.output / f"logits_{spec['id']}.npy")[gradable]
+        logits = np.load(args.output / f"logits_{cohort}_{spec['id']}.npy")[gradable]
         thresholds, head = thresholds_for(spec)
         result, positive = metrics(logits, grade, thresholds, head)
         sens = (weights * (truth & positive)).sum(1) / (weights * truth).sum(1)
@@ -192,17 +212,33 @@ def evaluate(args):
             'sensitivity_difference_ci95': np.percentile(d_sens, [2.5, 97.5]).tolist(),
             'specificity_difference': float((~positive[~truth]).mean() - (~base[~truth]).mean()),
             'specificity_difference_ci95': np.percentile(d_spec, [2.5, 97.5]).tolist()}
-    report = {'schema_version': 1, 'lock_sha256': sha(args.output / 'lock.json'),
+    return {'cluster_unit': COHORTS[cohort]['cluster'],
+            'population': {'images': int(len(frame)), 'gradable': int(gradable.sum()),
+                           'ungradable': int((~gradable).sum()), 'clusters_gradable': int(len(unique))},
+            'results': results, 'comparisons': comparisons}
+
+
+def evaluate(args):
+    lock = json.loads((args.output / 'lock.json').read_text())
+    for path, digest in lock['bindings'].items():
+        if sha(ROOT / path) != digest:
+            raise ValueError(f'Locked artifact changed: {path}')
+    report_path = args.output / 'report.json'
+    if report_path.exists():
+        raise FileExistsError('This lock has already been evaluated')
+    config = json.loads(args.variants.read_text())
+    cohorts = {cohort: evaluate_cohort(cohort, args, config, lock) for cohort in COHORTS}
+    report = {'schema_version': 2, 'lock_sha256': sha(args.output / 'lock.json'),
               'evaluated_utc': datetime.now(timezone.utc).isoformat(),
-              'population': {'images': len(frame), 'gradable': int(gradable.sum()),
-                             'ungradable': int((~gradable).sum()), 'exams_gradable': int(len(unique))},
-              'primary_variant': lock['primary_variant'], 'reference_variant': reference,
-              'results': results, 'comparisons': comparisons,
-              'exposure': 'Messidor-2 adjudicated labels are exposed after this evaluation.'}
+              'primary_variant': lock['primary_variant'], 'reference_variant': lock['reference_variant'],
+              'cohorts': cohorts,
+              'exposure': 'Messidor-2 adjudicated and DDR test labels are exposed after this evaluation.'}
     atomic_json(report_path, report)
-    for name, result in results.items():
-        print(name, {k: result[k] for k in ('sensitivity', 'sensitivity_ci95', 'specificity', 'specificity_ci95',
-                                            'auc_expected_grade_score', 'sensitivity_at_85_specificity', 'qwk')})
+    for cohort, block in cohorts.items():
+        for name, result in block['results'].items():
+            print(cohort, name, {k: (round(v, 4) if isinstance(v, float) else [round(x, 4) for x in v])
+                                 for k, v in result.items() if k in ('sensitivity', 'sensitivity_ci95', 'specificity',
+                                 'specificity_ci95', 'auc_expected_grade_score', 'sensitivity_at_85_specificity', 'qwk')})
 
 
 def main():
