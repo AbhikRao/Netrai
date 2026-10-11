@@ -97,8 +97,12 @@ def export_one(task):
     if verify and not np.array_equal(deployed_from_export(small), preprocess_for_model(rgb)):
         raise ValueError(f'Export does not reproduce the deployed input: {image_id}')
     target = Path(output) / f'{image_id}.png'
-    if not target.exists():
-        cv2.imwrite(str(target), cv2.cvtColor(small, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_PNG_COMPRESSION, 3])
+    existing = cv2.imread(str(target), cv2.IMREAD_COLOR) if target.exists() else None
+    if existing is None or not np.array_equal(cv2.cvtColor(existing, cv2.COLOR_BGR2RGB), small):
+        # Atomic write: an interrupted export can never leave a truncated PNG behind.
+        temporary = target.with_suffix('.tmp.png')
+        cv2.imwrite(str(temporary), cv2.cvtColor(small, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_PNG_COMPRESSION, 3])
+        temporary.replace(target)
     return image_id, hashlib.sha256(data).hexdigest(), hashlib.sha256(target.read_bytes()).hexdigest()
 
 
