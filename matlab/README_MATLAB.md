@@ -219,6 +219,25 @@ The separate `quality_model_candidate.onnx` fixture can be checked with
 its acquisition-defect stress results and portable-camera evidence are insufficient
 for promotion. The default quality route remains the native heuristic assessment.
 
+## Site-adapted grading candidate (opt-in)
+
+The default model is unchanged. `variant_C_site/` holds a research candidate that
+was tested once on DeepDRiD (93.3% sensitivity, 89.0% specificity; see
+[validation](../docs/VALIDATION.md)). It is tuned for DeepDRiD-like cameras: use
+it only where calibration images from the target camera support it. Its ONNX
+weights are not distributed in this repository. With a local copy of
+`variant_C_site/netrai_fold0.onnx`, run from the `matlab` folder in MATLAB's
+Command Window:
+
+```matlab
+results = main_pipeline('/absolute/path/to/fundus.jpg', ...
+    ModelPath=fullfile(pwd,'variant_C_site','netrai_fold0.onnx'), ...
+    ConfigPath=fullfile(pwd,'variant_C_site','netrai_config.json'));
+```
+
+The variant's `netrai_bundle.json` binds the weights by SHA-256, so a different
+file is refused.
+
 ## Interpretation
 
 NetrAI is a research prototype. Lesion outputs are candidates; Grad-CAM is
