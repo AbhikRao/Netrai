@@ -23,7 +23,8 @@ from utils.calibration import fit_temperature
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('runs', nargs='+', type=Path)
-    parser.add_argument('--target-sensitivity', type=float, default=0.92)
+    parser.add_argument('--target-sensitivity', type=float, default=0.90)
+    parser.add_argument('--rule', choices=('balanced', 'youden-balanced'), default='balanced')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     if args.output.exists():
@@ -33,8 +34,8 @@ def main():
         raise ValueError('Validation rows differ between runs')
     logits = np.mean([np.load(run / 'best_validation_outputs.npy') for run in args.runs], axis=0)
     grade, source = rows[0].grade.to_numpy(), rows[0].source.to_numpy()
-    thresholds = fit_policy(scores(logits), grade, args.target_sensitivity, source, 'balanced')
-    head = fit_head_threshold(logits, grade, args.target_sensitivity, source, 'balanced')
+    thresholds = fit_policy(scores(logits), grade, args.target_sensitivity, source, args.rule)
+    head = fit_head_threshold(logits, grade, args.target_sensitivity, source, args.rule)
     temperature, _ = fit_temperature(logits[:, :5], grade)
     per_source = {name: evaluate(logits[source == name], grade[source == name], thresholds, head)
                   for name in np.unique(source)}
@@ -42,7 +43,7 @@ def main():
         'schema_version': 1, 'status': 'round2_validation_policy_not_acceptance',
         'runs': [str(r) for r in args.runs],
         'validation_outputs_sha256': [sha256_file(r / 'best_validation_outputs.npy') for r in args.runs],
-        'rule': 'source-balanced grade-2 boundary and head threshold at target sensitivity; QWK for others',
+        'rule': args.rule, 'rule_description': 'source-balanced grade-2 boundary and head threshold (target sensitivity or Youden); QWK for other boundaries',
         'target_sensitivity': args.target_sensitivity, 'thresholds': thresholds, 'head_threshold': head,
         'temperature': float(temperature), 'validation_per_source': per_source})
     print(json.dumps({'thresholds': thresholds, 'head_threshold': head,
