@@ -77,12 +77,22 @@ def grade(score, thresholds):
     return (score[:, None] >= np.asarray(thresholds)[None]).sum(axis=1)
 
 
+def midpoint_below(values, cut):
+    """Place a boundary halfway below ``cut`` so no sample sits on it.
+
+    Decisions on the fitting data are unchanged, and tiny cross-runtime
+    numerical differences cannot flip the boundary sample.
+    """
+    lower = np.unique(values[values < cut])
+    return float((cut + lower[-1]) / 2) if len(lower) else float(cut - 1e-6)
+
+
 def referral_threshold(score, labels, target):
     """Lowest-FPR score boundary reaching ``target`` referable sensitivity."""
     fpr, tpr, cut = roc_curve(labels >= 2, score)
     eligible = np.flatnonzero(tpr >= target)
     best = eligible[np.argmin(fpr[eligible])]
-    return float(np.clip(cut[best], 1e-3, 4 - 1e-3))
+    return float(np.clip(midpoint_below(score, cut[best]), 1e-3, 4 - 1e-3))
 
 
 def fit_policy(score, labels, target, sources=None, rule='pooled'):
@@ -123,7 +133,8 @@ def fit_head_threshold(logits, labels, target, sources=None, rule='pooled'):
         return float(np.clip(balanced_threshold(probability, labels, sources, target), 1e-4, 1 - 1e-4))
     fpr, tpr, cut = roc_curve(labels >= 2, probability)
     eligible = np.flatnonzero(tpr >= target)
-    return float(np.clip(cut[eligible[np.argmin(fpr[eligible])]], 1e-4, 1 - 1e-4))
+    boundary = midpoint_below(probability, cut[eligible[np.argmin(fpr[eligible])]])
+    return float(np.clip(boundary, 1e-6, 1 - 1e-6))
 
 
 def selection_value(score, labels):

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "variant_id": "C_noDD_site",
+  "rung": "C",
+  "status": "research_candidate_not_deployed",
+  "adaptation_results_sha256": "93e5d57c13214b73b9c0968628cf7e2785b60a414acd43cb0188ab4f0cfea3a2",
+  "adaptation_code_sha256": "7ea7d9d30110b8d3ea96757db279b64a47edafd80ec32e903f8f69219cbc4a55",
+  "rung_checkpoint_sha256": "6a76a10095bf26d1154eb2c4588ab9e5d2d1c81cee532228b0f180788ee0df6f",
+  "onnx_sha256": "0bbbced8c2d89d6a92312b8a5ed94f48044aa3970c93557ea2f496d73449bd6a",
+  "pytorch_onnx_max_abs_error_random_probe": 4.76837158203125e-07,
+  "policy_sha256": "7f3065e17638a3beaec59cbe4c2b5fadd5fbc14253b1085f9f424af9917229f9",
+  "policy": {
+    "thresholds": [
+      1.8372498676194375,
+      2.012917523674763,
+      2.8346038489142815,
+      3.66594963427306
+    ],
+    "head_threshold": 0.4905923083974023,
+    "temperature": 1.3344041627785619,
+    "calibration_cohort": "deepdrid_validation",
+    "target_sensitivity": 0.92
+  },
+  "training_pool": [
+    "idrid_train",
+    "eyeq_train"
+  ],
+  "selection_cohorts": [
+    "deepdrid_validation",
+    "eyeq_test"
+  ],
+  "note": "Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant."
+}
