@@ -68,6 +68,16 @@ The candidate uses a corrected loss and a separate preprocessing contract. Its
 calibration partition fitted its policy, so calibration scores are not independent
 validation. Comparisons with the legacy workflow cannot isolate one training change.
 
+## Site-adapted candidate (not deployed)
+
+`matlab/variant_C_site/` holds a research candidate with the same architecture,
+input contract and ONNX schema. Its head layers were retrained on EyePACS, IDRiD
+and DeepDRiD training images over a frozen backbone, and its thresholds were
+calibrated on DeepDRiD validation. In one locked DeepDRiD evaluation it reached
+93.3% sensitivity and 89.0% specificity (see [validation](VALIDATION.md)). It
+depends on target-camera calibration data, has weak Grade-4 recall, and is not
+the default model. Its ONNX weights are kept outside Git.
+
 ## Intended use
 
 Reproducible research and prototype demonstrations. The system has not been

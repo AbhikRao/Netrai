@@ -113,9 +113,11 @@ Command Window; they cannot be entered directly into Bash.
 
 Lesion overlays are candidate detections, and Grad-CAM visualizes model
 attribution. Neither is proof of a confirmed lesion. On the new-to-project
-DeepDRiD development validation partition the deployed model reaches only 63.3%
-referable sensitivity (96.8% specificity, AUC 0.91), so external screening
-accuracy is the main open problem; see [validation](docs/VALIDATION.md). Portable-camera robustness,
+DeepDRiD data the deployed model reaches only about 63% referable sensitivity. A
+site-adapted candidate tested once under a predeclared lock reaches 93.3%
+sensitivity and 89.0% specificity on 392 held-out DeepDRiD images (MATLAB), but it
+needs calibration images from each camera and has not replaced the deployed model;
+see [validation](docs/VALIDATION.md). Portable-camera robustness,
 fresh external grading, broader full-image runtime checks and clinician explanation/review-time
 studies remain open. The capacity model's next steps are field-derived return and
 service assumptions, shift calendars, outages and timed referral escalation.

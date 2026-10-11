@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "site_calibrated_development_policy_not_acceptance",
+  "run": "full_v1",
+  "rung": "C",
+  "outputs_sha256": "afd64696fe8ac368d2c9d56ea0f8f1fb6a280816dcd6eafef70b525914296947",
+  "calibration_cohort": "deepdrid_validation",
+  "calibration_images": 396,
+  "calibration_patients": 99,
+  "rule": "pooled lowest-FPR grade-2 boundary and head threshold at target sensitivity; QWK for other boundaries",
+  "target_sensitivity": 0.92,
+  "thresholds": [
+    1.4511469062438176,
+    1.8432388074632726,
+    2.692714312115863,
+    3.9764271508041493
+  ],
+  "head_threshold": 0.45884988647357444,
+  "temperature": 0.7185973759749352,
+  "in_sample": {
+    "images": 396,
+    "referable": 180,
+    "sensitivity": 0.9222222222222223,
+    "specificity": 0.8796296296296297,
+    "auc": 0.9688271604938272,
+    "sens_at_spec85": 0.9388888888888889,
+    "sens_at_spec80": 0.9611111111111111,
+    "sens_at_spec90": 0.9166666666666666,
+    "selection_value": 0.9388888888888888,
+    "qwk": 0.8353905149944576,
+    "per_grade_recall": [
+      0.7647058823529411,
+      0.32608695652173914,
+      0.4782608695652174,
+      0.9264705882352942,
+      0.25
+    ],
+    "head_sensitivity": 0.9222222222222223,
+    "head_specificity": 0.9166666666666666,
+    "head_disagreement_rate": 0.050505050505050504
+  },
+  "patient_half_split_cross_validation": {
+    "splits": 40,
+    "mean_sensitivity": 0.9243013361494384,
+    "mean_specificity": 0.8713917229723644,
+    "mean_head_disagreement": 0.048145408163265305,
+    "fraction_meeting_both_targets": 0.475
+  }
+}

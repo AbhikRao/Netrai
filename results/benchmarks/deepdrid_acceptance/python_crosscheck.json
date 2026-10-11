@@ -1,0 +1,207 @@
+{
+  "primary_images": 392,
+  "primary_patients": 98,
+  "all_records": 400,
+  "variants": {
+    "A_legacy": {
+      "images": 392,
+      "tp": 103,
+      "fn": 61,
+      "tn": 221,
+      "fp": 7,
+      "sensitivity": 0.6280487804878049,
+      "specificity": 0.9692982456140351,
+      "sensitivity_ci95_patient_cluster": [
+        0.5217164855072464,
+        0.7312171792948235
+      ],
+      "specificity_ci95_patient_cluster": [
+        0.945542304230423,
+        0.9901014366142497
+      ],
+      "auc_expected_grade_score": 0.9509520753102267,
+      "qwk": 0.8123304819528478,
+      "per_grade_recall": [
+        0.8072916666666666,
+        0.4166666666666667,
+        0.2638888888888889,
+        0.3472222222222222,
+        0.5
+      ],
+      "per_grade_support": [
+        192,
+        36,
+        72,
+        72,
+        20
+      ],
+      "quality_gated": {
+        "referable_referred": 93,
+        "referable_auto_cleared": 58,
+        "referable_unresolved": 13,
+        "negative_auto_cleared": 211
+      },
+      "matches_matlab_counts": true
+    },
+    "B_site": {
+      "images": 392,
+      "tp": 152,
+      "fn": 12,
+      "tn": 189,
+      "fp": 39,
+      "sensitivity": 0.926829268292683,
+      "specificity": 0.8289473684210527,
+      "sensitivity_ci95_patient_cluster": [
+        0.8749684343434343,
+        0.9710207396301849
+      ],
+      "specificity_ci95_patient_cluster": [
+        0.7563025210084033,
+        0.8918918918918919
+      ],
+      "auc_expected_grade_score": 0.9509520753102267,
+      "qwk": 0.8088123334602209,
+      "per_grade_recall": [
+        0.8229166666666666,
+        0.027777777777777776,
+        0.8194444444444444,
+        0.3194444444444444,
+        0.5
+      ],
+      "per_grade_support": [
+        192,
+        36,
+        72,
+        72,
+        20
+      ],
+      "quality_gated": {
+        "referable_referred": 146,
+        "referable_auto_cleared": 4,
+        "referable_unresolved": 14,
+        "negative_auto_cleared": 114
+      },
+      "matches_matlab_counts": true
+    },
+    "C_site": {
+      "images": 392,
+      "tp": 153,
+      "fn": 11,
+      "tn": 203,
+      "fp": 25,
+      "sensitivity": 0.9329268292682927,
+      "specificity": 0.8903508771929824,
+      "sensitivity_ci95_patient_cluster": [
+        0.8835616438356164,
+        0.9746914556962024
+      ],
+      "specificity_ci95_patient_cluster": [
+        0.8362794675392281,
+        0.9386816519060454
+      ],
+      "auc_expected_grade_score": 0.9705551989730423,
+      "qwk": 0.8648194794290512,
+      "per_grade_recall": [
+        0.8229166666666666,
+        0.3888888888888889,
+        0.625,
+        0.9027777777777778,
+        0.2
+      ],
+      "per_grade_support": [
+        192,
+        36,
+        72,
+        72,
+        20
+      ],
+      "quality_gated": {
+        "referable_referred": 147,
+        "referable_auto_cleared": 7,
+        "referable_unresolved": 10,
+        "negative_auto_cleared": 192
+      },
+      "matches_matlab_counts": true
+    },
+    "C_noDD_site": {
+      "images": 392,
+      "tp": 154,
+      "fn": 10,
+      "tn": 181,
+      "fp": 47,
+      "sensitivity": 0.9390243902439024,
+      "specificity": 0.793859649122807,
+      "sensitivity_ci95_patient_cluster": [
+        0.8918837512211006,
+        0.9770180250783699
+      ],
+      "specificity_ci95_patient_cluster": [
+        0.725405220794565,
+        0.8565134099616857
+      ],
+      "auc_expected_grade_score": 0.9458707744972187,
+      "qwk": 0.7865774307492099,
+      "per_grade_recall": [
+        0.7447916666666666,
+        0.3055555555555556,
+        0.6944444444444444,
+        0.3472222222222222,
+        0.55
+      ],
+      "per_grade_support": [
+        192,
+        36,
+        72,
+        72,
+        20
+      ],
+      "quality_gated": {
+        "referable_referred": 149,
+        "referable_auto_cleared": 9,
+        "referable_unresolved": 6,
+        "negative_auto_cleared": 169
+      },
+      "matches_matlab_counts": true
+    },
+    "D_site": {
+      "images": 392,
+      "tp": 156,
+      "fn": 8,
+      "tn": 207,
+      "fp": 21,
+      "sensitivity": 0.9512195121951219,
+      "specificity": 0.9078947368421053,
+      "sensitivity_ci95_patient_cluster": [
+        0.9029850746268657,
+        0.9887640449438202
+      ],
+      "specificity_ci95_patient_cluster": [
+        0.8536406025824964,
+        0.9529947916666666
+      ],
+      "auc_expected_grade_score": 0.9753423192126658,
+      "qwk": 0.8912090007627765,
+      "per_grade_recall": [
+        0.9114583333333334,
+        0.1388888888888889,
+        0.5694444444444444,
+        0.8472222222222222,
+        0.7
+      ],
+      "per_grade_support": [
+        192,
+        36,
+        72,
+        72,
+        20
+      ],
+      "quality_gated": {
+        "referable_referred": 149,
+        "referable_auto_cleared": 6,
+        "referable_unresolved": 9,
+        "negative_auto_cleared": 193
+      },
+      "matches_matlab_counts": true
+    }
+  }
+}
