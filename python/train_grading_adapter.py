@@ -94,15 +94,33 @@ def fit_policy(score, labels, target, sources=None, rule='pooled'):
     """
     if rule == 'pooled':
         t1 = referral_threshold(score, labels, target)
+    elif rule == 'balanced':
+        t1 = balanced_threshold(score, labels, sources, target)
     else:
         t1 = min(referral_threshold(score[sources == name], labels[sources == name], target)
                  for name in np.unique(sources) if np.any(labels[sources == name] >= 2))
     return ordinal_thresholds(fit_other_thresholds(score, labels, t1)).tolist()
 
 
-def fit_head_threshold(logits, labels, target):
-    """Referral-head probability cut with the same sensitivity target."""
+def balanced_threshold(score, labels, sources, target):
+    """Boundary maximizing source-averaged specificity at source-averaged
+    sensitivity >= target, so no single large source dominates the operating point."""
+    names = [n for n in np.unique(sources) if np.any(labels[sources == n] >= 2) and np.any(labels[sources == n] < 2)]
+    candidates = np.unique(score)
+    best = None
+    for cut in candidates:
+        sens = np.mean([np.mean(score[(sources == n) & (labels >= 2)] >= cut) for n in names])
+        spec = np.mean([np.mean(score[(sources == n) & (labels < 2)] < cut) for n in names])
+        if sens >= target and (best is None or spec > best[0]):
+            best = (spec, cut)
+    return float(np.clip(best[1], 1e-3, 4 - 1e-3))
+
+
+def fit_head_threshold(logits, labels, target, sources=None, rule='pooled'):
+    """Referral-head probability cut with the same sensitivity target and rule."""
     probability = 1 / (1 + np.exp(-logits[:, 5]))
+    if rule == 'balanced':
+        return float(np.clip(balanced_threshold(probability, labels, sources, target), 1e-4, 1 - 1e-4))
     fpr, tpr, cut = roc_curve(labels >= 2, probability)
     eligible = np.flatnonzero(tpr >= target)
     return float(np.clip(cut[eligible[np.argmin(fpr[eligible])]], 1e-4, 1 - 1e-4))
@@ -267,7 +285,7 @@ def main():
     parser.add_argument('--stress', nargs='*', default=list(STRESS))
     parser.add_argument('--exclude-pool', nargs='*', default=[], help='e.g. deepdrid_training for D-noDeepDRiD')
     parser.add_argument('--target-sensitivity', type=float, default=0.92)
-    parser.add_argument('--threshold-rule', choices=('pooled', 'worst-source'), default='pooled')
+    parser.add_argument('--threshold-rule', choices=('pooled', 'balanced', 'worst-source'), default='pooled')
     parser.add_argument('--holdout-fraction', type=float, default=0.15)
     parser.add_argument('--epochs', type=int, default=12)
     parser.add_argument('--batch-size', type=int, default=32)
@@ -276,6 +294,7 @@ def main():
     parser.add_argument('--threads', type=int, default=6)
     parser.add_argument('--seed', type=int, default=2026)
     args = parser.parse_args()
+    code_sha256 = sha256_file(Path(__file__))  # hash the code that actually runs
     if args.output.exists() and any(args.output.iterdir()):
         raise FileExistsError('Use a new output directory')
     args.output.mkdir(parents=True, exist_ok=True)
@@ -341,7 +360,7 @@ def main():
         'schema_version': 1, 'status': 'development_selection_not_acceptance',
         'pool': pool_names, 'selection': args.selection, 'stress_exposed': args.stress,
         'arguments': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
-        'code_sha256': sha256_file(Path(__file__)), 'policies': policies, 'results': results,
+        'code_sha256': code_sha256, 'policies': policies, 'results': results,
         'holdout_groups': len(holdout_groups),
         'limitations': ['DeepDRiD validation and EyeQ test subset choose epochs and rungs; they are development data.',
                         'IDRiD test was previously exposed and is not used for any choice.',
