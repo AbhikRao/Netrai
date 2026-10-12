@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Two-stage locked evaluation on a fresh test cohort (round 2: Messidor-2).
+"""Two-stage locked evaluation on fresh test cohorts (round 2: Messidor-2/DDR; round 3: ODIR/EyeQ).
 
 ``freeze``: label-free. Computes every predeclared variant's logits on the test
 images, then writes a lock binding the image bytes, predictions, model files,
@@ -9,6 +9,9 @@ decision policies, code, protocol and the label file *hash* (never its values).
 model-only referable sensitivity/specificity at each variant's frozen policy,
 threshold-free AUC and sensitivity at 85% specificity, QWK, per-grade recall,
 exam-cluster bootstrap intervals and paired differences versus the reference.
+
+Logits already present in the output directory (e.g. computed on another device)
+are reused only after a CPU spot check of their first images.
 """
 from __future__ import annotations
 
@@ -46,6 +49,20 @@ ROUND3_COHORTS = {
     'eyeq_remainder': {'images': EYEQ / 'images/test', 'labels': EYEQ / 'data/Label_EyeQ_test.csv',
                        'cluster': 'patient (EyePACS filename prefix)'},
 }
+ROUNDS = {
+    2: {'cohorts': COHORTS, 'labels': [LABELS, DDR_LABELS],
+        'protocol': ROOT / '.project-notes/docs/MODEL_IMPROVEMENT_PLAN_v2.md',
+        'tests': {'messidor2': 'primary: 1748 images / 874 exams, Krause 2018 adjudicated grades',
+                  'ddr_test': 'secondary: DDR DR_grading test split, 4105 images, grade 5 = ungradable'},
+        'exposure': 'Messidor-2 adjudicated and DDR test labels are exposed after this evaluation.'},
+    3: {'cohorts': ROUND3_COHORTS, 'labels': [ODIR_LABELS, EYEQ / 'data/Label_EyeQ_test.csv'],
+        'protocol': ROOT / '.project-notes/docs/MODEL_IMPROVEMENT_PLAN_v3.md',
+        'tests': {'odir': 'primary: ODIR-5K training release (Kaggle mirror), 6784 images / 3392 patients after '
+                          'DDR-overlap exclusion; keyword-mapped ICDR grades',
+                  'eyeq_remainder': 'secondary: EyeQ/EyePACS test remainder, predeclared 4000-image patient subset'},
+        'exposure': 'ODIR-5K keyword labels and the EyeQ test-remainder DR grades are exposed after this evaluation.'},
+}
+SPOT_CHECK_IMAGES, SPOT_CHECK_TOLERANCE = 8, 5e-3
 QUALITY_TERMS = ('low image quality', 'lens dust', 'optic disk photographically invisible', 'image offset',
                  'no fundus image', 'image quality')
 
@@ -175,8 +192,9 @@ def freeze(args):
         raise FileExistsError('A lock may not be overwritten')
     args.output.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(args.threads)
-    cache, inventories = {}, []
-    for cohort, info in COHORTS.items():
+    setup = ROUNDS[args.round]
+    cache, inventories, spot_checks = {}, [], {}
+    for cohort, info in setup['cohorts'].items():
         frame = inventory(cohort)
         frame['sha256'] = [sha(info['images'] / i) for i in frame.image_id]
         inv = args.output / f'inventory_{cohort}.csv'
@@ -188,6 +206,15 @@ def freeze(args):
             path = args.output / f"logits_{cohort}_{spec['id']}.npy"
             if not path.exists():
                 np.save(path, logits_for(spec, frame, folder=info['images']))
+            else:  # precomputed elsewhere: shape and CPU spot check before binding
+                saved = np.load(path)
+                if saved.shape != (len(frame), 6):
+                    raise ValueError(f'{path.name}: shape {saved.shape} != ({len(frame)}, 6)')
+                head = frame.iloc[:SPOT_CHECK_IMAGES].reset_index(drop=True)
+                error = float(np.abs(logits_for(spec, head, folder=info['images']) - saved[:len(head)]).max())
+                if error > SPOT_CHECK_TOLERANCE:
+                    raise ValueError(f'{path.name}: CPU spot check differs by {error}')
+                spot_checks[path.name] = error
             cache[(cohort, spec['id'])] = path
         for spec in config['variants']:
             if spec['kind'] == 'ensemble':
@@ -198,12 +225,13 @@ def freeze(args):
                 [args.variants, *inventories, Path(__file__), args.protocol,
                  ROOT / 'python/utils/preprocessing.py', ROOT / 'python/models/netrai_model.py',
                  ROOT / 'python/export_adapted_variant.py', ROOT / 'python/utils/metrics.py',
-                 ROOT / 'python/weights/fold0_thresholds.npy', LABELS, DDR_LABELS, *matlab_files, *cache.values()]
+                 ROOT / 'python/weights/fold0_thresholds.npy', *setup['labels'], *matlab_files, *cache.values()]
                 + [ROOT / s['checkpoint'] for s in config['variants'] if s.get('checkpoint')]
                 + [ROOT / s['policy'] for s in config['variants'] if s.get('policy')]}
-    atomic_json(lock_path, {'schema_version': 1, 'locked_utc': datetime.now(timezone.utc).isoformat(),
-                            'tests': {'messidor2': 'primary: 1748 images / 874 exams, Krause 2018 adjudicated grades',
-                                      'ddr_test': 'secondary: DDR DR_grading test split, 4105 images, grade 5 = ungradable'},
+    atomic_json(lock_path, {'schema_version': 2 if args.round == 3 else 1, 'round': args.round,
+                            'locked_utc': datetime.now(timezone.utc).isoformat(), 'tests': setup['tests'],
+                            'precomputed_logits_cpu_spot_check_max_abs': spot_checks,
+                            'logits_provenance': config.get('logits_provenance'),
                             'labels_read': False, 'primary_variant': config['primary'],
                             'reference_variant': config['reference'], 'bootstrap_seed': config['bootstrap_seed'],
                             'bootstrap_replicates': config['bootstrap_replicates'], 'bindings': bindings})
@@ -283,7 +311,7 @@ def cohort_labels(cohort, frame):
     return frame, gradable, grade
 
 
-def evaluate_cohort(cohort, args, config, lock):
+def evaluate_cohort(cohort, args, config, lock, cohorts=COHORTS):
     frame = pd.read_csv(args.output / f'inventory_{cohort}.csv')
     frame, gradable, grade_all = cohort_labels(cohort, frame)
     grade = grade_all[gradable].astype(int)
@@ -317,7 +345,7 @@ def evaluate_cohort(cohort, args, config, lock):
             'sensitivity_difference_ci95': np.percentile(d_sens, [2.5, 97.5]).tolist(),
             'specificity_difference': float((~positive[~truth]).mean() - (~base[~truth]).mean()),
             'specificity_difference_ci95': np.percentile(d_spec, [2.5, 97.5]).tolist()}
-    return {'cluster_unit': COHORTS[cohort]['cluster'],
+    return {'cluster_unit': cohorts[cohort]['cluster'],
             'population': {'images': int(len(frame)), 'gradable': int(gradable.sum()),
                            'ungradable': int((~gradable).sum()), 'clusters_gradable': int(len(unique))},
             'results': results, 'comparisons': comparisons}
@@ -332,12 +360,13 @@ def evaluate(args):
     if report_path.exists():
         raise FileExistsError('This lock has already been evaluated')
     config = json.loads(args.variants.read_text())
-    cohorts = {cohort: evaluate_cohort(cohort, args, config, lock) for cohort in COHORTS}
+    setup = ROUNDS[lock.get('round', 2)]
+    cohorts = {cohort: evaluate_cohort(cohort, args, config, lock, setup['cohorts']) for cohort in setup['cohorts']}
     report = {'schema_version': 2, 'lock_sha256': sha(args.output / 'lock.json'),
               'evaluated_utc': datetime.now(timezone.utc).isoformat(),
               'primary_variant': lock['primary_variant'], 'reference_variant': lock['reference_variant'],
               'cohorts': cohorts,
-              'exposure': 'Messidor-2 adjudicated and DDR test labels are exposed after this evaluation.'}
+              'exposure': setup['exposure']}
     atomic_json(report_path, report)
     for cohort, block in cohorts.items():
         for name, result in block['results'].items():
@@ -351,9 +380,12 @@ def main():
     parser.add_argument('stage', choices=('freeze', 'evaluate'))
     parser.add_argument('--variants', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--protocol', type=Path, default=ROOT / '.project-notes/docs/MODEL_IMPROVEMENT_PLAN_v2.md')
+    parser.add_argument('--round', type=int, choices=sorted(ROUNDS), default=2,
+                        help='freeze only; evaluate follows the round recorded in the lock')
+    parser.add_argument('--protocol', type=Path, help='default: the round plan')
     parser.add_argument('--threads', type=int, default=6)
     args = parser.parse_args()
+    args.protocol = args.protocol or ROUNDS[args.round]['protocol']
     args.variants, args.output, args.protocol = args.variants.resolve(), args.output.resolve(), args.protocol.resolve()
     (freeze if args.stage == 'freeze' else evaluate)(args)
 
