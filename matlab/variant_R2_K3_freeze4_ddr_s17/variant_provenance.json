@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "variant_id": "R2_K3_freeze4_ddr_s17",
+  "rung": "F",
+  "status": "research_candidate_not_deployed",
+  "adaptation_results_sha256": "cb5757f29e36677988f588e393cadfd1ad74578bb9fe6969e34709a48979d912",
+  "adaptation_code_sha256": null,
+  "rung_checkpoint_sha256": [
+    "841f356a9f83ad852a537fe0c66f2e3cf856d1563d369dad7356e1d20836e653"
+  ],
+  "onnx_sha256": "fa297b6762fc645d1b1de05e3cbb4555577d002939226fb37cc39022a6fb8e6f",
+  "pytorch_onnx_max_abs_error_random_probe": 9.5367431640625e-07,
+  "policy_sha256": "cb5757f29e36677988f588e393cadfd1ad74578bb9fe6969e34709a48979d912",
+  "policy": {
+    "thresholds": [
+      0.9998086304637395,
+      1.0025898641698483,
+      2.024136468364768,
+      2.841326993393627
+    ],
+    "head_threshold": 0.21110216832481754,
+    "temperature": 0.8139657363554733,
+    "calibration_cohort": null,
+    "target_sensitivity": 0.9,
+    "rule": "balanced"
+  },
+  "training_pool": null,
+  "selection_cohorts": null,
+  "note": "Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant."
+}
