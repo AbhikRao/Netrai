@@ -1,0 +1,21 @@
+{
+  "status": "POST-HOC exploratory on exposed Messidor-2; not acceptance evidence",
+  "method": "40 exam-level half splits; grade-2 boundary fitted on one half at 0.90 sensitivity, applied to the other",
+  "results": {
+    "A_legacy": {
+      "mean_sensitivity": 0.8973891057639509,
+      "mean_specificity": 0.7204313076612421,
+      "fraction_both_targets": 0.0
+    },
+    "K3_freeze4_ddr_s17": {
+      "mean_sensitivity": 0.8983187753795885,
+      "mean_specificity": 0.8079072144277859,
+      "fraction_both_targets": 0.0
+    },
+    "E_K2_K3_M": {
+      "mean_sensitivity": 0.9001962802587762,
+      "mean_specificity": 0.8092657112338932,
+      "fraction_both_targets": 0.0
+    }
+  }
+}
