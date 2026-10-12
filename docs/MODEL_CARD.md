@@ -78,6 +78,15 @@ calibrated on DeepDRiD validation. In one locked DeepDRiD evaluation it reached
 depends on target-camera calibration data, has weak Grade-4 recall, and is not
 the default model. Its ONNX weights are kept outside Git.
 
+## Round-2 candidate K3 (not deployed)
+
+`matlab/variant_R2_K3_freeze4_ddr_s17/` holds a full-network fine-tuned candidate
+(same architecture and ONNX schema; first four backbone stages frozen; trained on
+APTOS, EyePACS, IDRiD, DeepDRiD and DDR train/valid). In one locked test it reached
+93.9% sensitivity / 69.3% specificity on Messidor-2 and 86.1% / 94.3% on DDR test
+(see [validation](VALIDATION.md)). Specificity on the unseen camera is below target and
+grade 1 is never predicted, so it is a research variant; its weights are kept outside Git.
+
 ## Intended use
 
 Reproducible research and prototype demonstrations. The system has not been

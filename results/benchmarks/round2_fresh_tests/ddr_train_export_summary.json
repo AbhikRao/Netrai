@@ -1,0 +1,11 @@
+{
+  "images": 8763,
+  "grade_counts": {
+    "0": 4386,
+    "1": 441,
+    "2": 3133,
+    "3": 165,
+    "4": 638
+  },
+  "note": "DDR train+valid gradable; DDR test reserved and untouched"
+}

@@ -1,0 +1,23 @@
+{
+  "export": "/kaggle/input/datasets/abhikrao/netrai-train-512",
+  "init": "/kaggle/input/datasets/abhikrao/netrai-train-512/legacy_init_state.pt",
+  "output": "/kaggle/working/run",
+  "epochs": "14",
+  "batch_size": "16",
+  "lr": "0.0001",
+  "class_power": "0.5",
+  "freeze_blocks": "0",
+  "workers": "4",
+  "seed": "2026",
+  "max_train_per_epoch": "0",
+  "device": "cuda",
+  "train_images": 15878,
+  "validation_images": 3503,
+  "train_grade_counts": [
+    10334,
+    1376,
+    2840,
+    795,
+    533
+  ]
+}
