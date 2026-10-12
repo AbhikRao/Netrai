@@ -11,12 +11,13 @@ The simulation explores how connectivity, staffing and recapture demand affect
 screening completion.
 
 <!-- current-state:start -->
-> **Current state (2026-10-12):** the deployed MATLAB model is unchanged. Round 2
-> trained full-network models on GPUs; the selected candidate was tested once on two
-> fresh test sets. On Messidor-2 (a camera never seen in training) it raised referable-DR
-> sensitivity from 54.1% to 93.9% and AUC from 0.909 to 0.937, but specificity fell to
-> 69.3% (target 85%), so it remains a research variant. On the DDR test it reached
-> 86.1% / 94.3% (AUC 0.962). See [validation](docs/VALIDATION.md).
+> **Current state (2026-10-12):** the deployed MATLAB model is unchanged. A round-2
+> full-network candidate, tested once on Messidor-2 (a camera never seen in training),
+> ranks referable DR better than the deployed model: AUC 0.937 vs 0.909 (+0.028, 95% CI
+> +0.015 to +0.041) and sensitivity at 85% specificity 88.2% vs 82.3%. At its fixed
+> thresholds it reaches 93.9% sensitivity but only 69.3% specificity (target 85%), so it
+> remains a research variant. On the DDR test: 86.1% / 94.3% (AUC 0.962). See
+> [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)

@@ -1,0 +1,67 @@
+{
+  "confirmed_duplicates": [
+    "007-3242-100.jpg",
+    "007-7238-400.jpg",
+    "20170414102603948.jpg",
+    "20170414102752964.jpg",
+    "20170414102854581.jpg",
+    "20170422195603994.jpg",
+    "20170426133908898.jpg",
+    "20170426133913159.jpg",
+    "20170426134414814.jpg",
+    "20170426134444480.jpg",
+    "20170426134639089.jpg",
+    "20170426134827493.jpg"
+  ],
+  "conservative_exclusions": 35,
+  "results": {
+    "exclude_12_confirmed/A_legacy": {
+      "images": 3747,
+      "sensitivity": 0.34399052693901716,
+      "specificity": 0.9922254616132167,
+      "auc_expected_grade_score": 0.8912419065570912
+    },
+    "exclude_12_confirmed/K2_freeze4_ddr": {
+      "images": 3747,
+      "sensitivity": 0.8679692125518058,
+      "specificity": 0.935374149659864,
+      "auc_expected_grade_score": 0.9592331561737442
+    },
+    "exclude_12_confirmed/K3_freeze4_ddr_s17": {
+      "images": 3747,
+      "sensitivity": 0.8608644168146833,
+      "specificity": 0.9431486880466472,
+      "auc_expected_grade_score": 0.9615689124334501
+    },
+    "exclude_12_confirmed/M_freeze4": {
+      "images": 3747,
+      "sensitivity": 0.8312611012433393,
+      "specificity": 0.9319727891156463,
+      "auc_expected_grade_score": 0.9264882642560535
+    },
+    "exclude_all_distance0_and_confirmed/A_legacy": {
+      "images": 3727,
+      "sensitivity": 0.34400948991696323,
+      "specificity": 0.9921607055365017,
+      "auc_expected_grade_score": 0.8915942049201337
+    },
+    "exclude_all_distance0_and_confirmed/K2_freeze4_ddr": {
+      "images": 3727,
+      "sensitivity": 0.8683274021352313,
+      "specificity": 0.9348358647721705,
+      "auc_expected_grade_score": 0.9590596217633414
+    },
+    "exclude_all_distance0_and_confirmed/K3_freeze4_ddr_s17": {
+      "images": 3727,
+      "sensitivity": 0.8612099644128114,
+      "specificity": 0.9431651151396374,
+      "auc_expected_grade_score": 0.9614910933223602
+    },
+    "exclude_all_distance0_and_confirmed/M_freeze4": {
+      "images": 3727,
+      "sensitivity": 0.8315539739027283,
+      "specificity": 0.93140617344439,
+      "auc_expected_grade_score": 0.9265138794685228
+    }
+  }
+}
