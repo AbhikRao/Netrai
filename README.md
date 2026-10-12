@@ -12,12 +12,11 @@ screening completion.
 
 <!-- current-state:start -->
 > **Current state (2026-10-12):** the deployed MATLAB model is unchanged. A round-2
-> full-network candidate, tested once on Messidor-2 (a camera never seen in training),
-> ranks referable DR better than the deployed model: AUC 0.937 vs 0.909 (+0.028, 95% CI
-> +0.015 to +0.041) and sensitivity at 85% specificity 88.2% vs 82.3%. At its fixed
-> thresholds it reaches 93.9% sensitivity but only 69.3% specificity (target 85%), so it
-> remains a research variant. On the DDR test: 86.1% / 94.3% (AUC 0.962). See
-> [validation](docs/VALIDATION.md).
+> candidate ranks referable DR better on an unseen camera (Messidor-2 AUC 0.937 vs 0.909,
+> +0.028, 95% CI +0.015 to +0.041) but misses the specificity target at fixed thresholds
+> (93.9% / 69.3%), so it remains a research variant. Round 3 is in progress: 768-pixel
+> training on ~28.8k images, to be judged once on a new fresh test (ODIR-5K, with images
+> shared with the training data removed). See [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)

@@ -34,10 +34,49 @@ MESSIDOR = ROOT / 'data/messidor2'
 LABELS = MESSIDOR / 'adjudicated_labels_download/messidor_data.csv'
 DDR = ROOT / 'data/DDR/extracted/DDR-dataset/DR_grading'
 DDR_LABELS = DDR / 'test.txt'
+ODIR = ROOT / 'data/odir/extracted/ODIR-5K/ODIR-5K'
+ODIR_LABELS = ODIR / 'data.xlsx'
+EYEQ = ROOT / 'data/eyeq'
 COHORTS = {
     'messidor2': {'images': MESSIDOR / 'images', 'labels': LABELS, 'cluster': 'exam (left/right pair)'},
     'ddr_test': {'images': DDR / 'test', 'labels': DDR_LABELS, 'cluster': 'image (no patient ids released)'},
 }
+ROUND3_COHORTS = {
+    'odir': {'images': ODIR / 'Training Images', 'labels': ODIR_LABELS, 'cluster': 'patient (ODIR ID)'},
+    'eyeq_remainder': {'images': EYEQ / 'images/test', 'labels': EYEQ / 'data/Label_EyeQ_test.csv',
+                       'cluster': 'patient (EyePACS filename prefix)'},
+}
+QUALITY_TERMS = ('low image quality', 'lens dust', 'optic disk photographically invisible', 'image offset',
+                 'no fundus image', 'image quality')
+
+
+def odir_grade(keywords):
+    """Predeclared ODIR keyword -> ICDR grade mapping (None = not usable for the DR endpoint)."""
+    import re
+    terms = [t.strip().lower() for t in re.split('[,，;]', str(keywords)) if t.strip()]
+    if any(any(q in t for q in QUALITY_TERMS) for t in terms):
+        return 'ungradable'
+    grades = []
+    for t in terms:
+        if 'hypertensive' in t:
+            continue
+        if re.search(r'severe\s*non[\s-]*proliferative', t):
+            grades.append(3)
+        elif re.search(r'moderate\s*non[\s-]*proliferative', t):
+            grades.append(2)
+        elif re.search(r'mild\s*non[\s-]*proliferative', t):
+            grades.append(1)
+        elif re.search(r'proliferative', t) and 'non' not in t:
+            grades.append(4)
+        elif 'diabetic retinopathy' in t:
+            grades.append('unspecified')
+    if 'unspecified' in grades:
+        return 'unspecified'
+    if grades:
+        return max(grades)
+    if any(t == 'normal fundus' for t in terms):
+        return 0
+    return 'other_disease_only'
 
 
 def sha(path):
@@ -45,6 +84,34 @@ def sha(path):
 
 
 def inventory(cohort='messidor2'):
+    if cohort == 'odir':
+        excluded = set(pd.read_csv(ROOT / 'results/model_improvement/odir_excluded_images.csv').image)
+        images = sorted(p.name for p in (ODIR / 'Training Images').glob('*.jpg') if p.name not in excluded)
+        return pd.DataFrame({'image_id': images, 'exam_id': ['odir_' + i.split('_')[0] for i in images]})
+    if cohort == 'eyeq_remainder':
+        labels = pd.read_csv(EYEQ / 'data/Label_EyeQ_test.csv', usecols=['image', 'quality'])
+        labels = labels.loc[labels.quality.isin([0, 1])]
+        from extract_backbone_cache import cohort as cached
+        used = set(cached('eyeq_test', 3000, 2026).image_id)  # round-2 selection subset
+        overlap = ROOT / 'results/verification_2026-09-24/perceptual_overlap/visually_confirmed_pairs.csv'
+        used |= set(pd.read_csv(overlap).image_b)
+        labels = labels.loc[~labels.image.isin(used)]
+        labels['patient'] = labels.image.str.split('_').str[0]
+        patients = labels.patient.drop_duplicates().sample(frac=1, random_state=20261012)
+        counts, chosen, total = labels.groupby('patient').size(), [], 0
+        for patient in patients:  # predeclared 4,000-image patient subset bounds compute
+            if total >= 4000:
+                break
+            chosen.append(patient); total += int(counts[patient])
+        labels = labels.loc[labels.patient.isin(chosen)].sort_values('image')
+        names = []
+        for image in labels.image:
+            stem = Path(image).stem
+            found = next(p for p in (EYEQ / f'images/test/{image}', EYEQ / f'images/test/{stem}.png',
+                                     EYEQ / f'images/test/{stem}.jpg') if p.is_file())
+            names.append(found.name)
+        return pd.DataFrame({'image_id': names, 'label_image': labels.image.values,
+                             'exam_id': ('eyeq_' + labels.patient).values})
     if cohort == 'ddr_test':
         images = sorted(p.name for p in DDR.joinpath('test').iterdir())
         return pd.DataFrame({'image_id': images, 'exam_id': images})
@@ -71,6 +138,7 @@ def load_model(spec):
 
 
 def logits_for(spec, frame, batch=8, folder=MESSIDOR / 'images'):
+    size = int(spec.get('size', 512))
     model = load_model(spec)
     outputs = []
     with torch.inference_mode():
@@ -79,7 +147,7 @@ def logits_for(spec, frame, batch=8, folder=MESSIDOR / 'images'):
             for name in frame.image_id[start:start + batch]:
                 data = np.frombuffer((folder / name).read_bytes(), np.uint8)
                 rgb = cv2.cvtColor(cv2.imdecode(data, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
-                arrays.append(preprocess_for_model(rgb).transpose(2, 0, 1))
+                arrays.append(preprocess_for_model(rgb, size=size).transpose(2, 0, 1))
             grade, referral = model(torch.from_numpy(np.stack(arrays)).float())
             outputs.append(torch.cat([grade, referral[:, None]], 1).numpy())
             if start % 200 == 0:
@@ -175,6 +243,26 @@ def metrics(logits, grade, thresholds, head_threshold):
 
 def cohort_labels(cohort, frame):
     """First and only read of a reserved label file, after lock verification."""
+    if cohort == 'odir':
+        table = pd.read_excel(ODIR_LABELS)
+        per_eye = {}
+        for row in table.itertuples(index=False):
+            per_eye[str(row[3]).strip()] = odir_grade(row[5])  # Left-Fundus, Left-Diagnostic Keywords
+            per_eye[str(row[4]).strip()] = odir_grade(row[6])  # Right-Fundus, Right-Diagnostic Keywords
+        mapped = frame.image_id.map(per_eye)
+        if mapped.isna().any():
+            raise ValueError('ODIR label coverage incomplete')
+        gradable = mapped.map(lambda g: isinstance(g, (int, np.integer))).to_numpy()
+        grade = np.array([g if isinstance(g, (int, np.integer)) else -1 for g in mapped], dtype=float)
+        frame = frame.assign(odir_status=mapped.astype(str))
+        return frame, gradable, grade
+    if cohort == 'eyeq_remainder':
+        labels = pd.read_csv(EYEQ / 'data/Label_EyeQ_test.csv', usecols=['image', 'DR_grade'])
+        frame = frame.merge(labels.rename(columns={'image': 'label_image'}), on='label_image', how='left',
+                            validate='one_to_one')
+        if frame.DR_grade.isna().any():
+            raise ValueError('EyeQ label coverage incomplete')
+        return frame, np.ones(len(frame), bool), frame.DR_grade.to_numpy(float)
     if cohort == 'messidor2':
         labels = pd.read_csv(LABELS)
         # The release lists 'IM000012.jpg' for files named 'IM000012.JPG': join case-insensitively.
