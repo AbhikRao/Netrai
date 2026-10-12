@@ -87,8 +87,21 @@ def logits_for(spec, frame, batch=8, folder=MESSIDOR / 'images'):
     return np.concatenate(outputs).astype(np.float64)
 
 
+def check_matlab_variant(config):
+    """The exported MATLAB primary must carry exactly the locked primary policy."""
+    spec = next(v for v in config['variants'] if v['id'] == config['primary'])
+    policy = json.loads((ROOT / spec['policy']).read_text())
+    variant = ROOT / config['matlab_primary_variant']
+    matlab = json.loads((variant / 'netrai_config.json').read_text())
+    if not (np.allclose(matlab['grade_thresholds'], policy['thresholds'], rtol=0, atol=1e-12)
+            and abs(matlab['referable_head_threshold'] - policy['head_threshold']) < 1e-12):
+        raise ValueError('MATLAB primary variant thresholds differ from the locked policy')
+    return [variant / 'netrai_fold0.onnx', variant / 'netrai_config.json', variant / 'netrai_bundle.json']
+
+
 def freeze(args):
     config = json.loads(args.variants.read_text())
+    matlab_files = check_matlab_variant(config) if config.get('matlab_primary_variant') else []
     lock_path = args.output / 'lock.json'
     if lock_path.exists():
         raise FileExistsError('A lock may not be overwritten')
@@ -102,7 +115,7 @@ def freeze(args):
         frame.to_csv(inv, index=False)
         inventories.append(inv)
         for spec in config['variants']:
-            if spec['kind'] == 'ensemble':
+            if spec['kind'] in ('ensemble', 'policy_of'):
                 continue
             path = args.output / f"logits_{cohort}_{spec['id']}.npy"
             if not path.exists():
@@ -116,7 +129,8 @@ def freeze(args):
     bindings = {str(p.relative_to(ROOT)): sha(p) for p in
                 [args.variants, *inventories, Path(__file__), args.protocol,
                  ROOT / 'python/utils/preprocessing.py', ROOT / 'python/models/netrai_model.py',
-                 ROOT / 'python/export_adapted_variant.py', LABELS, DDR_LABELS, *cache.values()]
+                 ROOT / 'python/export_adapted_variant.py', ROOT / 'python/utils/metrics.py',
+                 ROOT / 'python/weights/fold0_thresholds.npy', LABELS, DDR_LABELS, *matlab_files, *cache.values()]
                 + [ROOT / s['checkpoint'] for s in config['variants'] if s.get('checkpoint')]
                 + [ROOT / s['policy'] for s in config['variants'] if s.get('policy')]}
     atomic_json(lock_path, {'schema_version': 1, 'locked_utc': datetime.now(timezone.utc).isoformat(),
@@ -163,8 +177,10 @@ def cohort_labels(cohort, frame):
     """First and only read of a reserved label file, after lock verification."""
     if cohort == 'messidor2':
         labels = pd.read_csv(LABELS)
-        labels['image_id'] = labels.image_id.str.strip()
-        frame = frame.merge(labels, on='image_id', how='left', validate='one_to_one')
+        # The release lists 'IM000012.jpg' for files named 'IM000012.JPG': join case-insensitively.
+        labels['key'] = labels.image_id.str.strip().str.lower()
+        frame = frame.assign(key=frame.image_id.str.lower()).merge(
+            labels.drop(columns='image_id'), on='key', how='left', validate='one_to_one')
         if frame.adjudicated_gradable.isna().any():
             raise ValueError('Messidor-2 label coverage incomplete')
         gradable = (frame.adjudicated_gradable == 1).to_numpy()
@@ -191,7 +207,8 @@ def evaluate_cohort(cohort, args, config, lock):
     truth = grade >= 2
     results, positives = {}, {}
     for spec in config['variants']:
-        logits = np.load(args.output / f"logits_{cohort}_{spec['id']}.npy")[gradable]
+        source_id = spec.get('logits_from', spec['id'])  # secondary operating point shares logits
+        logits = np.load(args.output / f"logits_{cohort}_{source_id}.npy")[gradable]
         thresholds, head = thresholds_for(spec)
         result, positive = metrics(logits, grade, thresholds, head)
         sens = (weights * (truth & positive)).sum(1) / (weights * truth).sum(1)
@@ -249,6 +266,7 @@ def main():
     parser.add_argument('--protocol', type=Path, default=ROOT / '.project-notes/docs/MODEL_IMPROVEMENT_PLAN_v2.md')
     parser.add_argument('--threads', type=int, default=6)
     args = parser.parse_args()
+    args.variants, args.output, args.protocol = args.variants.resolve(), args.output.resolve(), args.protocol.resolve()
     (freeze if args.stage == 'freeze' else evaluate)(args)
 
 
