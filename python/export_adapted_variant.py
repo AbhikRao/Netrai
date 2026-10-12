@@ -74,7 +74,13 @@ def main():
                         help='round-2 full-network checkpoint(s); several = mean ensemble')
     parser.add_argument('--policy', type=Path, required=True,
                         help='site policy JSON from calibrate_site_policy.py')
+    parser.add_argument('--size', type=int, default=512,
+                        help='square model input size (legacy-area-v1 at this size; 768 for round 3)')
     args = parser.parse_args()
+    if args.size % 32 or not 256 <= args.size <= 1024:
+        raise ValueError('--size must be a multiple of 32 in [256, 1024]')
+    if args.size != 512 and args.rung != 'F':
+        raise ValueError('Only full checkpoints (rung F) are trained at a non-512 size')
     results = json.loads(args.results.read_text())
     policy = json.loads(args.policy.read_text())
     expected_rung = 'A' if args.rung == 'B' else args.rung
@@ -88,6 +94,7 @@ def main():
         raise FileExistsError(f'{output} exists; variants are immutable')
     output.mkdir()
     config = json.loads((ACTIVE / 'netrai_config.json').read_text())
+    config['input_size'] = args.size
     config['grade_thresholds'] = [float(v) for v in policy['thresholds']]
     config['referable_head_threshold'] = float(policy['head_threshold'])
     if policy['temperature'] is not None:
@@ -98,19 +105,19 @@ def main():
     elif args.rung == 'F':
         members = [full_model(c) for c in args.full_checkpoint]
         model = members[0] if len(members) == 1 else MeanEnsemble(members).eval()
-        torch.onnx.export(DualHeadOutputs(model).eval(), torch.zeros(1, 3, 512, 512), output / 'netrai_fold0.onnx',
+        torch.onnx.export(DualHeadOutputs(model).eval(), torch.zeros(1, 3, args.size, args.size), output / 'netrai_fold0.onnx',
                           export_params=True, opset_version=17, do_constant_folding=True,
                           input_names=['input'], output_names=['model_outputs'], dynamo=False)
     else:
         checkpoint = args.results.parent / f'rung_{args.rung}.pt'
         model = adapted_model(checkpoint)
-        torch.onnx.export(DualHeadOutputs(model).eval(), torch.zeros(1, 3, 512, 512), output / 'netrai_fold0.onnx',
+        torch.onnx.export(DualHeadOutputs(model).eval(), torch.zeros(1, 3, args.size, args.size), output / 'netrai_fold0.onnx',
                           export_params=True, opset_version=17, do_constant_folding=True,
                           input_names=['input'], output_names=['model_outputs'], dynamo=False)
     (output / 'netrai_config.json').write_text(json.dumps(config, indent=2) + '\n', encoding='utf-8')
     # PyTorch/ONNX parity on a fixed random tensor and the bundled MATLAB fixture input.
     session = ort.InferenceSession(str(output / 'netrai_fold0.onnx'), providers=['CPUExecutionProvider'])
-    probe = np.random.default_rng(7).normal(size=(1, 3, 512, 512)).astype(np.float32)
+    probe = np.random.default_rng(7).normal(size=(1, 3, args.size, args.size)).astype(np.float32)
     with torch.inference_mode():
         expected = DualHeadOutputs(model)(torch.from_numpy(probe)).numpy()
     error = float(np.abs(session.run(['model_outputs'], {'input': probe})[0] - expected).max())
@@ -126,6 +133,7 @@ def main():
         'rung_checkpoint_sha256': (None if args.rung == 'B' else
                                    [sha256_file(c) for c in args.full_checkpoint] if args.rung == 'F'
                                    else sha256_file(args.results.parent / f'rung_{args.rung}.pt')),
+        'input_size': args.size,
         'onnx_sha256': sha256_file(output / 'netrai_fold0.onnx'),
         'pytorch_onnx_max_abs_error_random_probe': error,
         'policy_sha256': sha256_file(args.policy), 'policy': {k: policy.get(k) for k in
