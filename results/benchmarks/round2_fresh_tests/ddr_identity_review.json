@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-12",
+  "test_cohort": "DDR DR_grading test split (4105 images), labels unopened",
+  "archive_sha256": "a50cf62cf68031e7ebde6312e17a3c65ce5f7aa2294f7f4c3484bf1ac54e9178",
+  "compared_sources": [
+    "aptos",
+    "eyeq_train",
+    "eyeq_test",
+    "idrid_grading",
+    "idrid_segmentation",
+    "deepdrid_training",
+    "deepdrid_validation",
+    "deepdrid_evaluation",
+    "messidor2"
+  ],
+  "exact_byte_overlaps": 0,
+  "geometric_checks_distance_le2_training_sources": 535,
+  "geometrically_consistent": 0,
+  "max_inliers": 14,
+  "visual_review": "All 18 distance-0 pairs inspected: different retinas; several DDR images are very low quality.",
+  "decision": "DDR test retained intact as fresh test #2; DDR train/valid unused.",
+  "notes": [
+    "DDR provides no patient identifiers; intervals are image-level.",
+    "Three DDR JPEGs emit extraneous-byte warnings but decode."
+  ],
+  "candidates_sha256": "ab1b80b48d8c153019caee5baab6b4a557ed81645aeefe2f4f94634ae4f109e0",
+  "geometry_sha256": "1fdf273b3cb1fc5eae4917980b26db9d403e392dc7c09f35786bab2bcbb93104",
+  "inventory_sha256": "b7bb7520597fc31ea2a99f25b8e524dead505828ea08025f787c32b354ea05e2",
+  "labels_file_sha256": "195b400fe17bb2323f074904536eb9c9b3bdf77f867e1456c8f0caefabfdd328"
+}

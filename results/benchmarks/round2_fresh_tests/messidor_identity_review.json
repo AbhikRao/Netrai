@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-11",
+  "test_cohort": "Messidor-2 (1748 images), adjudicated grades (Krause et al. 2018), labels unopened",
+  "compared_sources": [
+    "aptos",
+    "eyeq_train",
+    "eyeq_test",
+    "idrid_grading",
+    "idrid_segmentation",
+    "deepdrid_training",
+    "deepdrid_validation",
+    "deepdrid_evaluation"
+  ],
+  "exact_byte_overlaps": 0,
+  "phash_candidates_distance_le4": 10814,
+  "geometric_checks_distance_le2": 795,
+  "geometrically_consistent": 0,
+  "visual_review": "All 19 distance-0 pairs inspected side by side: different retinas (vascular pattern, disc position, colour). No confirmed repeat.",
+  "decision": "Messidor-2 retained intact as fresh test #1; nothing excluded.",
+  "limitation": "Bounded pHash/ORB screen cannot prove global independence.",
+  "candidate_csv_sha256": "1d5e077f4e1c8bb5b596181a84895ace68afa703ed17f0091149a971a77b13e8",
+  "geometry_csv_sha256": "5298ce47ae0c993897d60dfa09eb7e2f39272dec3d969fb6a1993215e47e8e96",
+  "labels_file_sha256": "bb8bbd82eb4bfddc8a0eb9aa45d84274d814e913534f8027f6a4ff0a310fda72"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "contract": "legacy-area-v1 crop + INTER_AREA 512 uint8 PNG, pre-Ben-Graham",
+  "images": 19381,
+  "by_split_source": "{('train', 'aptos'): 3662, ('train', 'deepdrid'): 1580, ('train', 'eyeq'): 10223, ('train', 'idrid'): 413, ('validation', 'deepdrid'): 400, ('validation', 'eyeq'): 3000, ('validation', 'idrid'): 103}",
+  "grade_counts_train": {
+    "0": 10334,
+    "1": 1376,
+    "2": 2840,
+    "3": 795,
+    "4": 533
+  },
+  "reserved_fresh_tests_not_exported": [
+    "messidor2 (all)",
+    "EyeQ test remainder",
+    "DDR test"
+  ],
+  "deployed_input_reproduction": "exact (array_equal) on a fixed 1-in-25 sample; identical crop/resize code for all"
+}

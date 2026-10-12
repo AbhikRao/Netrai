@@ -1,0 +1,23 @@
+{
+  "export": "../data/train_export",
+  "init": "../legacy_init_state.pt",
+  "output": "../run_mac_freeze4",
+  "epochs": "12",
+  "batch_size": "8",
+  "lr": "0.0001",
+  "class_power": "0.5",
+  "freeze_blocks": "4",
+  "workers": "4",
+  "seed": "17",
+  "max_train_per_epoch": "0",
+  "device": "mps",
+  "train_images": 15878,
+  "validation_images": 3503,
+  "train_grade_counts": [
+    10334,
+    1376,
+    2840,
+    795,
+    533
+  ]
+}

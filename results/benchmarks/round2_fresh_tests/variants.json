@@ -1,0 +1,117 @@
+{
+ "primary": "K3_freeze4_ddr_s17",
+ "reference": "A_legacy",
+ "bootstrap_seed": 20261012,
+ "bootstrap_replicates": 2000,
+ "operating_points": {
+  "primary": "source-balanced 0.90 sensitivity (validation)",
+  "secondary": "source-balanced Youden (suffix _youden)"
+ },
+ "variants": [
+  {
+   "id": "A_legacy",
+   "kind": "legacy"
+  },
+  {
+   "id": "C_site",
+   "kind": "rung",
+   "checkpoint": "results/model_improvement/full_v1/rung_C.pt",
+   "policy": "results/model_improvement/full_v1/site_policy_C_v2.json"
+  },
+  {
+   "id": "K_full",
+   "kind": "full",
+   "checkpoint": "results/model_improvement/kaggle_output_v1/run/best.pt",
+   "policy": "results/model_improvement/round2_eval/policy_K_full_balanced.json"
+  },
+  {
+   "id": "M_freeze4",
+   "kind": "full",
+   "checkpoint": "results/model_improvement/mac_output_v1/run/best.pt",
+   "policy": "results/model_improvement/round2_eval/policy_M_freeze4_balanced.json"
+  },
+  {
+   "id": "K2_freeze4_ddr",
+   "kind": "full",
+   "checkpoint": "results/model_improvement/kaggle_output_v2/run/best.pt",
+   "policy": "results/model_improvement/round2_eval/policy_K2_freeze4_ddr_balanced.json"
+  },
+  {
+   "id": "K3_freeze4_ddr_s17",
+   "kind": "full",
+   "checkpoint": "results/model_improvement/kaggle_output_v3/run/best.pt",
+   "policy": "results/model_improvement/round2_eval/policy_K3_freeze4_ddr_s17_balanced.json"
+  },
+  {
+   "id": "E_K2_K3",
+   "kind": "ensemble",
+   "members": [
+    "K2_freeze4_ddr",
+    "K3_freeze4_ddr_s17"
+   ],
+   "policy": "results/model_improvement/round2_eval/policy_E_K2_K3_balanced.json"
+  },
+  {
+   "id": "E_K2_M",
+   "kind": "ensemble",
+   "members": [
+    "K2_freeze4_ddr",
+    "M_freeze4"
+   ],
+   "policy": "results/model_improvement/round2_eval/policy_E_K2_M_balanced.json"
+  },
+  {
+   "id": "E_K2_K3_M",
+   "kind": "ensemble",
+   "members": [
+    "K2_freeze4_ddr",
+    "K3_freeze4_ddr_s17",
+    "M_freeze4"
+   ],
+   "policy": "results/model_improvement/round2_eval/policy_E_K2_K3_M_balanced.json"
+  },
+  {
+   "id": "K_full_youden",
+   "kind": "policy_of",
+   "logits_from": "K_full",
+   "policy": "results/model_improvement/round2_eval/policy_K_full_youden-balanced.json"
+  },
+  {
+   "id": "M_freeze4_youden",
+   "kind": "policy_of",
+   "logits_from": "M_freeze4",
+   "policy": "results/model_improvement/round2_eval/policy_M_freeze4_youden-balanced.json"
+  },
+  {
+   "id": "K2_freeze4_ddr_youden",
+   "kind": "policy_of",
+   "logits_from": "K2_freeze4_ddr",
+   "policy": "results/model_improvement/round2_eval/policy_K2_freeze4_ddr_youden-balanced.json"
+  },
+  {
+   "id": "K3_freeze4_ddr_s17_youden",
+   "kind": "policy_of",
+   "logits_from": "K3_freeze4_ddr_s17",
+   "policy": "results/model_improvement/round2_eval/policy_K3_freeze4_ddr_s17_youden-balanced.json"
+  },
+  {
+   "id": "E_K2_K3_youden",
+   "kind": "policy_of",
+   "logits_from": "E_K2_K3",
+   "policy": "results/model_improvement/round2_eval/policy_E_K2_K3_youden-balanced.json"
+  },
+  {
+   "id": "E_K2_M_youden",
+   "kind": "policy_of",
+   "logits_from": "E_K2_M",
+   "policy": "results/model_improvement/round2_eval/policy_E_K2_M_youden-balanced.json"
+  },
+  {
+   "id": "E_K2_K3_M_youden",
+   "kind": "policy_of",
+   "logits_from": "E_K2_K3_M",
+   "policy": "results/model_improvement/round2_eval/policy_E_K2_K3_M_youden-balanced.json"
+  }
+ ],
+ "matlab_primary_variant": "matlab/variant_R2_K3_freeze4_ddr_s17"
+}

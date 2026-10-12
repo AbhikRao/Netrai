@@ -91,6 +91,56 @@ image-level without confidence intervals; views of one patient are correlated.
 [confusion matrix](../results/benchmarks/deepdrid_development/confusion_matrix.csv),
 [per-grade metrics](../results/benchmarks/deepdrid_development/per_grade_metrics.csv)
 
+## Round 2: full-network models on two fresh tests (October 12)
+
+Four EfficientNet-B4 models were fine-tuned end to end on GPUs (Kaggle and an
+Apple M4) from the deployed weights, with the architecture, input contract and
+six-output ONNX schema unchanged. Training used up to 24,641 images (APTOS, EyePACS,
+IDRiD, DeepDRiD, and for two models DDR train/valid), acquisition-style
+augmentation (rotation, field-of-view shift, exposure, colour, blur, JPEG) and
+source- and grade-balanced sampling. The primary candidate, `K3` (first four
+backbone stages frozen, DDR added, seed 17), was chosen on development validation by
+a rule fixed in advance; thresholds were fitted on validation data only.
+
+Everything was then locked (53 artifacts: predictions, checkpoints, policies, code,
+protocol, label-file hashes) and two never-used tests were scored once:
+**Messidor-2** with adjudicated grades (Krause et al., 2018; a camera no model saw,
+874 exams) and the **DDR** test split (4,105 images; in-dataset for `K3`, which trained
+on DDR train/valid). Identity reviews found no overlap with any training image.
+
+| Messidor-2 (1,744 gradable images) | Sensitivity (95% CI) | Specificity (95% CI) | AUC | Sens. at 85% spec. |
+| --- | --- | --- | ---: | ---: |
+| Deployed model | 54.1% (48.7–59.4) | 96.3% (95.1–97.4) | 0.909 | 82.3% |
+| **`K3` primary operating point** | **93.9% (91.7–95.9)** | **69.3% (66.5–72.2)** | **0.937** | **88.2%** |
+| `K3` balanced (Youden) point | 91.9% (89.4–94.4) | 76.5% (73.8–79.1) | 0.937 | 88.2% |
+
+| DDR test (3,759 gradable images) | Sensitivity | Specificity | AUC |
+| --- | --- | --- | ---: |
+| Deployed model | 34.4% | 99.2% | 0.891 |
+| **`K3`** | **86.1%** (84.5–87.7) | **94.3%** (93.3–95.3) | **0.962** |
+
+Messidor-2 intervals are exam-cluster bootstrap; DDR has no patient identifiers, so
+its intervals are image-level and likely optimistic. AUCs use the expected-grade score.
+
+What this shows:
+
+- On a camera never seen in training, `K3` ranks referable disease better than the
+  deployed model (AUC 0.937 vs 0.909) and is far more sensitive (+39.8 points, paired
+  interval 34.8–45.0), at a cost of 27.0 specificity points.
+- The thresholds, fitted on other cameras, are too low for Messidor-2: specificity
+  is 69%, below the 85% target. Even at the best possible threshold, sensitivity at 85%
+  specificity is 88.2%, so both targets are narrowly missed. Many of the false
+  positives are mild (grade 1) eyes graded as referable; `K3` never predicts grade 1.
+- Per the predeclared rule, `K3` is therefore a **research variant, not the default**.
+  A single global threshold still does not transfer across cameras; per-camera threshold
+  calibration with a small labelled set remains the practical deployment requirement.
+- MATLAB reproduces `K3`'s logits within 1.1e-5 on label-free test images. Messidor-2
+  and DDR test are now exposed and cannot serve as fresh tests again.
+
+[Locked report](../results/benchmarks/round2_fresh_tests/report.json),
+[variants and policies](../results/benchmarks/round2_fresh_tests/),
+[identity reviews](../results/benchmarks/round2_fresh_tests/messidor_identity_review.json)
+
 ## Locked DeepDRiD evaluation of site-adapted candidates (October 11)
 
 A new grading candidate was developed without the reserved data and then tested

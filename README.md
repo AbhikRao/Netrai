@@ -12,11 +12,11 @@ screening completion.
 
 <!-- current-state:start -->
 > **Current state (2026-10-12):** the deployed MATLAB model is unchanged. Round 2
-> trained four full-network models on GPUs (Kaggle and an Apple M4) with up to 24.6k
-> images; on development validation the selected candidate raises referable-DR AUC from
-> 0.951/0.839/0.891 to 0.982/0.916/0.948 (DeepDRiD/EyePACS/IDRiD) and reproduces in
-> MATLAB within 1.1e-5. Its single locked test on still-unopened Messidor-2 (adjudicated
-> grades) and DDR test images is next.
+> trained full-network models on GPUs; the selected candidate was tested once on two
+> fresh test sets. On Messidor-2 (a camera never seen in training) it raised referable-DR
+> sensitivity from 54.1% to 93.9% and AUC from 0.909 to 0.937, but specificity fell to
+> 69.3% (target 85%), so it remains a research variant. On the DDR test it reached
+> 86.1% / 94.3% (AUC 0.962). See [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)
@@ -121,12 +121,10 @@ Command Window; they cannot be entered directly into Bash.
 ## Scope and next steps
 
 Lesion overlays are candidate detections, and Grad-CAM visualizes model
-attribution. Neither is proof of a confirmed lesion. On the new-to-project
-DeepDRiD data the deployed model reaches only about 63% referable sensitivity. A
-site-adapted candidate tested once under a predeclared lock reaches 93.3%
-sensitivity and 89.0% specificity on 392 held-out DeepDRiD images (MATLAB), but it
-needs calibration images from each camera and has not replaced the deployed model;
-see [validation](docs/VALIDATION.md). Portable-camera robustness,
+attribution. Neither is proof of a confirmed lesion. External screening accuracy is
+the main open problem: a round-2 candidate is far more sensitive on unseen cameras
+(93.9% on Messidor-2) but its specificity there is 69.3%, because decision thresholds
+do not transfer between cameras; per-camera calibration is still needed. Portable-camera robustness,
 fresh external grading, broader full-image runtime checks and clinician explanation/review-time
 studies remain open. The capacity model's next steps are field-derived return and
 service assumptions, shift calendars, outages and timed referral escalation.
