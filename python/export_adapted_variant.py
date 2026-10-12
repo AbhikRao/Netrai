@@ -95,6 +95,12 @@ def main():
     output.mkdir()
     config = json.loads((ACTIVE / 'netrai_config.json').read_text())
     config['input_size'] = args.size
+    if args.rung == 'F':  # legacy checkpoint metadata does not describe new weights
+        for key in ('fold', 'checkpoint_epoch', 'checkpoint_qwk'):
+            config.pop(key, None)
+        config['confidence_calibration'] = {'method': 'scalar_temperature_scaling',
+                                            'artifact': 'variant policy (see variant_provenance.json)',
+                                            'applies_to': 'grade_logits_for_confidence_only'}
     config['grade_thresholds'] = [float(v) for v in policy['thresholds']]
     config['referable_head_threshold'] = float(policy['head_threshold'])
     if policy['temperature'] is not None:

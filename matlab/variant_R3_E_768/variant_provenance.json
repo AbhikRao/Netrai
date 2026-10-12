@@ -28,5 +28,6 @@
   },
   "training_pool": null,
   "selection_cohorts": null,
-  "note": "Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant."
+  "note": "Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant.",
+  "config_metadata_note": "netrai_config.json inherits fold/checkpoint_epoch/checkpoint_qwk and the calibration artifact path from the deployed legacy config; they describe the legacy checkpoint, not these weights. Left unchanged because the round-3 lock binds the config hash; the exporter drops them for later full-checkpoint variants."
 }
