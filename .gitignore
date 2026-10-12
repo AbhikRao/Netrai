@@ -49,6 +49,7 @@ kaggle.json
 
 # MATLAB/Simulink generated caches.
 /matlab/+netrai_fold0/
+/+netrai_fold0/
 /matlab/+quality_model_candidate/
 slprj/
 *.slxc
