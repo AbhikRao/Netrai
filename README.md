@@ -15,7 +15,8 @@ screening completion.
 > at 768 × 768 pixels (two models averaged). In one locked test on ODIR-5K, a set of
 > cameras never used in training, it reached **90.5% sensitivity / 84.5% specificity
 > (AUC 0.948)**, against 32.1% / 98.3% (AUC 0.885) for the deployed model. It ranks
-> referable DR better than the round-2 candidate (AUC +0.013, 95% CI +0.008 to +0.019)
+> referable DR better than the round-2 candidate (paired AUC +0.013, 95% CI +0.008 to +0.019,
+> analysed after the lock)
 > and missed 1 of 182 severe/proliferative eyes. Specificity is 0.5 points under the 85%
 > target, so it stays an opt-in research variant. See [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
