@@ -181,6 +181,8 @@ def check_matlab_variant(config):
     if not (np.allclose(matlab['grade_thresholds'], policy['thresholds'], rtol=0, atol=1e-12)
             and abs(matlab['referable_head_threshold'] - policy['head_threshold']) < 1e-12):
         raise ValueError('MATLAB primary variant thresholds differ from the locked policy')
+    if int(matlab['input_size']) != int(spec.get('size', 512)):
+        raise ValueError('MATLAB primary variant input size differs from the locked variant')
     return [variant / 'netrai_fold0.onnx', variant / 'netrai_config.json', variant / 'netrai_bundle.json']
 
 
@@ -210,8 +212,9 @@ def freeze(args):
                 saved = np.load(path)
                 if saved.shape != (len(frame), 6):
                     raise ValueError(f'{path.name}: shape {saved.shape} != ({len(frame)}, 6)')
-                head = frame.iloc[:SPOT_CHECK_IMAGES].reset_index(drop=True)
-                error = float(np.abs(logits_for(spec, head, folder=info['images']) - saved[:len(head)]).max())
+                rows = np.unique(np.linspace(0, len(frame) - 1, SPOT_CHECK_IMAGES).round().astype(int))
+                head = frame.iloc[rows].reset_index(drop=True)  # spread over the file, includes the last row
+                error = float(np.abs(logits_for(spec, head, folder=info['images']) - saved[rows]).max())
                 if error > SPOT_CHECK_TOLERANCE:
                     raise ValueError(f'{path.name}: CPU spot check differs by {error}')
                 spot_checks[path.name] = error
@@ -345,9 +348,12 @@ def evaluate_cohort(cohort, args, config, lock, cohorts=COHORTS):
             'sensitivity_difference_ci95': np.percentile(d_sens, [2.5, 97.5]).tolist(),
             'specificity_difference': float((~positive[~truth]).mean() - (~base[~truth]).mean()),
             'specificity_difference_ci95': np.percentile(d_spec, [2.5, 97.5]).tolist()}
-    return {'cluster_unit': cohorts[cohort]['cluster'],
-            'population': {'images': int(len(frame)), 'gradable': int(gradable.sum()),
-                           'ungradable': int((~gradable).sum()), 'clusters_gradable': int(len(unique))},
+    population = {'images': int(len(frame)), 'gradable': int(gradable.sum()),
+                  'ungradable': int((~gradable).sum()), 'clusters_gradable': int(len(unique))}
+    if 'odir_status' in frame:  # 'ungradable' above = every eye outside the DR endpoint
+        population['not_in_dr_endpoint_by_status'] = {str(k): int(v) for k, v in
+                                                     frame.odir_status[~gradable].value_counts().items()}
+    return {'cluster_unit': cohorts[cohort]['cluster'], 'population': population,
             'results': results, 'comparisons': comparisons}
 
 
