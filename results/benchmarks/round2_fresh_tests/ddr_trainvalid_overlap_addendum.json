@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-12",
+  "scope": "Post-lock addendum: DDR train/valid (used to train K2/K3) screened against both fresh tests",
+  "messidor2_vs_ddr_trainvalid": {
+    "exact": 0,
+    "geometrically_consistent": 0
+  },
+  "ddr_test_vs_ddr_trainvalid": {
+    "exact": 3,
+    "geometrically_consistent": 12,
+    "visual": "12 geometric pairs are the same image re-saved within the DDR release"
+  },
+  "impact": "Excluding the 12 confirmed (or all 39 distance-0) DDR test images leaves K3 at 86.1% / 94.3%, AUC 0.962 (ddr_duplicate_sensitivity_analysis.json)."
+}

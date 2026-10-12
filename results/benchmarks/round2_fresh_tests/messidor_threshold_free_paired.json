@@ -1,0 +1,32 @@
+{
+  "status": "added after lock (summaries predeclared; paired difference intervals not)",
+  "cluster": "exam",
+  "replicates": 2000,
+  "seed": 20261012,
+  "results": {
+    "K3_freeze4_ddr_s17_vs_A_legacy": {
+      "auc_difference": 0.02793122267958137,
+      "auc_difference_ci95": [
+        0.015208670822742947,
+        0.041256042401507646
+      ],
+      "sens_at_85spec_difference": 0.05908096280087527,
+      "sens_at_85spec_difference_ci95": [
+        0.017370261967036126,
+        0.0907224667789288
+      ]
+    },
+    "E_K2_K3_M_vs_A_legacy": {
+      "auc_difference": 0.029939183112049572,
+      "auc_difference_ci95": [
+        0.01790385326952496,
+        0.04190275485274007
+      ],
+      "sens_at_85spec_difference": 0.05908096280087527,
+      "sens_at_85spec_difference_ci95": [
+        0.018992432193559033,
+        0.09277036901717203
+      ]
+    }
+  }
+}

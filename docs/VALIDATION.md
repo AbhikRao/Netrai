@@ -106,7 +106,10 @@ Everything was then locked (53 artifacts: predictions, checkpoints, policies, co
 protocol, label-file hashes) and two never-used tests were scored once:
 **Messidor-2** with adjudicated grades (Krause et al., 2018; a camera no model saw,
 874 exams) and the **DDR** test split (4,105 images; in-dataset for `K3`, which trained
-on DDR train/valid). Identity reviews found no overlap with any training image.
+on DDR train/valid). Identity reviews found no overlap between Messidor-2 and any
+training image. The DDR release itself repeats 12 images between its train/valid and
+test splits; excluding them leaves the DDR results unchanged
+([addendum](../results/benchmarks/round2_fresh_tests/ddr_trainvalid_overlap_addendum.json)).
 
 | Messidor-2 (1,744 gradable images) | Sensitivity (95% CI) | Specificity (95% CI) | AUC | Sens. at 85% spec. |
 | --- | --- | --- | ---: | ---: |
@@ -124,9 +127,13 @@ its intervals are image-level and likely optimistic. AUCs use the expected-grade
 
 What this shows:
 
-- On a camera never seen in training, `K3` ranks referable disease better than the
-  deployed model (AUC 0.937 vs 0.909) and is far more sensitive (+39.8 points, paired
-  interval 34.8–45.0), at a cost of 27.0 specificity points.
+- On a camera never seen in training, `K3` ranks referable disease genuinely better
+  than the deployed model: AUC +0.028 (paired exam-cluster 95% CI +0.015 to +0.041) and
+  sensitivity at 85% specificity +5.9 points (+1.7 to +9.1). These paired intervals were
+  added after the lock; the summaries themselves were predeclared.
+  [Paired analysis](../results/benchmarks/round2_fresh_tests/messidor_threshold_free_paired.json)
+- At its fixed thresholds `K3` is far more sensitive (+39.8 points, 34.8–45.0) at a cost
+  of 27.0 specificity points; this part is largely a shift in operating point.
 - The thresholds, fitted on other cameras, are too low for Messidor-2: specificity
   is 69%, below the 85% target. Even at the best possible threshold, sensitivity at 85%
   specificity is 88.2%, so both targets are narrowly missed. Many of the false
