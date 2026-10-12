@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "status": "round3_selection_validation_only",
+  "validation_images": 5959,
+  "candidates": {
+    "R4_768_s2026": {
+      "members": [
+        "../results/model_improvement/kaggle_output_r4_s2026/run"
+      ],
+      "selection_value": 0.8966841376435533,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8917824074074074,
+          "auc": 0.9374204998624861
+        },
+        "idrid": {
+          "selection": 0.90625,
+          "auc": 0.9391025641025641
+        },
+        "messidor": {
+          "selection": 0.87673231218089,
+          "auc": 0.9358846842435464
+        },
+        "odir": {
+          "selection": 0.9119718309859155,
+          "auc": 0.9536895284751989
+        }
+      }
+    },
+    "R4_768_s17": {
+      "members": [
+        "../results/model_improvement/kaggle_output_r4_s17/run"
+      ],
+      "selection_value": 0.8969250888057905,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8900462962962964,
+          "auc": 0.9343421972405574
+        },
+        "idrid": {
+          "selection": 0.8854166666666666,
+          "auc": 0.9447115384615385
+        },
+        "messidor": {
+          "selection": 0.8920495988329686,
+          "auc": 0.9437992107576354
+        },
+        "odir": {
+          "selection": 0.92018779342723,
+          "auc": 0.9557647819282847
+        }
+      }
+    },
+    "E4_768": {
+      "members": [
+        "../results/model_improvement/kaggle_output_r4_s2026/run",
+        "../results/model_improvement/kaggle_output_r4_s17/run"
+      ],
+      "selection_value": 0.8976618850798281,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8912037037037037,
+          "auc": 0.9376045677484416
+        },
+        "idrid": {
+          "selection": 0.8958333333333334,
+          "auc": 0.9463141025641025
+        },
+        "messidor": {
+          "selection": 0.8869438366156089,
+          "auc": 0.9426158572766886
+        },
+        "odir": {
+          "selection": 0.9166666666666666,
+          "auc": 0.9563048581343131
+        }
+      }
+    },
+    "E_768_round3": {
+      "members": [
+        "../results/model_improvement/round4_eval/R3_s2026_on_r4_validation",
+        "../results/model_improvement/round4_eval/R3_s17_on_r4_validation"
+      ],
+      "selection_value": 0.8897055072859558,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8877314814814815,
+          "auc": 0.9334540875962597
+        },
+        "idrid": {
+          "selection": 0.875,
+          "auc": 0.9407051282051282
+        },
+        "messidor": {
+          "selection": 0.8935083880379285,
+          "auc": 0.9438213136243772
+        },
+        "odir": {
+          "selection": 0.902582159624413,
+          "auc": 0.9481356739470641
+        }
+      }
+    },
+    "R3_768_s2026": {
+      "members": [
+        "../results/model_improvement/round4_eval/R3_s2026_on_r4_validation"
+      ],
+      "selection_value": 0.8853052402978533,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8784722222222222,
+          "auc": 0.9290923232948295
+        },
+        "idrid": {
+          "selection": 0.875,
+          "auc": 0.9427083333333334
+        },
+        "messidor": {
+          "selection": 0.8898614150255288,
+          "auc": 0.9408000217628226
+        },
+        "odir": {
+          "selection": 0.897887323943662,
+          "auc": 0.9455373545621556
+        }
+      }
+    },
+    "R3_768_s17": {
+      "members": [
+        "../results/model_improvement/round4_eval/R3_s17_on_r4_validation"
+      ],
+      "selection_value": 0.8868786305644876,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.883101851851852,
+          "auc": 0.9330393976897691
+        },
+        "idrid": {
+          "selection": 0.8854166666666666,
+          "auc": 0.9395032051282052
+        },
+        "messidor": {
+          "selection": 0.8811086797957696,
+          "auc": 0.9373009679355413
+        },
+        "odir": {
+          "selection": 0.897887323943662,
+          "auc": 0.9433600394638362
+        }
+      }
+    }
+  }
+}

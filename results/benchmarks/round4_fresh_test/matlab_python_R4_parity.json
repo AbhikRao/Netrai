@@ -1,0 +1,8 @@
+{
+ "images": 40,
+ "max_abs_logit_error": 1.7166137720181496e-05,
+ "grade_matches": 40,
+ "head_matches": 40,
+ "variant": "matlab/variant_R4_768_s17",
+ "list": "round2_eval/parity_list.txt (Messidor-2, validation data)"
+}

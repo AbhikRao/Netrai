@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "status": "round2_validation_policy_not_acceptance",
+  "runs": [
+    "../results/model_improvement/kaggle_output_r4_s17/run"
+  ],
+  "validation_outputs_sha256": [
+    "b0242144647f6d7dc11fdfcbe09db8360017d0f7b1daceecd1fcbc9a42c4801e"
+  ],
+  "rule": "youden-balanced",
+  "rule_description": "source-balanced grade-2 boundary and head threshold (target sensitivity or Youden); QWK for other boundaries",
+  "target_sensitivity": 0.9,
+  "thresholds": [
+    0.916562980250271,
+    1.130761234540746,
+    1.9565318514123953,
+    2.7681788834497003
+  ],
+  "head_threshold": 0.35689157675859506,
+  "temperature": 0.7340464326697469,
+  "validation_per_source": {
+    "eyeq": {
+      "images": 3000,
+      "referable": 576,
+      "sensitivity": 0.8246527777777778,
+      "specificity": 0.948019801980198,
+      "auc": 0.9343421972405574,
+      "sens_at_spec85": 0.8923611111111112,
+      "sens_at_spec80": 0.9114583333333334,
+      "sens_at_spec90": 0.8663194444444444,
+      "selection_value": 0.8900462962962964,
+      "qwk": 0.8071277215936661,
+      "per_grade_recall": [
+        0.9422263973696571,
+        0.2033898305084746,
+        0.5032537960954447,
+        0.5555555555555556,
+        0.5116279069767442
+      ],
+      "head_sensitivity": 0.7934027777777778,
+      "head_specificity": 0.9579207920792079,
+      "head_disagreement_rate": 0.024
+    },
+    "idrid": {
+      "images": 103,
+      "referable": 64,
+      "sensitivity": 0.859375,
+      "specificity": 0.9487179487179487,
+      "auc": 0.9447115384615385,
+      "sens_at_spec85": 0.875,
+      "sens_at_spec80": 0.90625,
+      "sens_at_spec90": 0.875,
+      "selection_value": 0.8854166666666666,
+      "qwk": 0.7824287623399577,
+      "per_grade_recall": [
+        0.9117647058823529,
+        0.0,
+        0.375,
+        0.42105263157894735,
+        0.46153846153846156
+      ],
+      "head_sensitivity": 0.84375,
+      "head_specificity": 0.9487179487179487,
+      "head_disagreement_rate": 0.009708737864077669
+    },
+    "messidor": {
+      "images": 1744,
+      "referable": 457,
+      "sensitivity": 0.9168490153172867,
+      "specificity": 0.7972027972027972,
+      "auc": 0.9437992107576354,
+      "sens_at_spec85": 0.899343544857768,
+      "sens_at_spec80": 0.9146608315098468,
+      "sens_at_spec90": 0.862144420131291,
+      "selection_value": 0.8920495988329686,
+      "qwk": 0.7025738648123087,
+      "per_grade_recall": [
+        0.7069813176007866,
+        0.2777777777777778,
+        0.69164265129683,
+        0.7466666666666667,
+        0.2857142857142857
+      ],
+      "head_sensitivity": 0.8818380743982495,
+      "head_specificity": 0.8477078477078477,
+      "head_disagreement_rate": 0.06594036697247706
+    },
+    "odir": {
+      "images": 1112,
+      "referable": 284,
+      "sensitivity": 0.8732394366197183,
+      "specificity": 0.9033816425120773,
+      "auc": 0.9557647819282847,
+      "sens_at_spec85": 0.9330985915492958,
+      "sens_at_spec80": 0.954225352112676,
+      "sens_at_spec90": 0.8732394366197183,
+      "selection_value": 0.92018779342723,
+      "qwk": 0.8044899897705684,
+      "per_grade_recall": [
+        0.9036496350364963,
+        0.3006993006993007,
+        0.5473251028806584,
+        0.6756756756756757,
+        0.25
+      ],
+      "head_sensitivity": 0.8556338028169014,
+      "head_specificity": 0.9190821256038647,
+      "head_disagreement_rate": 0.02877697841726619
+    }
+  }
+}
