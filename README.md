@@ -15,8 +15,10 @@ screening completion.
 > candidate ranks referable DR better on an unseen camera (Messidor-2 AUC 0.937 vs 0.909,
 > +0.028, 95% CI +0.015 to +0.041) but misses the specificity target at fixed thresholds
 > (93.9% / 69.3%), so it remains a research variant. Round 3 is in progress: 768-pixel
-> training on ~28.8k images, to be judged once on a new fresh test (ODIR-5K, with images
-> shared with the training data removed). See [validation](docs/VALIDATION.md).
+> training on ~28.8k images. The first 768-pixel model beats the round-2 candidate on the
+> same validation images (selection value 0.881 vs 0.866; validation only, not a test
+> result); a second seed is training. Both will be judged once on a new fresh test (ODIR-5K,
+> with images shared with the training data removed). See [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)
