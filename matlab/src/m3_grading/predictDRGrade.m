@@ -20,8 +20,9 @@ function [grade, probabilities, isReferable, continuousScore, logits, ...
     if numel(thresholds) ~= 4 || any(~isfinite(thresholds)) || any(diff(thresholds) <= 0)
         error('NetrAI:InvalidThresholds', 'Exactly four finite grade thresholds are required.');
     end
-    if size(modelInput, 1) ~= 512 || size(modelInput, 2) ~= 512 || size(modelInput, 3) ~= 3
-        error('NetrAI:InvalidModelInput', 'Model input must be 512-by-512-by-3.');
+    side = size(modelInput, 1);
+    if size(modelInput, 2) ~= side || size(modelInput, 3) ~= 3 || side < 256 || side > 1024 || mod(side, 32) ~= 0
+        error('NetrAI:InvalidModelInput', 'Model input must be square N-by-N-by-3 with N a multiple of 32 in [256, 1024].');
     end
 
     dlX = dlarray(single(modelInput), 'SSCB');
