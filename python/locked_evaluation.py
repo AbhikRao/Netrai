@@ -40,6 +40,8 @@ DDR_LABELS = DDR / 'test.txt'
 ODIR = ROOT / 'data/odir/extracted/ODIR-5K/ODIR-5K'
 ODIR_LABELS = ODIR / 'data.xlsx'
 EYEQ = ROOT / 'data/eyeq'
+FDR26 = ROOT / 'data/fdr26'
+FDR26_LABELS = FDR26 / 'download/classification DR.xlsx'
 COHORTS = {
     'messidor2': {'images': MESSIDOR / 'images', 'labels': LABELS, 'cluster': 'exam (left/right pair)'},
     'ddr_test': {'images': DDR / 'test', 'labels': DDR_LABELS, 'cluster': 'image (no patient ids released)'},
@@ -48,6 +50,10 @@ ROUND3_COHORTS = {
     'odir': {'images': ODIR / 'Training Images', 'labels': ODIR_LABELS, 'cluster': 'patient (ODIR ID)'},
     'eyeq_remainder': {'images': EYEQ / 'images/test', 'labels': EYEQ / 'data/Label_EyeQ_test.csv',
                        'cluster': 'patient (EyePACS filename prefix)'},
+}
+ROUND4_COHORTS = {
+    'fdr26': {'images': FDR26 / 'extracted/images', 'labels': FDR26_LABELS,
+              'cluster': 'file-name prefix without the 2-digit suffix (presumed patient/exam)'},
 }
 ROUNDS = {
     2: {'cohorts': COHORTS, 'labels': [LABELS, DDR_LABELS],
@@ -61,6 +67,11 @@ ROUNDS = {
                           'DDR-overlap exclusion; keyword-mapped ICDR grades',
                   'eyeq_remainder': 'secondary: EyeQ/EyePACS test remainder, predeclared 4000-image patient subset'},
         'exposure': 'ODIR-5K keyword labels and the EyeQ test-remainder DR grades are exposed after this evaluation.'},
+    4: {'cohorts': ROUND4_COHORTS, 'labels': [FDR26_LABELS],
+        'protocol': ROOT / '.project-notes/docs/MODEL_IMPROVEMENT_PLAN_v4.md',
+        'tests': {'fdr26': 'primary: FDR26 (Zenodo 10.5281/zenodo.23101200), Oujda, Morocco; final grade_DR '
+                           '(ALFEDIAM 0-4, three graders + senior), identity-reviewed exclusions removed'},
+        'exposure': 'FDR26 grades are exposed after this evaluation.'},
 }
 SPOT_CHECK_IMAGES, SPOT_CHECK_TOLERANCE = 8, 5e-3
 QUALITY_TERMS = ('low image quality', 'lens dust', 'optic disk photographically invisible', 'image offset',
@@ -100,7 +111,19 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def fdr26_grade(value):
+    """Final FDR26 grade: an integer 0-4, possibly written as 'DR2' / '2'; anything else is not gradable."""
+    import re
+    found = re.fullmatch(r'\s*(?:DR\s*)?([0-4])(?:\.0)?\s*', str(value), flags=re.IGNORECASE)
+    return int(found.group(1)) if found else None
+
+
 def inventory(cohort='messidor2'):
+    if cohort == 'fdr26':
+        listing = ROOT / 'results/model_improvement/fdr26_excluded_images.csv'
+        excluded = set(pd.read_csv(listing).image) if listing.is_file() else set()
+        images = sorted(p.name for p in (FDR26 / 'extracted/images').glob('*.jpg') if p.name not in excluded)
+        return pd.DataFrame({'image_id': images, 'exam_id': ['fdr26_' + Path(i).stem[:-2] for i in images]})
     if cohort == 'odir':
         excluded = set(pd.read_csv(ROOT / 'results/model_improvement/odir_excluded_images.csv').image)
         images = sorted(p.name for p in (ODIR / 'Training Images').glob('*.jpg') if p.name not in excluded)
@@ -287,6 +310,17 @@ def cohort_labels(cohort, frame):
         grade = np.array([g if isinstance(g, (int, np.integer)) else -1 for g in mapped], dtype=float)
         frame = frame.assign(odir_status=mapped.astype(str))
         return frame, gradable, grade
+    if cohort == 'fdr26':
+        table = pd.read_excel(FDR26_LABELS, sheet_name='Toutes')
+        keys = table.image_id.astype(str).str.strip().map(lambda i: i if i.lower().endswith('.jpg') else i + '.jpg')
+        if keys.str.lower().duplicated().any():
+            raise ValueError('FDR26 label file repeats an image')
+        grades = dict(zip(keys.str.lower(), table.grade_DR.map(fdr26_grade)))
+        if not set(frame.image_id.str.lower()) <= set(grades):
+            raise ValueError('FDR26 label coverage incomplete')
+        mapped = frame.image_id.str.lower().map(grades)
+        gradable = mapped.notna().to_numpy()
+        return frame, gradable, mapped.fillna(-1).to_numpy(float)
     if cohort == 'eyeq_remainder':
         labels = pd.read_csv(EYEQ / 'data/Label_EyeQ_test.csv', usecols=['image', 'DR_grade'])
         frame = frame.merge(labels.rename(columns={'image': 'label_image'}), on='label_image', how='left',
