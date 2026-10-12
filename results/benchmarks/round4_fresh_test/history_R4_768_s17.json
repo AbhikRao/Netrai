@@ -1,0 +1,122 @@
+[
+  {
+    "epoch": 0,
+    "loss": 0.7422717465708654,
+    "selection_value": 0.891035565370707,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.935038360606894,
+        "selection_value": 0.8854166666666666
+      },
+      "idrid": {
+        "auc": 0.9415064102564102,
+        "selection_value": 0.890625
+      },
+      "messidor": {
+        "auc": 0.9408408270552691,
+        "selection_value": 0.8796498905908097
+      },
+      "odir": {
+        "auc": 0.9535194257331429,
+        "selection_value": 0.908450704225352
+      }
+    },
+    "seconds": 1776.4
+  },
+  {
+    "epoch": 1,
+    "loss": 0.7198403806322151,
+    "selection_value": 0.8969250888057905,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9343421972405573,
+        "selection_value": 0.8900462962962964
+      },
+      "idrid": {
+        "auc": 0.9447115384615384,
+        "selection_value": 0.8854166666666666
+      },
+      "messidor": {
+        "auc": 0.9437992107576353,
+        "selection_value": 0.8920495988329686
+      },
+      "odir": {
+        "auc": 0.9557647819282847,
+        "selection_value": 0.92018779342723
+      }
+    },
+    "seconds": 1800.0
+  },
+  {
+    "epoch": 2,
+    "loss": 0.7012766846600506,
+    "selection_value": 0.8885232418550936,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9381775417125046,
+        "selection_value": 0.8923611111111112
+      },
+      "idrid": {
+        "auc": 0.9350961538461539,
+        "selection_value": 0.8697916666666666
+      },
+      "messidor": {
+        "auc": 0.9381034720203211,
+        "selection_value": 0.8752735229759301
+      },
+      "odir": {
+        "auc": 0.9546676192420221,
+        "selection_value": 0.9166666666666666
+      }
+    },
+    "seconds": 1809.9
+  },
+  {
+    "epoch": 3,
+    "loss": 0.7012804989847872,
+    "selection_value": 0.889244681890068,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.937563743353502,
+        "selection_value": 0.8917824074074074
+      },
+      "idrid": {
+        "auc": 0.9350961538461539,
+        "selection_value": 0.875
+      },
+      "messidor": {
+        "auc": 0.9373502743305807,
+        "selection_value": 0.8723559445660102
+      },
+      "odir": {
+        "auc": 0.9551439069197796,
+        "selection_value": 0.9178403755868545
+      }
+    },
+    "seconds": 1809.1
+  },
+  {
+    "epoch": 4,
+    "loss": 0.6879699712163873,
+    "selection_value": 0.8928897153078126,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9380471901356803,
+        "selection_value": 0.8935185185185185
+      },
+      "idrid": {
+        "auc": 0.9346955128205128,
+        "selection_value": 0.875
+      },
+      "messidor": {
+        "auc": 0.9423081173628219,
+        "selection_value": 0.8840262582056893
+      },
+      "odir": {
+        "auc": 0.955348030210247,
+        "selection_value": 0.9190140845070424
+      }
+    },
+    "seconds": 1809.2
+  }
+]

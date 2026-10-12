@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "size": 768,
+  "images_total": 42055,
+  "images_exported_here": 8408,
+  "by_split_source": {
+    "train/aptos": 3662,
+    "train/ddr": 12522,
+    "train/deepdrid": 1980,
+    "train/eyeq": 14223,
+    "train/idrid": 413,
+    "train/odir": 3296,
+    "validation/eyeq": 3000,
+    "validation/idrid": 103,
+    "validation/messidor": 1744,
+    "validation/odir": 1112
+  },
+  "odir_patients_validation_share": 0.25,
+  "odir_split_seed": 20261013,
+  "reserved_fresh_tests_not_exported": [
+    "mBRSET",
+    "BRSET"
+  ],
+  "deployed_input_reproduction": "exact (array_equal) on a fixed 1-in-25 sample"
+}

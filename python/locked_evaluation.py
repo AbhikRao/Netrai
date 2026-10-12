@@ -53,7 +53,7 @@ ROUND3_COHORTS = {
 }
 ROUND4_COHORTS = {
     'fdr26': {'images': FDR26 / 'extracted/images', 'labels': FDR26_LABELS,
-              'cluster': 'file-name prefix without the 2-digit suffix (presumed patient/exam)'},
+              'cluster': 'file-name prefix groups merged through identical photographs and vessel matches >= 0.6'},
 }
 ROUNDS = {
     2: {'cohorts': COHORTS, 'labels': [LABELS, DDR_LABELS],
@@ -70,7 +70,7 @@ ROUNDS = {
     4: {'cohorts': ROUND4_COHORTS, 'labels': [FDR26_LABELS],
         'protocol': ROOT / '.project-notes/docs/MODEL_IMPROVEMENT_PLAN_v4.md',
         'tests': {'fdr26': 'primary: FDR26 (Zenodo 10.5281/zenodo.23101200), Oujda, Morocco; final grade_DR '
-                           '(ALFEDIAM 0-4, three graders + senior), identity-reviewed exclusions removed'},
+                           '(ALFEDIAM 0-4, three graders + senior); duplicate photographs removed (2,833 images)'},
         'exposure': 'FDR26 grades are exposed after this evaluation.'},
 }
 SPOT_CHECK_IMAGES, SPOT_CHECK_TOLERANCE = 8, 5e-3
@@ -112,9 +112,9 @@ def sha(path):
 
 
 def fdr26_grade(value):
-    """Final FDR26 grade: an integer 0-4, possibly written as 'DR2' / '2'; anything else is not gradable."""
+    """Final FDR26 grade: 0-4 written as 'DR2 - Moderee', 'DR2' or 2; anything else is not gradable."""
     import re
-    found = re.fullmatch(r'\s*(?:DR\s*)?([0-4])(?:\.0)?\s*', str(value), flags=re.IGNORECASE)
+    found = re.fullmatch(r'\s*(?:DR\s*)?([0-4])(?:\.0)?(?:\s*-\s*[^\d].*)?\s*', str(value), flags=re.IGNORECASE)
     return int(found.group(1)) if found else None
 
 
@@ -123,6 +123,10 @@ def inventory(cohort='messidor2'):
         listing = ROOT / 'results/model_improvement/fdr26_excluded_images.csv'
         excluded = set(pd.read_csv(listing).image) if listing.is_file() else set()
         images = sorted(p.name for p in (FDR26 / 'extracted/images').glob('*.jpg') if p.name not in excluded)
+        clusters = ROOT / 'results/model_improvement/fdr26_clusters.csv'
+        if clusters.is_file():  # name prefixes merged through shared photographs / same-eye vessel matches
+            table = dict(pd.read_csv(clusters).itertuples(index=False))
+            return pd.DataFrame({'image_id': images, 'exam_id': [table[i] for i in images]})
         return pd.DataFrame({'image_id': images, 'exam_id': ['fdr26_' + Path(i).stem[:-2] for i in images]})
     if cohort == 'odir':
         excluded = set(pd.read_csv(ROOT / 'results/model_improvement/odir_excluded_images.csv').image)

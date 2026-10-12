@@ -98,6 +98,14 @@ remainder it reached 87.6% / 92.0%. It missed 1 of 182 grade-3/4 ODIR eyes. Spec
 0.5 points under the 85% target and grade 1 is almost never predicted, so it is a research
 variant; its weights (143 MB) are kept outside Git. See [validation](VALIDATION.md).
 
+## Round-4 candidate R4_768_s17 (not deployed)
+
+`matlab/variant_R4_768_s17/` continues the round-3 768-pixel model with ODIR and more EyePACS
+training data. In one locked test on FDR26 (Morocco, cameras unseen in training) it reached 78.0%
+sensitivity / 92.4% specificity (AUC 0.910; deployed model 0.911, round-3 E_768 0.912). About half of
+moderate (grade-2) eyes are missed, and ranking is weaker on rectangular-format images. It is a
+research variant; its weights are kept outside Git. See [validation](VALIDATION.md).
+
 ## Intended use
 
 Reproducible research and prototype demonstrations. The system has not been

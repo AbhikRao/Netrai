@@ -1,0 +1,12 @@
+{"status": "post_hoc_analysis_of_exposed_FDR26_labels",
+ "lock": "results/model_improvement/round4_lock_v3/lock.json",
+ "referred_fraction_by_true_grade": {
+   "R4_768_s17": {"0": 0.057, "1": 0.090, "2": 0.535, "3": 0.820, "4": 0.971},
+   "E_768": {"0": 0.055, "1": 0.087, "2": 0.508, "3": 0.827, "4": 0.971},
+   "A_legacy": {"0": 0.006, "1": 0.002, "2": 0.118, "3": 0.500, "4": 0.875}},
+ "auc_by_image_format": {
+   "note": "image size groups (1/8-scale shapes); presumably different cameras or capture settings",
+   "square 1958x1960 (922 images, 611 referable)": {"R4_768_s17": 0.968, "A_legacy": 0.956},
+   "rectangular 1958x2576 (1702 images, 998 referable)": {"R4_768_s17": 0.894, "A_legacy": 0.904},
+   "rectangular 2910x3600 (205 images, 78 referable)": {"R4_768_s17": 0.768, "A_legacy": 0.743}},
+ "hypothesis": "legacy-area-v1 crops the non-black bounding box and resizes it to a square; when the circular field is clipped by a rectangular frame this distorts the aspect ratio. To be tested on a new fresh test, not on FDR26."}

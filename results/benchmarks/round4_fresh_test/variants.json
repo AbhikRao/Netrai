@@ -1,0 +1,135 @@
+{
+ "primary": "R4_768_s17",
+ "reference": "A_legacy",
+ "bootstrap_seed": 20261013,
+ "bootstrap_replicates": 2000,
+ "operating_points": {
+  "primary": "source-balanced 0.90 sensitivity (round-4 validation for R4/E4/E_768_r4val; each model's own round's validation otherwise)",
+  "secondary": "source-balanced Youden (suffix _youden)"
+ },
+ "selection": "results/model_improvement/round4_eval/round4_selection_table.json",
+ "logits_provenance": "A_legacy FDR26 logits computed on CPU (the Mac MPS copy failed the 5e-3 spot check); K3, round-3 and round-4 768 logits on the owner's Mac (Apple M4, MPS, fp32, python mac_infer.py, same preprocessing code); ensembles are means of member logits; CPU spot check at freeze",
+ "matlab_primary_variant": "matlab/variant_R4_768_s17",
+ "variants": [
+  {
+   "id": "A_legacy",
+   "kind": "legacy"
+  },
+  {
+   "id": "K3_freeze4_ddr_s17",
+   "kind": "full",
+   "checkpoint": "results/model_improvement/kaggle_output_v3/run/best.pt",
+   "policy": "results/model_improvement/round2_eval/policy_K3_freeze4_ddr_s17_balanced.json"
+  },
+  {
+   "id": "K3_freeze4_ddr_s17_youden",
+   "kind": "policy_of",
+   "logits_from": "K3_freeze4_ddr_s17",
+   "policy": "results/model_improvement/round2_eval/policy_K3_freeze4_ddr_s17_youden-balanced.json"
+  },
+  {
+   "id": "R3_768_s2026",
+   "kind": "full",
+   "size": 768,
+   "checkpoint": "results/model_improvement/kaggle_output_768_s2026/run/best.pt",
+   "policy": "results/model_improvement/round3_eval/policy_R3_768_s2026_balanced.json"
+  },
+  {
+   "id": "R3_768_s2026_youden",
+   "kind": "policy_of",
+   "logits_from": "R3_768_s2026",
+   "policy": "results/model_improvement/round3_eval/policy_R3_768_s2026_youden-balanced.json",
+   "size": 768
+  },
+  {
+   "id": "R3_768_s17",
+   "kind": "full",
+   "size": 768,
+   "checkpoint": "results/model_improvement/kaggle_output_768_s17/run/best.pt",
+   "policy": "results/model_improvement/round3_eval/policy_R3_768_s17_balanced.json"
+  },
+  {
+   "id": "R3_768_s17_youden",
+   "kind": "policy_of",
+   "logits_from": "R3_768_s17",
+   "policy": "results/model_improvement/round3_eval/policy_R3_768_s17_youden-balanced.json",
+   "size": 768
+  },
+  {
+   "id": "E_768",
+   "kind": "ensemble",
+   "size": 768,
+   "members": [
+    "R3_768_s2026",
+    "R3_768_s17"
+   ],
+   "policy": "results/model_improvement/round3_eval/policy_E_768_balanced.json"
+  },
+  {
+   "id": "E_768_youden",
+   "kind": "policy_of",
+   "logits_from": "E_768",
+   "policy": "results/model_improvement/round3_eval/policy_E_768_youden-balanced.json",
+   "size": 768
+  },
+  {
+   "id": "E_768_r4val",
+   "kind": "policy_of",
+   "logits_from": "E_768",
+   "size": 768,
+   "policy": "results/model_improvement/round4_eval/policy_E_768_r4val_balanced.json"
+  },
+  {
+   "id": "E_768_r4val_youden",
+   "kind": "policy_of",
+   "logits_from": "E_768",
+   "size": 768,
+   "policy": "results/model_improvement/round4_eval/policy_E_768_r4val_youden-balanced.json"
+  },
+  {
+   "id": "R4_768_s2026",
+   "kind": "full",
+   "size": 768,
+   "checkpoint": "results/model_improvement/kaggle_output_r4_s2026/run/best.pt",
+   "policy": "results/model_improvement/round4_eval/policy_R4_768_s2026_balanced.json"
+  },
+  {
+   "id": "R4_768_s2026_youden",
+   "kind": "policy_of",
+   "logits_from": "R4_768_s2026",
+   "policy": "results/model_improvement/round4_eval/policy_R4_768_s2026_youden-balanced.json",
+   "size": 768
+  },
+  {
+   "id": "R4_768_s17",
+   "kind": "full",
+   "size": 768,
+   "checkpoint": "results/model_improvement/kaggle_output_r4_s17/run/best.pt",
+   "policy": "results/model_improvement/round4_eval/policy_R4_768_s17_balanced.json"
+  },
+  {
+   "id": "R4_768_s17_youden",
+   "kind": "policy_of",
+   "logits_from": "R4_768_s17",
+   "policy": "results/model_improvement/round4_eval/policy_R4_768_s17_youden-balanced.json",
+   "size": 768
+  },
+  {
+   "id": "E4_768",
+   "kind": "ensemble",
+   "size": 768,
+   "members": [
+    "R4_768_s2026",
+    "R4_768_s17"
+   ],
+   "policy": "results/model_improvement/round4_eval/policy_E4_768_balanced.json"
+  },
+  {
+   "id": "E4_768_youden",
+   "kind": "policy_of",
+   "logits_from": "E4_768",
+   "policy": "results/model_improvement/round4_eval/policy_E4_768_youden-balanced.json",
+   "size": 768
+  }
+ ]
+}

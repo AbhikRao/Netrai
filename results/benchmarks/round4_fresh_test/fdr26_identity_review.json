@@ -1,0 +1,24 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-13",
+ "test_cohort": "FDR26 (Zenodo 10.5281/zenodo.23101200), 3,000 JPEG images, labels unopened",
+ "archive_sha256": "6c5517d60f24cbd310a1ab0607b8c90dbb4b88b61aee57840fc2e823b753dadb",
+ "label_workbook_sha256": {
+  "classification DR.xlsx": "2f14256a953e4cde4c46099942586d4259e5ca2f96ad2fcd6510f1aec26c241e",
+  "metadata_classification_DR.xlsx": "54083bc9bccf55f4eb271256de152f0e948090182bf43984585fa8535943f610"
+ },
+ "zenodo_md5_verified": true,
+ "method": "python/identity_review_vessel.py: FOV-cropped green high-pass thumbnails, 64-px screen (20 candidates per image, plain and mirrored) then 128-px rescoring, against all 42,055 round-3/round-4 training and validation images (APTOS, EyeQ, IDRiD, DeepDRiD, DDR, Messidor-2, ODIR). Positive control: recovers every ODIR/DDR copy present in the export.",
+ "max_corr128_histogram": {
+  ">=0.4": 587,
+  ">=0.45": 227,
+  ">=0.5": 73,
+  ">=0.6": 3,
+  ">=0.7": 0,
+  ">=0.8": 0
+ },
+ "visual_review": "Top 12 distinct test images (corr128 0.54-0.66) viewed side by side with their best match: all clearly different retinas (different disc position, vessel tree, lesions); similarity driven by illumination crescents. Copies in the ODIR control mostly scored >= 0.8.",
+ "images_excluded": 0,
+ "primary_population_images": 3000,
+ "limitation": "No exact-byte hash comparison against raw source files; copies with heavy crop/rotation could be missed. Clusters are file-name prefixes (presumed patient/exam), not documented patient IDs."
+}

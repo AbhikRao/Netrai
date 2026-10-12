@@ -91,6 +91,67 @@ image-level without confidence intervals; views of one patient are correlated.
 [confusion matrix](../results/benchmarks/deepdrid_development/confusion_matrix.csv),
 [per-grade metrics](../results/benchmarks/deepdrid_development/per_grade_metrics.csv)
 
+## Round 4: added camera diversity, tested on FDR26 (October 13)
+
+The two 768-pixel models continued training on 36,096 images, adding 3,296 ODIR eyes (several
+Chinese camera brands) and 4,000 more EyePACS images. 1,112 ODIR eyes from other patients joined
+validation. The primary candidate, `R4_768_s17`, was chosen on validation by the predeclared rule.
+It is a single model; the two-model mean was within the tie margin. Everything was then locked
+(42 artifacts) and a new public test was scored once:
+
+- **FDR26**, published on Zenodo in October 2026 (CC BY 4.0). Fundus photographs from Mohammed VI
+  University Hospital, Oujda, Morocco: a region and cameras absent from training. Three graders
+  and a senior grader assigned five-stage ALFEDIAM grades; referable means stage ≥ 2.
+- **Identity review:** no image matches any training or validation image
+  ([review](../results/benchmarks/round4_fresh_test/fdr26_identity_review.json)).
+- **Repeated photographs:** the release repeats many photographs, often under different names, so
+  167 repeats were removed before any grade was read: 2,833 images remain. Name groups were merged
+  through repeated or same-eye photographs into 1,817 clusters, which are used for the intervals.
+- **Two halted attempts:** the first two lock attempts stopped at the label-join step before any
+  result was computed, once on a release file-name duplicate and once on the grade spelling. Both
+  are recorded in the protocol.
+
+| FDR26 (2,833 images, 1,687 referable) | Sensitivity (95% CI) | Specificity (95% CI) | AUC | Sens. at 85% spec. |
+| --- | --- | --- | ---: | ---: |
+| Deployed model | 50.3% (47.5–53.1) | 99.7% (99.3–99.9) | 0.911 | 81.9% |
+| Round-2 `K3` | 76.6% (74.2–78.9) | 91.7% (90.0–93.2) | 0.904 | 81.1% |
+| Round-3 `E_768` | 77.4% (75.0–79.6) | 92.7% (91.1–94.2) | 0.912 | 84.2% |
+| **Round-4 `R4_768_s17` primary operating point** | **78.0% (75.7–80.2)** | **92.4% (90.8–93.9)** | **0.910** | **83.5%** |
+| `R4_768_s17` balanced (Youden) point | 74.8% (72.2–77.0) | 94.7% (93.3–95.9) | 0.910 | 83.5% |
+
+[Full report](../results/benchmarks/round4_fresh_test/report.json)
+
+What this shows:
+
+- **Round 4 did not improve on this test.**
+  - Threshold-free ranking is the same as the deployed model's: paired AUC difference −0.001
+    (95% CI −0.011 to +0.009).
+  - It is also the same as round 3's: −0.002 (−0.007 to +0.003).
+  - The newer models refer far more referable eyes at their thresholds: +27.7 sensitivity points
+    against the deployed model (+25.2 to +30.1), at a cost of 7.2 specificity points.
+  - [Paired analysis](../results/benchmarks/round4_fresh_test/threshold_free_paired.json)
+    (paired intervals added after the lock).
+- **The targets are not met** (sensitivity 78% < 90%), so `R4_768_s17` stays a research variant.
+- **Misses are concentrated in moderate disease.**
+  - About half of grade-2 eyes are referred, against 82% of grade 3 and 97% of grade 4.
+  - The deployed model refers 12%, 50% and 88% of these grades.
+  - The test set is enriched for disease (60% referable), so it is not a screening population.
+- **Performance depends on the image format, post hoc.**
+  - AUC is 0.968 on the square-format images but 0.894 and 0.768 on two rectangular formats.
+  - A likely cause is that the preprocessing distorts the aspect ratio when the circular field is
+    clipped by the frame.
+  - This is a hypothesis for the next round; it cannot be tested on FDR26 again.
+  - [Post-hoc analysis](../results/benchmarks/round4_fresh_test/posthoc_by_grade_and_camera.json)
+- **Limits.**
+  - ALFEDIAM grades are close to, but not the same as, ICDR.
+  - Clusters are inferred from file names and image similarity, not documented patient IDs.
+  - Most test logits were computed on an Apple M4 GPU (CPU spot checks within 4.1e-3); the
+    deployed model's were computed on the CPU.
+- **MATLAB parity:** `R4_768_s17` runs in MATLAB with the locked thresholds. Its grades and
+  referral decisions match Python on 40 validation images (maximum logit difference 1.7e-5).
+  [Parity](../results/benchmarks/round4_fresh_test/matlab_python_R4_parity.json)
+- **Exposure:** FDR26 is now exposed.
+
 ## Round 3: 768-pixel models on two fresh tests (October 12)
 
 The round-2 recipe was retrained at **768 × 768 pixels** instead of 512 (same
@@ -371,7 +432,7 @@ warnings; clinician explanation usefulness remains unmeasured.
 - Portable-camera quality validation and factor-specific robustness.
 - Reliable annotated lesion evaluation, including appropriate subtype/NV labels.
 - Prospective, camera-specific validation of the site-adapted candidate and severe-grade (Grade-4) recall.
-- For the round-3 candidate `E_768`: specificity just below the 85% target on ODIR, grade-1 recognition, and a fresh adjudicated test with other eye diseases included.
+- For the 768-pixel candidates: specificity just below target on ODIR, grade-2 sensitivity and rectangular-format cameras on FDR26, grade-1 recognition, and a fresh adjudicated test with other eye diseases included.
 - Broader full-image runtime checks, including quality and retinal analysis.
 - Clinician explanation usefulness and measured review time.
 - Field-derived recapture-return assumptions, shift/outage modeling and timed referral escalation.
