@@ -134,7 +134,14 @@ What this shows:
 - Per the predeclared rule, `K3` is therefore a **research variant, not the default**.
   A single global threshold still does not transfer across cameras; per-camera threshold
   calibration with a small labelled set remains the practical deployment requirement.
-- MATLAB reproduces `K3`'s logits within 1.1e-5 on label-free test images. Messidor-2
+- Post-hoc and exploratory (Messidor-2 already exposed): even with the threshold
+  calibrated on half of the Messidor-2 exams and tested on the other half (40 splits),
+  `K3` reaches about 90% sensitivity at 81% specificity (deployed model: 72%). The
+  remaining gap on this camera is the model's ranking, not only calibration.
+  [Post-hoc analysis](../results/benchmarks/round2_fresh_tests/posthoc_messidor_site_calibration.json)
+- MATLAB reproduces `K3` exactly at the locked thresholds: on all 1,748 Messidor-2
+  images its grades and referral decisions match the Python results (maximum logit
+  difference 2.1e-5). [Parity](../results/benchmarks/round2_fresh_tests/matlab_python_k3_messidor_parity.json) Messidor-2
   and DDR test are now exposed and cannot serve as fresh tests again.
 
 [Locked report](../results/benchmarks/round2_fresh_tests/report.json),
