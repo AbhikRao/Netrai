@@ -87,6 +87,17 @@ APTOS, EyePACS, IDRiD, DeepDRiD and DDR train/valid). In one locked test it reac
 (see [validation](VALIDATION.md)). Specificity on the unseen camera is below target and
 grade 1 is never predicted, so it is a research variant; its weights are kept outside Git.
 
+## Round-3 candidate E_768 (not deployed)
+
+`matlab/variant_R3_E_768/` holds the mean of two full-network models trained at
+768 × 768 pixels (same architecture, `legacy-area-v1` preprocessing at 768 px, one
+two-member ONNX graph with the standard six outputs). In one locked test on ODIR-5K,
+a set of cameras not used in training, it reached 90.5% sensitivity / 84.5% specificity
+(AUC 0.948, vs 0.935 for K3 and 0.885 for the deployed model). On the EyePACS test
+remainder it reached 87.6% / 92.0%. It missed 1 of 182 grade-3/4 ODIR eyes. Specificity is
+0.5 points under the 85% target and grade 1 is almost never predicted, so it is a research
+variant; its weights (143 MB) are kept outside Git. See [validation](VALIDATION.md).
+
 ## Intended use
 
 Reproducible research and prototype demonstrations. The system has not been

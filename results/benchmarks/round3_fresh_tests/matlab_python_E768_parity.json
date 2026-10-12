@@ -1,0 +1,9 @@
+{
+ "images": 40,
+ "max_abs_logit_error": 9.059906002306661e-06,
+ "grade_matches": 40,
+ "head_matches": 40,
+ "variant": "matlab/variant_R3_E_768",
+ "python": "mean of two 768 checkpoints, CPU",
+ "list": "results/model_improvement/round2_eval/parity_list.txt (Messidor-2, validation data)"
+}

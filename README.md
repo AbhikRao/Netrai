@@ -11,14 +11,13 @@ The simulation explores how connectivity, staffing and recapture demand affect
 screening completion.
 
 <!-- current-state:start -->
-> **Current state (2026-10-12):** the deployed MATLAB model is unchanged. A round-2
-> candidate ranks referable DR better on an unseen camera (Messidor-2 AUC 0.937 vs 0.909,
-> +0.028, 95% CI +0.015 to +0.041) but misses the specificity target at fixed thresholds
-> (93.9% / 69.3%), so it remains a research variant. Round 3 is in progress: 768-pixel
-> training on ~28.8k images. The first 768-pixel model beats the round-2 candidate on the
-> same validation images (selection value 0.881 vs 0.866; validation only, not a test
-> result); a second seed is training. Both will be judged once on a new fresh test (ODIR-5K,
-> with images shared with the training data removed). See [validation](docs/VALIDATION.md).
+> **Current state (2026-10-12):** the deployed MATLAB model is unchanged. Round 3 retrained
+> at 768 × 768 pixels (two models averaged). In one locked test on ODIR-5K, a set of
+> cameras never used in training, it reached **90.5% sensitivity / 84.5% specificity
+> (AUC 0.948)**, against 32.1% / 98.3% (AUC 0.885) for the deployed model. It ranks
+> referable DR better than the round-2 candidate (AUC +0.013, 95% CI +0.008 to +0.019)
+> and missed 1 of 182 severe/proliferative eyes. Specificity is 0.5 points under the 85%
+> target, so it stays an opt-in research variant. See [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)

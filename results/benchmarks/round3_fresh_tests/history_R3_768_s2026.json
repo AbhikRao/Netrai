@@ -1,0 +1,182 @@
+[
+  {
+    "epoch": 0,
+    "loss": 1.009760667135318,
+    "selection_value": 0.8477477409028285,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9155937729189586,
+        "selection_value": 0.8454861111111112
+      },
+      "idrid": {
+        "auc": 0.9419070512820513,
+        "selection_value": 0.875
+      },
+      "messidor": {
+        "auc": 0.9221230993659878,
+        "selection_value": 0.8227571115973742
+      }
+    },
+    "seconds": 1831.2
+  },
+  {
+    "epoch": 1,
+    "loss": 0.8446874846352471,
+    "selection_value": 0.876407292595294,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9284212275394206,
+        "selection_value": 0.8738425925925926
+      },
+      "idrid": {
+        "auc": 0.9379006410256411,
+        "selection_value": 0.875
+      },
+      "messidor": {
+        "auc": 0.9417929505456858,
+        "selection_value": 0.8803792851932896
+      }
+    },
+    "seconds": 1847.8
+  },
+  {
+    "epoch": 2,
+    "loss": 0.7948723199798001,
+    "selection_value": 0.8694168388848366,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9240981389805647,
+        "selection_value": 0.8715277777777777
+      },
+      "idrid": {
+        "auc": 0.9399038461538461,
+        "selection_value": 0.890625
+      },
+      "messidor": {
+        "auc": 0.9222863205357735,
+        "selection_value": 0.8460977388767322
+      }
+    },
+    "seconds": 1855.5
+  },
+  {
+    "epoch": 3,
+    "loss": 0.7605533952928252,
+    "selection_value": 0.8811112124159171,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9290923232948295,
+        "selection_value": 0.8784722222222222
+      },
+      "idrid": {
+        "auc": 0.9427083333333334,
+        "selection_value": 0.875
+      },
+      "messidor": {
+        "auc": 0.9408000217628226,
+        "selection_value": 0.8898614150255288
+      }
+    },
+    "seconds": 1858.7
+  },
+  {
+    "epoch": 4,
+    "loss": 0.7338139296819767,
+    "selection_value": 0.8793430214496042,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9296380809955995,
+        "selection_value": 0.8744212962962963
+      },
+      "idrid": {
+        "auc": 0.9411057692307693,
+        "selection_value": 0.8854166666666666
+      },
+      "messidor": {
+        "auc": 0.9383194000261834,
+        "selection_value": 0.8781911013858497
+      }
+    },
+    "seconds": 1845.1
+  },
+  {
+    "epoch": 5,
+    "loss": 0.7203068326661984,
+    "selection_value": 0.8784207256125564,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.932521572469747,
+        "selection_value": 0.8842592592592592
+      },
+      "idrid": {
+        "auc": 0.9290865384615384,
+        "selection_value": 0.875
+      },
+      "messidor": {
+        "auc": 0.9386577439093851,
+        "selection_value": 0.8760029175784099
+      }
+    },
+    "seconds": 1839.2
+  },
+  {
+    "epoch": 6,
+    "loss": 0.698196432126893,
+    "selection_value": 0.8785815469919226,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9315195842500916,
+        "selection_value": 0.8807870370370371
+      },
+      "idrid": {
+        "auc": 0.9350961538461539,
+        "selection_value": 0.890625
+      },
+      "messidor": {
+        "auc": 0.9377345241677846,
+        "selection_value": 0.8643326039387308
+      }
+    },
+    "seconds": 1847.6
+  },
+  {
+    "epoch": 7,
+    "loss": 0.699185738513867,
+    "selection_value": 0.8780450536240106,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.9326089509992666,
+        "selection_value": 0.8813657407407408
+      },
+      "idrid": {
+        "auc": 0.9342948717948718,
+        "selection_value": 0.890625
+      },
+      "messidor": {
+        "auc": 0.9375730032185174,
+        "selection_value": 0.862144420131291
+      }
+    },
+    "seconds": 1870.0
+  },
+  {
+    "epoch": 8,
+    "loss": 0.6901524843358331,
+    "selection_value": 0.877566810519491,
+    "per_source": {
+      "eyeq": {
+        "auc": 0.933312992757609,
+        "selection_value": 0.8836805555555555
+      },
+      "idrid": {
+        "auc": 0.9314903846153846,
+        "selection_value": 0.8854166666666666
+      },
+      "messidor": {
+        "auc": 0.9368691119238165,
+        "selection_value": 0.8636032093362509
+      }
+    },
+    "seconds": 1840.8
+  }
+]

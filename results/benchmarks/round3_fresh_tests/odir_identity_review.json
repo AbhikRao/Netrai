@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-12",
+  "test_cohort": "ODIR-5K labelled training release (7,000 images / 3,500 patients), labels unopened",
+  "archive_sha256": "5f65f0ececf05c4850a311e1ae8ddf9af0718b607ecf0da82e4b35f95952493f",
+  "annotation_sha256": "0507270f4edad478857a300514018eabefff5fe3ce04ed3b5bd4fcefbd5f54bf",
+  "exact_byte_overlaps": 0,
+  "phash_geometric_consistent": 22,
+  "ddr_same_image_screen": "pHash<=7 candidates (45,759 pairs) verified by green-channel high-pass (vessel) thumbnail correlation; borderline 0.45-0.47 visually different retinas; copies cluster >= 0.6",
+  "odir_images_flagged": 136,
+  "patients_excluded": 108,
+  "images_excluded": 216,
+  "primary_population_images": 6784,
+  "primary_population_patients": 3392,
+  "decision": "Exclude whole ODIR patients with any image matching DDR (vessel corr >= 0.5) or any geometric match; ODIR shares images with DDR, which trains K2/K3 and round 3.",
+  "limitation": "Copies beyond pHash distance 7 (heavy crop/rotation) can be missed."
+}
