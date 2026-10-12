@@ -91,6 +91,75 @@ image-level without confidence intervals; views of one patient are correlated.
 [confusion matrix](../results/benchmarks/deepdrid_development/confusion_matrix.csv),
 [per-grade metrics](../results/benchmarks/deepdrid_development/per_grade_metrics.csv)
 
+## Round 3: 768-pixel models on two fresh tests (October 12)
+
+The round-2 recipe was retrained at **768 × 768 pixels** instead of 512 (same
+`legacy-area-v1` preprocessing, architecture and six-output ONNX schema) on 28,800
+images: the round-2 sources plus DDR test and DeepDRiD evaluation, both already exposed.
+Messidor-2, now exposed, joined validation. Two seeds were trained on Kaggle GPUs. The
+primary candidate, **`E_768`**, is the mean of the two models. It was chosen by a rule
+fixed before training (validation selection value 0.885 vs 0.883 and 0.881 for the
+single models); thresholds were fitted on validation data only.
+
+Everything was then locked (40 artifacts) and two never-used tests were scored once:
+
+- **ODIR-5K** (primary): several camera brands, none used in training. Its per-eye
+  diagnostic keywords were mapped to ICDR grades by a mapping fixed in advance. Eyes
+  with other diseases only, unspecified DR or quality problems are outside the DR
+  endpoint. 108 patients whose photographs also appear in DDR were removed before any
+  label was read ([identity review](../results/benchmarks/round3_fresh_tests/odir_identity_review.json)).
+- **EyePACS test remainder** (secondary): 4,000 unused images from 2,919 patients,
+  in-domain.
+
+| ODIR (4,408 gradable eyes, 2,570 patients) | Sensitivity (95% CI) | Specificity (95% CI) | AUC | Sens. at 85% spec. |
+| --- | --- | --- | ---: | ---: |
+| Deployed model | 32.1% (28.9–35.4) | 98.3% (97.8–98.7) | 0.885 | 77.4% |
+| Round-2 `K3` (512 px) | 89.8% (87.9–91.6) | 81.3% (79.9–82.7) | 0.935 | 87.7% |
+| **`E_768` primary operating point** | **90.5% (88.7–92.3)** | **84.5% (83.1–85.8)** | **0.948** | **90.3%** |
+| `E_768` balanced (Youden) point | 84.6% (82.3–86.8) | 92.6% (91.7–93.5) | 0.948 | 90.3% |
+
+| EyePACS remainder (4,000 images) | Sensitivity (95% CI) | Specificity (95% CI) | AUC |
+| --- | --- | --- | ---: |
+| Deployed model | 31.3% (27.8–35.0) | 98.0% (97.5–98.5) | 0.838 |
+| Round-2 `K3` | 85.3% (82.6–87.8) | 88.1% (86.9–89.2) | 0.928 |
+| **`E_768`** | **87.6% (85.1–89.9)** | **92.0% (91.0–93.0)** | **0.952** |
+
+Intervals are patient-cluster bootstrap (2,000 replicates); AUCs use the expected-grade
+score. [Full report](../results/benchmarks/round3_fresh_tests/report.json)
+
+What this shows:
+
+- **Higher resolution improves ranking on unseen data.** The paired difference against
+  round-2 `K3` excludes zero on both tests: ODIR AUC +0.013 (95% CI +0.008 to +0.019) and
+  sensitivity at 85% specificity +2.5 points (+0.6 to +4.5); EyePACS AUC +0.024 (+0.016 to
+  +0.034). Against the deployed model the ODIR AUC gain is +0.063 (+0.053 to +0.074).
+  These paired intervals were added after the lock; the summaries were predeclared.
+  [Paired analysis](../results/benchmarks/round3_fresh_tests/threshold_free_paired.json)
+- **Thresholds now transfer much better.** On a camera never seen in training, `E_768`
+  is at 90.5% sensitivity / 84.5% specificity at thresholds fitted on other data. Round 2
+  got 69% specificity on Messidor-2, and `K3` gets 81% here.
+- **The predeclared promotion rule is still narrowly not met.** It requires >85%
+  specificity, and `E_768` reaches 84.5% (interval 83.1–85.8). `E_768` is therefore a
+  **research variant, not the default**.
+- **Severe disease is rarely missed.** On ODIR, `E_768` missed 1 of 151 grade-3 eyes and
+  none of 31 grade-4 eyes; the deployed model missed 37 and 6. On EyePACS it missed 3 of
+  118 and 0 of 67 (deployed: 36 and 15). Almost all misses are grade 2. About half of the
+  false positives are grade-1 (mild) eyes; grade 1 is almost never predicted (recall 3%).
+- **Limits.**
+  - ODIR labels are diagnostic keywords from a hospital record, not adjudicated
+    research grades.
+  - The non-referable class contains only normal and mild-DR eyes. Eyes with other
+    diseases are outside the endpoint, so specificity in a real clinic, where other
+    diseases appear, may be lower.
+  - The test logits were computed on an Apple M4 GPU, and spot checks against the CPU
+    agree within 2.4e-3. The ODIR copy is a public Kaggle mirror.
+- MATLAB runs `E_768` as one 768-pixel, two-member ONNX graph with locked thresholds.
+  On 40 Messidor-2 validation images its grades and referral decisions match Python
+  (maximum logit difference 9.1e-6).
+  [Parity](../results/benchmarks/round3_fresh_tests/matlab_python_E768_parity.json)
+  ODIR and the EyePACS test DR grades are now exposed and cannot serve as fresh tests
+  again.
+
 ## Round 2: full-network models on two fresh tests (October 12)
 
 Four EfficientNet-B4 models were fine-tuned end to end on GPUs (Kaggle and an
@@ -302,6 +371,7 @@ warnings; clinician explanation usefulness remains unmeasured.
 - Portable-camera quality validation and factor-specific robustness.
 - Reliable annotated lesion evaluation, including appropriate subtype/NV labels.
 - Prospective, camera-specific validation of the site-adapted candidate and severe-grade (Grade-4) recall.
+- For the round-3 candidate `E_768`: specificity just below the 85% target on ODIR, grade-1 recognition, and a fresh adjudicated test with other eye diseases included.
 - Broader full-image runtime checks, including quality and retinal analysis.
 - Clinician explanation usefulness and measured review time.
 - Field-derived recapture-return assumptions, shift/outage modeling and timed referral escalation.

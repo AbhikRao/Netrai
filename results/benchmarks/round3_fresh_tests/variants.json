@@ -1,0 +1,96 @@
+{
+ "primary": "E_768",
+ "reference": "A_legacy",
+ "bootstrap_seed": 20261012,
+ "bootstrap_replicates": 2000,
+ "operating_points": {
+  "primary": "source-balanced 0.90 sensitivity (round-3 validation)",
+  "secondary": "source-balanced Youden (suffix _youden)"
+ },
+ "information_only": [
+  "E_768_K3",
+  "E_768_K3_youden"
+ ],
+ "logits_provenance": "A_legacy, K3 and 768 test logits computed on the owner's Mac (Apple M4, MPS, fp32) with python mac_infer.py (legacy-area-v1 preprocessing, same code); ensembles are means of member logits; CPU spot check at freeze",
+ "matlab_primary_variant": "matlab/variant_R3_E_768",
+ "variants": [
+  {
+   "id": "A_legacy",
+   "kind": "legacy"
+  },
+  {
+   "id": "K3_freeze4_ddr_s17",
+   "kind": "full",
+   "checkpoint": "results/model_improvement/kaggle_output_v3/run/best.pt",
+   "policy": "results/model_improvement/round2_eval/policy_K3_freeze4_ddr_s17_balanced.json"
+  },
+  {
+   "id": "K3_freeze4_ddr_s17_youden",
+   "kind": "policy_of",
+   "logits_from": "K3_freeze4_ddr_s17",
+   "policy": "results/model_improvement/round2_eval/policy_K3_freeze4_ddr_s17_youden-balanced.json"
+  },
+  {
+   "id": "R3_768_s2026",
+   "kind": "full",
+   "size": 768,
+   "checkpoint": "results/model_improvement/kaggle_output_768_s2026/run/best.pt",
+   "policy": "results/model_improvement/round3_eval/policy_R3_768_s2026_balanced.json"
+  },
+  {
+   "id": "R3_768_s2026_youden",
+   "kind": "policy_of",
+   "logits_from": "R3_768_s2026",
+   "policy": "results/model_improvement/round3_eval/policy_R3_768_s2026_youden-balanced.json",
+   "size": 768
+  },
+  {
+   "id": "R3_768_s17",
+   "kind": "full",
+   "size": 768,
+   "checkpoint": "results/model_improvement/kaggle_output_768_s17/run/best.pt",
+   "policy": "results/model_improvement/round3_eval/policy_R3_768_s17_balanced.json"
+  },
+  {
+   "id": "R3_768_s17_youden",
+   "kind": "policy_of",
+   "logits_from": "R3_768_s17",
+   "policy": "results/model_improvement/round3_eval/policy_R3_768_s17_youden-balanced.json",
+   "size": 768
+  },
+  {
+   "id": "E_768",
+   "kind": "ensemble",
+   "members": [
+    "R3_768_s2026",
+    "R3_768_s17"
+   ],
+   "policy": "results/model_improvement/round3_eval/policy_E_768_balanced.json",
+   "size": 768
+  },
+  {
+   "id": "E_768_youden",
+   "kind": "policy_of",
+   "logits_from": "E_768",
+   "policy": "results/model_improvement/round3_eval/policy_E_768_youden-balanced.json",
+   "size": 768
+  },
+  {
+   "id": "E_768_K3",
+   "kind": "ensemble",
+   "members": [
+    "R3_768_s2026",
+    "R3_768_s17",
+    "K3_freeze4_ddr_s17"
+   ],
+   "policy": "results/model_improvement/round3_eval/policy_E_768_K3_balanced.json"
+  },
+  {
+   "id": "E_768_K3_youden",
+   "kind": "policy_of",
+   "logits_from": "E_768_K3",
+   "policy": "results/model_improvement/round3_eval/policy_E_768_K3_youden-balanced.json"
+  }
+ ],
+ "selection": "results/model_improvement/round3_eval/round3_selection_table.json"
+}

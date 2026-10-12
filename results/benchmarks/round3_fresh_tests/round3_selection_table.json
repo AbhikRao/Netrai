@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "status": "round3_selection_validation_only",
+  "validation_images": 4847,
+  "candidates": {
+    "R3_768_s2026": {
+      "members": [
+        "../results/model_improvement/kaggle_output_768_s2026/run"
+      ],
+      "selection_value": 0.8811112124159171,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8784722222222222,
+          "auc": 0.9290923232948295
+        },
+        "idrid": {
+          "selection": 0.875,
+          "auc": 0.9427083333333334
+        },
+        "messidor": {
+          "selection": 0.8898614150255288,
+          "auc": 0.9408000217628226
+        }
+      }
+    },
+    "R3_768_s17": {
+      "members": [
+        "../results/model_improvement/kaggle_output_768_s17/run"
+      ],
+      "selection_value": 0.8832090661047628,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.883101851851852,
+          "auc": 0.9330393976897691
+        },
+        "idrid": {
+          "selection": 0.8854166666666666,
+          "auc": 0.9395032051282052
+        },
+        "messidor": {
+          "selection": 0.8811086797957696,
+          "auc": 0.9373009679355413
+        }
+      }
+    },
+    "E_768": {
+      "members": [
+        "../results/model_improvement/kaggle_output_768_s2026/run",
+        "../results/model_improvement/kaggle_output_768_s17/run"
+      ],
+      "selection_value": 0.8854132898398034,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8877314814814815,
+          "auc": 0.9334540875962597
+        },
+        "idrid": {
+          "selection": 0.875,
+          "auc": 0.9407051282051282
+        },
+        "messidor": {
+          "selection": 0.8935083880379285,
+          "auc": 0.9438213136243772
+        }
+      }
+    },
+    "E_768_K3": {
+      "members": [
+        "../results/model_improvement/kaggle_output_768_s2026/run",
+        "../results/model_improvement/kaggle_output_768_s17/run",
+        "K3"
+      ],
+      "selection_value": 0.8883992489937057,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8825231481481483,
+          "auc": 0.9342233051430142
+        },
+        "idrid": {
+          "selection": 0.890625,
+          "auc": 0.9511217948717948
+        },
+        "messidor": {
+          "selection": 0.8920495988329686,
+          "auc": 0.9473934769339583
+        }
+      }
+    },
+    "K3_freeze4_ddr_s17": {
+      "members": [
+        "K3"
+      ],
+      "selection_value": 0.8655385532322987,
+      "per_source": {
+        "eyeq": {
+          "selection": 0.8478009259259259,
+          "auc": 0.9155751512651267
+        },
+        "idrid": {
+          "selection": 0.875,
+          "auc": 0.9475160256410257
+        },
+        "messidor": {
+          "selection": 0.8738147337709702,
+          "auc": 0.9365817746561729
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "round2_validation_policy_not_acceptance",
+  "runs": [
+    "../results/model_improvement/kaggle_output_768_s17/run"
+  ],
+  "validation_outputs_sha256": [
+    "80dac14eb0c97d621f8719e3136dfae35109861ab3f33ad681f3a66058e86927"
+  ],
+  "rule": "youden-balanced",
+  "rule_description": "source-balanced grade-2 boundary and head threshold (target sensitivity or Youden); QWK for other boundaries",
+  "target_sensitivity": 0.9,
+  "thresholds": [
+    1.002006101204107,
+    1.37901936964247,
+    2.008768127257575,
+    2.7715998456347974
+  ],
+  "head_threshold": 0.5102572903140128,
+  "temperature": 0.8117466436608266,
+  "validation_per_source": {
+    "eyeq": {
+      "images": 3000,
+      "referable": 576,
+      "sensitivity": 0.7777777777777778,
+      "specificity": 0.9616336633663366,
+      "auc": 0.9330393976897691,
+      "sens_at_spec85": 0.8819444444444444,
+      "sens_at_spec80": 0.9027777777777778,
+      "sens_at_spec90": 0.8645833333333334,
+      "selection_value": 0.883101851851852,
+      "qwk": 0.807466364821687,
+      "per_grade_recall": [
+        0.9544387036167215,
+        0.2305084745762712,
+        0.48156182212581344,
+        0.5,
+        0.5813953488372093
+      ],
+      "head_sensitivity": 0.7638888888888888,
+      "head_specificity": 0.9612211221122112,
+      "head_disagreement_rate": 0.018333333333333333
+    },
+    "idrid": {
+      "images": 103,
+      "referable": 64,
+      "sensitivity": 0.828125,
+      "specificity": 0.9487179487179487,
+      "auc": 0.9395032051282052,
+      "sens_at_spec85": 0.890625,
+      "sens_at_spec80": 0.890625,
+      "sens_at_spec90": 0.875,
+      "selection_value": 0.8854166666666666,
+      "qwk": 0.7990869474994812,
+      "per_grade_recall": [
+        0.9117647058823529,
+        0.2,
+        0.1875,
+        0.3684210526315789,
+        0.5384615384615384
+      ],
+      "head_sensitivity": 0.828125,
+      "head_specificity": 0.9487179487179487,
+      "head_disagreement_rate": 0.0
+    },
+    "messidor": {
+      "images": 1744,
+      "referable": 457,
+      "sensitivity": 0.8774617067833698,
+      "specificity": 0.8694638694638694,
+      "auc": 0.9373009679355413,
+      "sens_at_spec85": 0.8862144420131292,
+      "sens_at_spec80": 0.9102844638949672,
+      "sens_at_spec90": 0.8468271334792122,
+      "selection_value": 0.8811086797957696,
+      "qwk": 0.7431407470718343,
+      "per_grade_recall": [
+        0.7640117994100295,
+        0.3296296296296296,
+        0.6714697406340058,
+        0.7333333333333333,
+        0.37142857142857144
+      ],
+      "head_sensitivity": 0.862144420131291,
+      "head_specificity": 0.8694638694638694,
+      "head_disagreement_rate": 0.03153669724770642
+    }
+  }
+}

@@ -238,6 +238,22 @@ results = main_pipeline('/absolute/path/to/fundus.jpg', ...
 The variant's `netrai_bundle.json` binds the weights by SHA-256, so a different
 file is refused.
 
+## 768-pixel grading candidate (opt-in)
+
+`variant_R3_E_768/` holds the round-3 research candidate: two models trained at
+768 × 768 pixels, averaged inside one ONNX graph. In one locked test on ODIR-5K
+(cameras not used in training) it reached 90.5% sensitivity and 84.5% specificity,
+just under the 85% target ([validation](../docs/VALIDATION.md)). The configuration sets
+`input_size` to 768; the grading code accepts any square size from 256 to 1024 that is
+a multiple of 32. The weights are not distributed. With a local copy, run from the
+`matlab` folder:
+
+```matlab
+results = main_pipeline('/absolute/path/to/fundus.jpg', ...
+    ModelPath=fullfile(pwd,'variant_R3_E_768','netrai_fold0.onnx'), ...
+    ConfigPath=fullfile(pwd,'variant_R3_E_768','netrai_config.json'));
+```
+
 ## Interpretation
 
 NetrAI is a research prototype. Lesion outputs are candidates; Grad-CAM is
