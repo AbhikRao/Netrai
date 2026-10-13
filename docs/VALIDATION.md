@@ -138,9 +138,10 @@ What this shows:
   - The test set is enriched for disease (60% referable), so it is not a screening population.
 - **Performance depends on the image format, post hoc.**
   - AUC is 0.968 on the square-format images but 0.894 and 0.768 on two rectangular formats.
-  - A likely cause is that the preprocessing distorts the aspect ratio when the circular field is
-    clipped by the frame.
-  - This is a hypothesis for the next round; it cannot be tested on FDR26 again.
+  - It is not an aspect-ratio artefact: the cropped retinal field is square in all three formats
+    (median width/height 1.000).
+  - The difference is more likely due to the camera or capture, for example the bright glare
+    crescents common in the rectangular-format images. It cannot be tested on FDR26 again.
   - [Post-hoc analysis](../results/benchmarks/round4_fresh_test/posthoc_by_grade_and_camera.json)
 - **Limits.**
   - ALFEDIAM grades are close to, but not the same as, ICDR.

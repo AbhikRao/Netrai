@@ -16,7 +16,7 @@ screening completion.
 > **90.5% / 84.5%** (sensitivity / specificity) on ODIR-5K (round 3; AUC 0.948 vs 0.885 deployed)
 > and **78.0% / 92.4%** on the new Moroccan FDR26 set (round 4), where the deployed model reaches
 > 50.3% / 99.7%. On FDR26, ranking (AUC 0.910) is no better than the deployed model's (0.911):
-> moderate (grade-2) eyes and rectangular-format cameras are the main weaknesses. No candidate meets
+> moderate (grade-2) eyes and some camera formats are the main weaknesses. No candidate meets
 > both targets, so they remain opt-in research variants. See [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
 
