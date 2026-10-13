@@ -40,7 +40,28 @@ def deployed_input(rgb512):
     return (blended.astype(np.float32) / 255.0 - MEAN) / STD
 
 
-def augment(rgb, rng):
+def add_glare(image, rng):
+    """Bright crescent at the field-of-view rim (pupil/lens reflex seen on some cameras).
+
+    Pixels inside the field but outside a slightly shifted inner disc are pulled toward a
+    warm white with a soft edge; strength and width vary per sample."""
+    h, w = image.shape[:2]
+    inside = image.max(axis=2) > 10
+    if not inside.any():
+        return image
+    ys, xs = inside.nonzero()
+    cy, cx, radius = (ys.min() + ys.max()) / 2, (xs.min() + xs.max()) / 2, max(np.ptp(ys), np.ptp(xs)) / 2
+    theta = rng.uniform(0, 2 * np.pi)
+    offset = rng.uniform(0.08, 0.3) * radius  # crescent width on one side, none on the other
+    yy, xx = np.mgrid[:h, :w].astype(np.float32)
+    dist = np.hypot(yy - (cy - offset * np.sin(theta)), xx - (cx - offset * np.cos(theta)))
+    crescent = np.clip((dist - radius) / (0.04 * radius) + 0.5, 0, 1)
+    crescent = cv2.GaussianBlur(crescent * inside, (0, 0), 0.015 * radius + 1) * rng.uniform(0.5, 1.0)
+    colour = np.array([255, rng.uniform(220, 255), rng.uniform(150, 230)], np.float32)
+    return image * (1 - crescent[..., None]) + colour * crescent[..., None]
+
+
+def augment(rgb, rng, glare_prob=0.0):
     """Acquisition-like augmentation applied before the deployed enhancement."""
     h, w = rgb.shape[:2]
     angle = rng.uniform(0, 360)
@@ -58,6 +79,8 @@ def augment(rgb, rng):
     if rng.random() < 0.3:                                           # uneven illumination
         ramp = np.linspace(rng.uniform(0.6, 1.0), rng.uniform(0.6, 1.0), w, dtype=np.float32)
         image *= ramp[None, :, None] if rng.random() < 0.5 else ramp[:, None, None]
+    if glare_prob and rng.random() < glare_prob:
+        image = add_glare(np.clip(image, 0, 255), rng)
     image = np.clip(image, 0, 255).astype(np.uint8)
     if rng.random() < 0.3:
         image = cv2.GaussianBlur(image, (0, 0), rng.uniform(0.5, 2.0))   # defocus
@@ -68,8 +91,8 @@ def augment(rgb, rng):
 
 
 class Rows(Dataset):
-    def __init__(self, frame, roots, train, seed):
-        self.frame, self.train, self.seed = frame.reset_index(drop=True), train, seed
+    def __init__(self, frame, roots, train, seed, glare_prob=0.0):
+        self.frame, self.train, self.seed, self.glare_prob = frame.reset_index(drop=True), train, seed, glare_prob
         self.roots = roots if isinstance(roots, (list, tuple)) else [roots]
         self.epoch = 0
 
@@ -91,7 +114,7 @@ class Rows(Dataset):
         rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
         if self.train:
             rng = np.random.default_rng((self.seed, self.epoch, index, os.getpid()))
-            rgb = augment(rgb, rng)
+            rgb = augment(rgb, rng, self.glare_prob)
         array = deployed_input(rgb)
         return torch.from_numpy(array.transpose(2, 0, 1).copy()), int(row.grade)
 
@@ -153,6 +176,7 @@ def main():
     parser.add_argument('--max-train-per-epoch', type=int, default=0)
     parser.add_argument('--manifest', type=Path, help='override manifest (e.g. with extra sources)')
     parser.add_argument('--extra-images', type=Path, nargs='*', default=[])
+    parser.add_argument('--glare-prob', type=float, default=0.0, help='probability of a synthetic rim-glare crescent')
     args = parser.parse_args()
     device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)
@@ -190,7 +214,7 @@ def main():
         start_epoch, best, history = checkpoint['epoch'] + 1, checkpoint['best'], checkpoint['history']
         print(f'Resumed after epoch {checkpoint["epoch"]}', flush=True)
     weights = sampling_weights(train, args.class_power)
-    train_set = Rows(train, images, True, args.seed)
+    train_set = Rows(train, images, True, args.seed, args.glare_prob)
     val_loader = DataLoader(Rows(validation, images, False, args.seed), batch_size=32, num_workers=args.workers)
     config = {k: str(v) for k, v in vars(args).items()} | {'device': device.type, 'train_images': len(train),
                                                           'validation_images': len(validation),
