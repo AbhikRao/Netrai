@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "variant_id": "R5_768_s17",
+  "rung": "F",
+  "status": "research_candidate_not_deployed",
+  "adaptation_results_sha256": "111b13b556e66b45bf4f95d42e9eb1bd016d86ebed8cc8bfea911eb2b12b35c1",
+  "adaptation_code_sha256": null,
+  "rung_checkpoint_sha256": [
+    "442630c94a00c20e34ab107e9ae303d058be36b1fc5c6b0602723047594d9feb"
+  ],
+  "input_size": 768,
+  "onnx_sha256": "b5a569e639d34a74e75826ae7f42f93a92287ec5323f1bbd89876b6b105eea14",
+  "pytorch_onnx_max_abs_error_random_probe": 1.3113021850585938e-06,
+  "policy_sha256": "2d87982cf112b81f64a6d1be3d094fbe6716cd9fbfc87d228b6ec50a77ca9660",
+  "policy": {
+    "thresholds": [
+      1.0887404977992396,
+      1.1953078418836713,
+      2.0708233579007924,
+      2.9346906356791482
+    ],
+    "head_threshold": 0.31710060805053564,
+    "temperature": 0.7826519186311084,
+    "calibration_cohort": null,
+    "target_sensitivity": 0.9,
+    "rule": "balanced"
+  },
+  "training_pool": null,
+  "selection_cohorts": null,
+  "note": "Run writeDeploymentBundle(modelPath, configPath) in MATLAB to bind this variant."
+}
