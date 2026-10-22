@@ -1,0 +1,239 @@
+{
+  "tier": "TL (leave-dataset-out held-out sources: never trained on or selected on; previously exposed data)",
+  "run": "[PosixPath('../results/model_improvement/experiments/X2/p_messidor_s2/run'), PosixPath('../results/model_improvement/experiments/X2/p_fdr26_s1/run'), PosixPath('../results/model_improvement/experiments/X2/p_odir_s1/run'), PosixPath('../results/model_improvement/experiments/X2/p_deepdrid_s1/run')]",
+  "config": {
+    "run": null,
+    "lodo_runs": [
+      "../results/model_improvement/experiments/X2/p_messidor_s2/run",
+      "../results/model_improvement/experiments/X2/p_fdr26_s1/run",
+      "../results/model_improvement/experiments/X2/p_odir_s1/run",
+      "../results/model_improvement/experiments/X2/p_deepdrid_s1/run"
+    ],
+    "sources": [
+      "odir",
+      "fdr26",
+      "messidor",
+      "eyeq"
+    ],
+    "sizes": [
+      25,
+      50,
+      100,
+      200
+    ],
+    "replicates": 500,
+    "calib_sensitivity": 0.92,
+    "min_positives": 5,
+    "seed": 20261020,
+    "output": "../results/model_improvement/experiments/X7/site_calibration_lodo.json"
+  },
+  "targets": {
+    "sensitivity": 0.9,
+    "specificity": 0.85
+  },
+  "results": {
+    "messidor:p_messidor_s2": {
+      "n_images": 1744,
+      "n_clusters": 874,
+      "referable_prevalence": 0.26204128440366975,
+      "frozen_threshold": 1.0879702127084974,
+      "frozen": {
+        "sensitivity": 0.9518599562363238,
+        "specificity": 0.7163947163947164,
+        "both_targets": false
+      },
+      "oracle": {
+        "both_targets_possible": false,
+        "auc": 0.9426311592613562,
+        "spec_at_sens90": 0.8251748251748252
+      },
+      "site": {
+        "25": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.554,
+          "sensitivity_mean": 0.8821774018894759,
+          "sensitivity_p10": 0.7390388413429888,
+          "specificity_mean": 0.764416441107343,
+          "specificity_p10": 0.5234583845420286
+        },
+        "50": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.578,
+          "sensitivity_mean": 0.8989712716820527,
+          "sensitivity_p10": 0.8086171892623506,
+          "specificity_mean": 0.7825139434176501,
+          "specificity_p10": 0.6352050106488482
+        },
+        "100": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.648,
+          "sensitivity_mean": 0.9095838706919711,
+          "sensitivity_p10": 0.8539241579244773,
+          "specificity_mean": 0.7884030810761282,
+          "specificity_p10": 0.6954281522510896
+        },
+        "200": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.708,
+          "sensitivity_mean": 0.9139767169319305,
+          "sensitivity_p10": 0.8712693498452012,
+          "specificity_mean": 0.7886474160018182,
+          "specificity_p10": 0.7341622074598672
+        }
+      }
+    },
+    "fdr26:p_fdr26_s1": {
+      "n_images": 2833,
+      "n_clusters": 1817,
+      "referable_prevalence": 0.5954818213907519,
+      "frozen_threshold": 0.9891421193282199,
+      "frozen": {
+        "sensitivity": 0.7516301126259632,
+        "specificity": 0.9485165794066318,
+        "both_targets": false
+      },
+      "oracle": {
+        "both_targets_possible": false,
+        "auc": 0.9073610848175815,
+        "spec_at_sens90": 0.643979057591623
+      },
+      "site": {
+        "25": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.582,
+          "sensitivity_mean": 0.8991341995629257,
+          "sensitivity_p10": 0.8021226262233456,
+          "specificity_mean": 0.5669018239201118,
+          "specificity_p10": 0.2310700976042591
+        },
+        "50": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.606,
+          "sensitivity_mean": 0.9048156458824141,
+          "sensitivity_p10": 0.8405136175957245,
+          "specificity_mean": 0.5803390889378017,
+          "specificity_p10": 0.3291172808915427
+        },
+        "100": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.692,
+          "sensitivity_mean": 0.9137233039722732,
+          "sensitivity_p10": 0.8702327661982591,
+          "specificity_mean": 0.5614995589466143,
+          "specificity_p10": 0.3885105216119597
+        },
+        "200": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.808,
+          "sensitivity_mean": 0.9182823004602313,
+          "sensitivity_p10": 0.8902559596468568,
+          "specificity_mean": 0.5541862268459821,
+          "specificity_p10": 0.4205036994877632
+        }
+      }
+    },
+    "odir:p_odir_s1": {
+      "n_images": 4408,
+      "n_clusters": 2570,
+      "referable_prevalence": 0.2588475499092559,
+      "frozen_threshold": 0.9975765610961167,
+      "frozen": {
+        "sensitivity": 0.8790534618755478,
+        "specificity": 0.8454239363330273,
+        "both_targets": false
+      },
+      "oracle": {
+        "both_targets_possible": false,
+        "auc": 0.9367319384051118,
+        "spec_at_sens90": 0.8105295378022651
+      },
+      "site": {
+        "25": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.534,
+          "sensitivity_mean": 0.8904765466957171,
+          "sensitivity_p10": 0.7689309669526488,
+          "specificity_mean": 0.7131244834187792,
+          "specificity_p10": 0.3400793230776115
+        },
+        "50": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.62,
+          "sensitivity_mean": 0.903494997482867,
+          "sensitivity_p10": 0.8099010617760618,
+          "specificity_mean": 0.7268136953072628,
+          "specificity_p10": 0.48547227922085
+        },
+        "100": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.638,
+          "sensitivity_mean": 0.9082957497989448,
+          "sensitivity_p10": 0.8389268570901083,
+          "specificity_mean": 0.7519874434093371,
+          "specificity_p10": 0.6021646164792525
+        },
+        "200": {
+          "p_both_targets": 0.0,
+          "p_sensitivity_target": 0.702,
+          "sensitivity_mean": 0.914098230792209,
+          "sensitivity_p10": 0.8734038750074478,
+          "specificity_mean": 0.7554319826250226,
+          "specificity_p10": 0.6673097658503591
+        }
+      }
+    },
+    "deepdrid:p_deepdrid_s1": {
+      "n_images": 1980,
+      "n_clusters": 495,
+      "referable_prevalence": 0.43434343434343436,
+      "frozen_threshold": 1.069587281627576,
+      "frozen": {
+        "sensitivity": 0.9697674418604652,
+        "specificity": 0.7178571428571429,
+        "both_targets": false
+      },
+      "oracle": {
+        "both_targets_possible": true,
+        "sensitivity": 0.9418604651162791,
+        "specificity": 0.85,
+        "threshold": 1.3892686337153226,
+        "auc": 0.9616289451827242,
+        "spec_at_sens90": 0.9214285714285714
+      },
+      "site": {
+        "25": {
+          "p_both_targets": 0.302,
+          "p_sensitivity_target": 0.604,
+          "sensitivity_mean": 0.9052939549525995,
+          "sensitivity_p10": 0.8372881713177641,
+          "specificity_mean": 0.8703564592837346,
+          "specificity_p10": 0.7409980536900984
+        },
+        "50": {
+          "p_both_targets": 0.446,
+          "p_sensitivity_target": 0.666,
+          "sensitivity_mean": 0.9136197158523872,
+          "sensitivity_p10": 0.8672599871134021,
+          "specificity_mean": 0.8845301873137988,
+          "specificity_p10": 0.8286036809326094
+        },
+        "100": {
+          "p_both_targets": 0.63,
+          "p_sensitivity_target": 0.76,
+          "sensitivity_mean": 0.9170097696381889,
+          "sensitivity_p10": 0.8823360378634212,
+          "specificity_mean": 0.889966434521934,
+          "specificity_p10": 0.8443015909263911
+        },
+        "200": {
+          "p_both_targets": 0.786,
+          "p_sensitivity_target": 0.822,
+          "sensitivity_mean": 0.9189524713575268,
+          "sensitivity_p10": 0.8886077763030888,
+          "specificity_mean": 0.8907630876111553,
+          "specificity_p10": 0.864136197284263
+        }
+      }
+    }
+  }
+}

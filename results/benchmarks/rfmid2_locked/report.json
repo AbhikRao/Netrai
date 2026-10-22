@@ -1,0 +1,612 @@
+{
+  "schema_version": 1,
+  "tier": "TF",
+  "lock_sha256": "ab95208a48c7ed6c18aff802653bf176074341dca6f7aac8983f9f2723a606ad",
+  "evaluated_utc": "2026-10-21T21:26:43.038662+00:00",
+  "primary_variant": "R5_768_s17",
+  "reference_variant": "A_legacy",
+  "population": {
+    "images_in_lock": 859,
+    "unlabelled_in_release": [
+      "Training_set/222.jpg",
+      "Training_set/79.jpg",
+      "Test_set/251.jpg",
+      "Test_set/291.jpg",
+      "Test_set/404.jpg",
+      "Test_set/489.jpg"
+    ],
+    "images": 853,
+    "dr_positive": 70,
+    "wnl": 261,
+    "other_disease_negatives": 522,
+    "clusters": 833
+  },
+  "results": {
+    "A_legacy": {
+      "auc_any_dr": {
+        "estimate": 0.8437876299945265,
+        "ci95": [
+          0.8160703050136506,
+          0.8707974042147376
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "estimate": 0.8509031198686371,
+        "ci95": [
+          0.8190731226900685,
+          0.8798607097158977
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "estimate": 0.8652800583835066,
+        "ci95": [
+          0.8352224275909439,
+          0.8932927392435231
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "estimate": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "estimate": 0.5031928480204342,
+        "ci95": [
+          0.4670095036267813,
+          0.538267711180701
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "estimate": 0.9731800766283525,
+        "ci95": [
+          0.9514925373134329,
+          0.992000796812749
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "estimate": 0.2681992337164751,
+        "ci95": [
+          0.2304830943529828,
+          0.30799945681694724
+        ],
+        "valid_replicates": 2000
+      }
+    },
+    "R3_768_s2026": {
+      "auc_any_dr": {
+        "estimate": 0.7426017150155082,
+        "ci95": [
+          0.7038559456008363,
+          0.7788727892868813
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "estimate": 0.7543149060390439,
+        "ci95": [
+          0.7154428784285106,
+          0.7902335262965237
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "estimate": 0.7607006020799124,
+        "ci95": [
+          0.7195725757265792,
+          0.8031065806370924
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "estimate": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "estimate": 0.49680715197956576,
+        "ci95": [
+          0.46192407800683727,
+          0.532059585492228
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "estimate": 0.9693486590038314,
+        "ci95": [
+          0.9469957971945604,
+          0.9884169884169884
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "estimate": 0.26053639846743293,
+        "ci95": [
+          0.22423672205930273,
+          0.29842603049124783
+        ],
+        "valid_replicates": 2000
+      }
+    },
+    "R3_768_s17": {
+      "auc_any_dr": {
+        "estimate": 0.7646414887794198,
+        "ci95": [
+          0.7250708470696798,
+          0.8033140530317423
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "estimate": 0.8179529282977559,
+        "ci95": [
+          0.7827049449428414,
+          0.8521522695851951
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "estimate": 0.8055829228243021,
+        "ci95": [
+          0.7670267785995931,
+          0.8418295039480808
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "estimate": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "estimate": 0.5274584929757343,
+        "ci95": [
+          0.4924797789929369,
+          0.56375
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "estimate": 0.9770114942528736,
+        "ci95": [
+          0.9571400669642858,
+          0.9926484006011164
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "estimate": 0.30268199233716475,
+        "ci95": [
+          0.26399655831739965,
+          0.34363236003861003
+        ],
+        "valid_replicates": 2000
+      }
+    },
+    "E_768": {
+      "auc_any_dr": {
+        "estimate": 0.7578726509760993,
+        "ci95": [
+          0.7190059225230467,
+          0.7944181811204161
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "estimate": 0.7892172961138478,
+        "ci95": [
+          0.7532881399011536,
+          0.8250538713304201
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "estimate": 0.7876299945265463,
+        "ci95": [
+          0.7467371482716404,
+          0.8260318770554406
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "estimate": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "estimate": 0.5134099616858238,
+        "ci95": [
+          0.47943045140322604,
+          0.548722998729352
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "estimate": 0.9731800766283525,
+        "ci95": [
+          0.9525383373688459,
+          0.9920956397248764
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "estimate": 0.2835249042145594,
+        "ci95": [
+          0.24737257473106533,
+          0.32353084508657265
+        ],
+        "valid_replicates": 2000
+      }
+    },
+    "R5_768_s17": {
+      "auc_any_dr": {
+        "estimate": 0.7162014230979749,
+        "ci95": [
+          0.6738512200396977,
+          0.7569918898025639
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "estimate": 0.7586206896551724,
+        "ci95": [
+          0.7181439026732066,
+          0.7967263212572715
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "estimate": 0.7807881773399015,
+        "ci95": [
+          0.7348785809766183,
+          0.8222292767492654
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "estimate": 0.9714285714285714,
+        "ci95": [
+          0.9076923076923077,
+          1.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "estimate": 0.5172413793103449,
+        "ci95": [
+          0.48205012853470436,
+          0.5518145495677788
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "estimate": 0.9693486590038314,
+        "ci95": [
+          0.9471597675586484,
+          0.9885507067599338
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "estimate": 0.29118773946360155,
+        "ci95": [
+          0.2553501259736958,
+          0.3294579244522113
+        ],
+        "valid_replicates": 2000
+      }
+    }
+  },
+  "comparisons": {
+    "R3_768_s2026_vs_A_legacy": {
+      "auc_any_dr": {
+        "a": 0.7426017150155082,
+        "b": 0.8437876299945265,
+        "difference": -0.1011859149790183,
+        "difference_ci95": [
+          -0.13703908978674198,
+          -0.06613770581569109
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "a": 0.7543149060390439,
+        "b": 0.8509031198686371,
+        "difference": -0.09658821382959315,
+        "difference_ci95": [
+          -0.12967510793622788,
+          -0.06207443830055282
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "a": 0.7607006020799124,
+        "b": 0.8652800583835066,
+        "difference": -0.10457945630359422,
+        "difference_ci95": [
+          -0.13613706323476443,
+          -0.07392019304464306
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "a": 1.0,
+        "b": 1.0,
+        "difference": 0.0,
+        "difference_ci95": [
+          0.0,
+          0.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "a": 0.49680715197956576,
+        "b": 0.5031928480204342,
+        "difference": -0.006385696040868416,
+        "difference_ci95": [
+          -0.029563933195038552,
+          0.015326651654966383
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "a": 0.9693486590038314,
+        "b": 0.9731800766283525,
+        "difference": -0.003831417624521105,
+        "difference_ci95": [
+          -0.028784826684107288,
+          0.020491803278688492
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "a": 0.26053639846743293,
+        "b": 0.2681992337164751,
+        "difference": -0.007662835249042155,
+        "difference_ci95": [
+          -0.03978423389099287,
+          0.024484423226853746
+        ],
+        "valid_replicates": 2000
+      }
+    },
+    "R3_768_s17_vs_A_legacy": {
+      "auc_any_dr": {
+        "a": 0.7646414887794198,
+        "b": 0.8437876299945265,
+        "difference": -0.07914614121510666,
+        "difference_ci95": [
+          -0.11956069593810015,
+          -0.03808884978224159
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "a": 0.8179529282977559,
+        "b": 0.8509031198686371,
+        "difference": -0.03295019157088119,
+        "difference_ci95": [
+          -0.07004455586497041,
+          0.00402623022103482
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "a": 0.8055829228243021,
+        "b": 0.8652800583835066,
+        "difference": -0.05969713555920453,
+        "difference_ci95": [
+          -0.08941558111422582,
+          -0.03081956047483023
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "a": 1.0,
+        "b": 1.0,
+        "difference": 0.0,
+        "difference_ci95": [
+          0.0,
+          0.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "a": 0.5274584929757343,
+        "b": 0.5031928480204342,
+        "difference": 0.024265644955300147,
+        "difference_ci95": [
+          0.0,
+          0.04943122599447991
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "a": 0.9770114942528736,
+        "b": 0.9731800766283525,
+        "difference": 0.003831417624521105,
+        "difference_ci95": [
+          -0.016129032258064502,
+          0.023624381438486143
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "a": 0.30268199233716475,
+        "b": 0.2681992337164751,
+        "difference": 0.03448275862068967,
+        "difference_ci95": [
+          0.0,
+          0.07042449502208054
+        ],
+        "valid_replicates": 2000
+      }
+    },
+    "E_768_vs_A_legacy": {
+      "auc_any_dr": {
+        "a": 0.7578726509760993,
+        "b": 0.8437876299945265,
+        "difference": -0.08591497901842715,
+        "difference_ci95": [
+          -0.12406630620799391,
+          -0.048009977377053634
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "a": 0.7892172961138478,
+        "b": 0.8509031198686371,
+        "difference": -0.06168582375478926,
+        "difference_ci95": [
+          -0.095187586981228,
+          -0.026823762504244817
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "a": 0.7876299945265463,
+        "b": 0.8652800583835066,
+        "difference": -0.07765006385696038,
+        "difference_ci95": [
+          -0.10778132542624648,
+          -0.04851546357057806
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "a": 1.0,
+        "b": 1.0,
+        "difference": 0.0,
+        "difference_ci95": [
+          0.0,
+          0.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "a": 0.5134099616858238,
+        "b": 0.5031928480204342,
+        "difference": 0.010217113665389577,
+        "difference_ci95": [
+          -0.0127392597166255,
+          0.033857938444584325
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "a": 0.9731800766283525,
+        "b": 0.9731800766283525,
+        "difference": 0.0,
+        "difference_ci95": [
+          -0.021354219623792504,
+          0.01984126984126977
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "a": 0.2835249042145594,
+        "b": 0.2681992337164751,
+        "difference": 0.01532567049808431,
+        "difference_ci95": [
+          -0.018631709752108212,
+          0.049623073323389146
+        ],
+        "valid_replicates": 2000
+      }
+    },
+    "R5_768_s17_vs_A_legacy": {
+      "auc_any_dr": {
+        "a": 0.7162014230979749,
+        "b": 0.8437876299945265,
+        "difference": -0.12758620689655165,
+        "difference_ci95": [
+          -0.17102737857465938,
+          -0.08881374232298522
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_referral_head": {
+        "a": 0.7586206896551724,
+        "b": 0.8509031198686371,
+        "difference": -0.09228243021346472,
+        "difference_ci95": [
+          -0.1315093808742169,
+          -0.054430081922993645
+        ],
+        "valid_replicates": 2000
+      },
+      "auc_expected_grade": {
+        "a": 0.7807881773399015,
+        "b": 0.8652800583835066,
+        "difference": -0.08449188104360517,
+        "difference_ci95": [
+          -0.11896862882720076,
+          -0.05347927746194748
+        ],
+        "valid_replicates": 2000
+      },
+      "sensitivity_grade_ge1": {
+        "a": 0.9714285714285714,
+        "b": 1.0,
+        "difference": -0.02857142857142858,
+        "difference_ci95": [
+          -0.09230769230769231,
+          0.0
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_grade_ge1": {
+        "a": 0.5172413793103449,
+        "b": 0.5031928480204342,
+        "difference": 0.014048531289910682,
+        "difference_ci95": [
+          -0.009009009009009028,
+          0.03689920836867397
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_wnl": {
+        "a": 0.9693486590038314,
+        "b": 0.9731800766283525,
+        "difference": -0.003831417624521105,
+        "difference_ci95": [
+          -0.025549784765113142,
+          0.018796992481202927
+        ],
+        "valid_replicates": 2000
+      },
+      "specificity_other_disease": {
+        "a": 0.29118773946360155,
+        "b": 0.2681992337164751,
+        "difference": 0.022988505747126464,
+        "difference_ci95": [
+          -0.009785696984609705,
+          0.05657020382867375
+        ],
+        "valid_replicates": 2000
+      }
+    }
+  },
+  "limitations": [
+    "DR is presence of ANY diabetic retinopathy, not referable DR or an ICDR grade.",
+    "RFMiD 2.0 comes from the same Nanded institute family as IDRiD (a training source): fresh images from a partly seen site, not an unseen domain.",
+    "Annotation adjudication procedure not verified (data descriptor not retrievable).",
+    "No patient ids: bootstrap clusters are vessel-correlation clusters at 0.6 (839 clusters); 541.jpg excluded as an ambiguous near-copy."
+  ]
+}

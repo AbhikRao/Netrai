@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "tier": "TL",
+  "tier_statement": "Leave-dataset-out estimate on previously exposed data: informative about cross-domain transfer, not fresh independent evidence.",
+  "cohort": "messidor",
+  "model": "run",
+  "created_utc": "2026-10-20T18:52:41.985020+00:00",
+  "n_images": 1744,
+  "n_clusters": 874,
+  "metrics": {
+    "policy_fitted_on_selection_rows": {
+      "thresholds": [
+        0.9705219029967724,
+        1.0879702127084974,
+        2.1432963803224903,
+        2.8512999585112095
+      ],
+      "head_threshold": 0.2542097649171813,
+      "temperature": 0.6247863817522824,
+      "rule": "balanced",
+      "target_sensitivity": 0.9
+    },
+    "heldout_sources": [
+      "messidor"
+    ],
+    "per_source": {
+      "messidor": {
+        "n_images": 1744,
+        "n_clusters": 874,
+        "referable_prevalence": 0.26204128440366975,
+        "ranking": {
+          "auc": 0.9426311592613562,
+          "pr_auc": 0.8714420545630019,
+          "sensitivity_at_specificity": {
+            "0.8": 0.9080962800875274,
+            "0.85": 0.8840262582056893,
+            "0.9": 0.8227571115973742,
+            "0.95": 0.7527352297592997
+          },
+          "specificity_at_sensitivity": {
+            "0.85": 0.8857808857808858,
+            "0.9": 0.8251748251748252,
+            "0.95": 0.7187257187257188
+          }
+        },
+        "referral_grade_policy": {
+          "tp": 435,
+          "fn": 22,
+          "tn": 922,
+          "fp": 365,
+          "sensitivity": 0.9518599562363238,
+          "specificity": 0.7163947163947164,
+          "ppv": 0.54375,
+          "npv": 0.9766949152542372,
+          "thresholds": [
+            0.9705219029967724,
+            1.0879702127084974,
+            2.1432963803224903,
+            2.8512999585112095
+          ]
+        },
+        "grading": {
+          "confusion_matrix": [
+            [
+              713,
+              77,
+              223,
+              1,
+              3
+            ],
+            [
+              103,
+              29,
+              136,
+              2,
+              0
+            ],
+            [
+              14,
+              8,
+              240,
+              81,
+              4
+            ],
+            [
+              0,
+              0,
+              5,
+              47,
+              23
+            ],
+            [
+              0,
+              0,
+              10,
+              9,
+              16
+            ]
+          ],
+          "support": [
+            1017,
+            270,
+            347,
+            75,
+            35
+          ],
+          "recall": [
+            0.7010816125860374,
+            0.10740740740740741,
+            0.69164265129683,
+            0.6266666666666667,
+            0.45714285714285713
+          ],
+          "precision": [
+            0.8590361445783132,
+            0.2543859649122807,
+            0.39087947882736157,
+            0.3357142857142857,
+            0.34782608695652173
+          ],
+          "f1": [
+            0.7720628045479155,
+            0.15104166666666669,
+            0.4994797086368366,
+            0.4372093023255814,
+            0.3950617283950617
+          ],
+          "macro_f1": 0.4509710421144124,
+          "qwk": 0.6637092159446087,
+          "mean_absolute_grade_error": 0.5521788990825688,
+          "exact_accuracy": 0.599197247706422,
+          "off_by_two_or_more": 0.1473623853211009
+        },
+        "calibration": {
+          "ece_referral_head": 0.17614952820066176,
+          "brier_referral_head": 0.11987866102923093,
+          "ece_grade_head_referral": 0.1929379269415461,
+          "brier_grade_head_referral": 0.12449175185522711,
+          "top_label_ece": 0.09986272484332266
+        },
+        "referral_head": {
+          "tp": 445,
+          "fn": 12,
+          "tn": 708,
+          "fp": 579,
+          "sensitivity": 0.973741794310722,
+          "specificity": 0.5501165501165501,
+          "ppv": 0.4345703125,
+          "npv": 0.9833333333333333,
+          "threshold": 0.2542097649171813,
+          "disagreement_with_grade_policy": 0.13761467889908258
+        },
+        "intervals": {
+          "auc": {
+            "estimate": 0.9426311592613562,
+            "ci95": [
+              0.9283072599166694,
+              0.9560054637397697
+            ],
+            "valid_replicates": 1000
+          },
+          "sensitivity_at_85_specificity": {
+            "estimate": 0.8840262582056893,
+            "ci95": [
+              0.8481561822125814,
+              0.9178403755868545
+            ],
+            "valid_replicates": 1000
+          },
+          "sensitivity_at_90_specificity": {
+            "estimate": 0.8227571115973742,
+            "ci95": [
+              0.7709747089019657,
+              0.8709730243696295
+            ],
+            "valid_replicates": 1000
+          },
+          "specificity_at_90_sensitivity": {
+            "estimate": 0.8251748251748252,
+            "ci95": [
+              0.7630438410690593,
+              0.8754927511464298
+            ],
+            "valid_replicates": 1000
+          },
+          "sensitivity": {
+            "estimate": 0.9518599562363238,
+            "ci95": [
+              0.9298215777539086,
+              0.9718317480641425
+            ],
+            "valid_replicates": 1000
+          },
+          "specificity": {
+            "estimate": 0.7163947163947164,
+            "ci95": [
+              0.6869545196703261,
+              0.7437323485738132
+            ],
+            "valid_replicates": 1000
+          },
+          "qwk": {
+            "estimate": 0.6637092159446087,
+            "ci95": [
+              0.6222319247981162,
+              0.7007135533994294
+            ],
+            "valid_replicates": 1000
+          },
+          "macro_f1": {
+            "estimate": 0.4509710421144124,
+            "ci95": [
+              0.4054091683107885,
+              0.4893398567682685
+            ],
+            "valid_replicates": 1000
+          },
+          "exact_accuracy": {
+            "estimate": 0.599197247706422,
+            "ci95": [
+              0.5751146788990825,
+              0.6248621839697704
+            ],
+            "valid_replicates": 1000
+          },
+          "recall_grade_0": {
+            "estimate": 0.7010816125860374,
+            "ci95": [
+              0.6692446338669672,
+              0.731953423060619
+            ],
+            "valid_replicates": 1000
+          },
+          "recall_grade_1": {
+            "estimate": 0.10740740740740741,
+            "ci95": [
+              0.07089396766169154,
+              0.14179298145948457
+            ],
+            "valid_replicates": 1000
+          },
+          "recall_grade_2": {
+            "estimate": 0.69164265129683,
+            "ci95": [
+              0.6416958464581349,
+              0.7393645016797313
+            ],
+            "valid_replicates": 1000
+          },
+          "recall_grade_3": {
+            "estimate": 0.6266666666666667,
+            "ci95": [
+              0.5,
+              0.7536231884057971
+            ],
+            "valid_replicates": 1000
+          },
+          "recall_grade_4": {
+            "estimate": 0.45714285714285713,
+            "ci95": [
+              0.21731366459627335,
+              0.6552565180824221
+            ],
+            "valid_replicates": 1000
+          },
+          "head_sensitivity": {
+            "estimate": 0.973741794310722,
+            "ci95": [
+              0.9586112163698371,
+              0.9872985551542095
+            ],
+            "valid_replicates": 1000
+          },
+          "head_specificity": {
+            "estimate": 0.5501165501165501,
+            "ci95": [
+              0.5199822530864198,
+              0.5822568697579074
+            ],
+            "valid_replicates": 1000
+          }
+        }
+      }
+    },
+    "selection_auc_by_source_TD": {
+      "ddr": 0.9674571428571429,
+      "deepdrid": 0.9595838335334134,
+      "eyeq": 0.9063666453867604,
+      "fdr26": 0.9242180356598598,
+      "idrid": 0.9572755417956658,
+      "odir": 0.9465798602628621
+    }
+  },
+  "limitations": [
+    "Leave-one-dataset-out fold on previously exposed data: not fresh independent evidence.",
+    "The selection data (tier TD) chose the epoch and fitted the policy.",
+    "Label definitions differ between sources."
+  ],
+  "experiment": "/kaggle/working/run"
+}

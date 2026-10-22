@@ -141,3 +141,9 @@ Original source and documentation use [MIT](../LICENSE). Training data,
 pretrained backbones, checkpoints and medical-image fixtures retain separate terms;
 see [licensing scope](../LICENSE_STATUS.md). Load model artifacts only from trusted
 sources and verify their recorded hashes.
+
+## Additional locked-test findings (October 22, 2026)
+
+- **Other retinal disease:** on RFMiD 2.0 (any-DR label, 70 DR eyes of 853) the deployed model ranks DR at AUC 0.844 and the 768-pixel research variants at 0.72–0.76; DR versus normal eyes is separated almost perfectly by all (AUC ≥ 0.994), but eyes with other conditions (vascular occlusions, retinitis, detachment) are flagged as DR-like, more so by the research variants. In screening such eyes would be referred anyway, but this is not a DR-specific result. See [validation](VALIDATION.md).
+- **Unseen sources:** one decision threshold does not transfer across sites; per-site calibration with about 100–200 labelled clusters restores sensitivity but not always specificity.
+- **Learned lesion candidates (opt-in, research):** pixel Dice on a locked test 0.60 (exudates), 0.43 (haemorrhages), 0.26 (microaneurysms); overlays are candidate evidence, not ground truth.

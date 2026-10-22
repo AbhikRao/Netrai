@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "locked_utc": "2026-10-21T21:23:35.827520+00:00",
+  "tests": {
+    "rfmid2": "859 images after identity review (541.jpg excluded); any-DR endpoint"
+  },
+  "fresh": true,
+  "labels_read": false,
+  "primary_variant": "R5_768_s17",
+  "reference_variant": "A_legacy",
+  "bootstrap_seed": 20261104,
+  "bootstrap_replicates": 2000,
+  "logits_provenance": "all logits computed on the laptop CPU (fp32, legacy-area-v1 preprocessing at each model's input size) at freeze; ensemble = mean of member logits",
+  "precomputed_logits_cpu_spot_check_max_abs": {
+    "A_legacy": 2.86102294921875e-06,
+    "R3_768_s2026": 0.00041484832763671875,
+    "R3_768_s17": 0.0016924142837524414,
+    "R5_768_s17": 0.0019491910934448242
+  },
+  "bindings": {
+    "results/model_improvement/rfmid2_eval/variants.json": "c09a279f9d6ff80d4e42f493478983d67f2fc5680293e3d6451c1cb60449c8a5",
+    "results/model_improvement/rfmid2_lock/inventory_rfmid2.csv": "d9a3ec31bac9618cdaba20cb800c1b624eafd84259a8e1d918c1b9e2c10fc10f",
+    "results/model_improvement/rfmid2_internal_clusters_0.6/clusters.csv": "3367c8f04cdf9ef3bf4f7fd0cb8ead2da8a5e6776560930f7f30e46c84ba629e",
+    "results/model_improvement/rfmid2_identity_v2/exclusions_v1.txt": "f6f5d9945d512011257194d111cac5780734705e49d5e82f8601f8c8a4cb66fa",
+    ".project-notes/docs/RFMID2_PREREG.md": "827a04491ae6b28a6af5879517dfe01c0af0575c73b76520fd396c206d86f2f2",
+    "python/weights/calibration.json": "0bddf7789262e01da3d9c1f66457c0115a03fb0bd8e873138c8bf9ed5caacf2f",
+    "python/locked_rfmid.py": "4de389ec2895e31e6c694e291f4166fb8783635273602de3894c37e95505931d",
+    "python/locked_evaluation.py": "4baceb814a5f2e52ccb8608e5e836c6e0d4289ad68e8255b82359f6bc601bf8b",
+    "python/exposure.py": "1e969e6c4a7b444bbf1343e1d936b002c01030411134675f4084161e867cc3f2",
+    "python/utils/preprocessing.py": "5aeb4322512e619d1693fe61c0fd4ce5c02295a00b762dcc50e2e523f29be744",
+    "python/models/netrai_model.py": "e62b91db78247ac37038f815ae6b2e6870708e2809cfea44ea23f540d0a3a8d1",
+    "python/export_adapted_variant.py": "7b4a53fbea4f6ce886ed62cc8e898ffdb1e8d88de911c81029ac2b84c8d7faeb",
+    "python/utils/metrics.py": "3767b2be3b452edc95e2f48b60d911a52387e624cc6480d80ee040fafc56c85b",
+    "python/netrai_eval/metrics.py": "f54fbe56b8f247f946b85cd00338d3eceabe477889492547e255da5f6e76041a",
+    "python/netrai_eval/bootstrap.py": "0db57e7fd53784980dc8fdbf3956b64564a635f260a1a80b731418252169b582",
+    "matlab/variant_R5_768_s17/netrai_fold0.onnx": "b5a569e639d34a74e75826ae7f42f93a92287ec5323f1bbd89876b6b105eea14",
+    "matlab/variant_R5_768_s17/netrai_config.json": "80632c5e9cf6af8f7ebc7b1b5b6509e8b83af169135a9d80d834d4617b955cd9",
+    "matlab/variant_R5_768_s17/netrai_bundle.json": "10d8aa8f3ed43dd6896b1c03802107c65758bd69522e9351537c5143941aa594",
+    "results/model_improvement/rfmid2_lock/logits_A_legacy.npy": "eee461fd91ec84d92b19b255dcedf70c511bd1a19b83eba4494125b6fc5e4f5b",
+    "results/model_improvement/rfmid2_lock/logits_R3_768_s2026.npy": "2bdb863ead89795b253d2b9c41dc7d457329805236a929f1d8f551d98ea1f320",
+    "results/model_improvement/rfmid2_lock/logits_R3_768_s17.npy": "113de45e88387e987c5106f136ca8194c39cae84542c36b0b207866fb9357ce6",
+    "results/model_improvement/rfmid2_lock/logits_R5_768_s17.npy": "bd565d976c4bbfaa94817b9a5759d70faad2779a6818a77f5b56c8d21356b1af",
+    "results/model_improvement/rfmid2_lock/logits_E_768.npy": "1f689cf8dd03539173adf942f45e2746b273fdb0912f3666a411609d1b243fcc",
+    "results/model_improvement/kaggle_output_768_s2026/run/best.pt": "06490c827ef69793e1f305a1d3bce9a8f04e32034410bedc6989032e8d669a21",
+    "results/model_improvement/kaggle_output_768_s17/run/best.pt": "09404bc778cd5ceb7623857e773427ed71c479c9445e5b9045abd8a389be5d30",
+    "results/model_improvement/kaggle_output_r5_s17/run/best.pt": "442630c94a00c20e34ab107e9ae303d058be36b1fc5c6b0602723047594d9feb",
+    "results/model_improvement/round3_eval/policy_R3_768_s2026_balanced.json": "ed2911f44361f10a5fb4ca608c4ba8a57c437bfb3700bfaf3d558a9da89b3ab3",
+    "results/model_improvement/round3_eval/policy_R3_768_s17_balanced.json": "e7998913c72e14987980169d52c826fa1503b01c0b0906c939cbd3f69a5dda1e",
+    "results/model_improvement/round3_eval/policy_E_768_balanced.json": "90c6f2b363e69fc5fcc448920ae9df425fed95c7b057217b8daca7b892866e02",
+    "results/model_improvement/round5_eval/policy_R5_768_s17_balanced.json": "2d87982cf112b81f64a6d1be3d094fbe6716cd9fbfc87d228b6ec50a77ca9660"
+  }
+}

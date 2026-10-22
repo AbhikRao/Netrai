@@ -1,0 +1,187 @@
+{
+  "tier": "TD (cluster-split validation images, native resolution; thresholds chosen on these images)",
+  "images": 107,
+  "summary": {
+    "EX": {
+      "aupr": 0.6456733096793437,
+      "auc": 0.9757861097753016,
+      "positive_pixels": 1471429,
+      "dice_best_on_this_set": 0.6407000593069795,
+      "threshold_chosen_on_this_set": 0.68
+    },
+    "HE": {
+      "aupr": 0.698423286372366,
+      "auc": 0.9872003027410667,
+      "positive_pixels": 2189320,
+      "dice_best_on_this_set": 0.6671620769883202,
+      "threshold_chosen_on_this_set": 0.908
+    },
+    "MA": {
+      "aupr": 0.2780068282018583,
+      "auc": 0.9467918337782525,
+      "positive_pixels": 127700,
+      "dice_best_on_this_set": 0.3612963712684579,
+      "threshold_chosen_on_this_set": 0.899
+    },
+    "SE": {
+      "aupr": 0.6101233980945993,
+      "auc": 0.9728145939966321,
+      "positive_pixels": 478268,
+      "dice_best_on_this_set": 0.5923040118960499,
+      "threshold_chosen_on_this_set": 0.898
+    }
+  },
+  "ma_lesion_curve": {
+    "0.1": {
+      "sensitivity": 0.7827529021558872,
+      "fp_per_image": 25.906542056074766
+    },
+    "0.125": {
+      "sensitivity": 0.7794361525704809,
+      "fp_per_image": 24.44859813084112
+    },
+    "0.15": {
+      "sensitivity": 0.7739082365948038,
+      "fp_per_image": 23.364485981308412
+    },
+    "0.175": {
+      "sensitivity": 0.7683803206191266,
+      "fp_per_image": 22.27102803738318
+    },
+    "0.2": {
+      "sensitivity": 0.765616362631288,
+      "fp_per_image": 21.364485981308412
+    },
+    "0.225": {
+      "sensitivity": 0.761746821448314,
+      "fp_per_image": 20.710280373831775
+    },
+    "0.25": {
+      "sensitivity": 0.754007739082366,
+      "fp_per_image": 20.16822429906542
+    },
+    "0.275": {
+      "sensitivity": 0.7506909894969597,
+      "fp_per_image": 19.61682242990654
+    },
+    "0.3": {
+      "sensitivity": 0.7468214483139857,
+      "fp_per_image": 19.102803738317757
+    },
+    "0.325": {
+      "sensitivity": 0.7423991155334438,
+      "fp_per_image": 18.542056074766354
+    },
+    "0.35": {
+      "sensitivity": 0.7385295743504698,
+      "fp_per_image": 18.121495327102803
+    },
+    "0.375": {
+      "sensitivity": 0.736318407960199,
+      "fp_per_image": 17.61682242990654
+    },
+    "0.4": {
+      "sensitivity": 0.7341072415699281,
+      "fp_per_image": 17.22429906542056
+    },
+    "0.425": {
+      "sensitivity": 0.7296849087893864,
+      "fp_per_image": 16.700934579439252
+    },
+    "0.45": {
+      "sensitivity": 0.724709784411277,
+      "fp_per_image": 16.364485981308412
+    },
+    "0.475": {
+      "sensitivity": 0.7230514096185738,
+      "fp_per_image": 16.018691588785046
+    },
+    "0.5": {
+      "sensitivity": 0.7180762852404643,
+      "fp_per_image": 15.654205607476635
+    },
+    "0.525": {
+      "sensitivity": 0.7136539524599226,
+      "fp_per_image": 15.177570093457945
+    },
+    "0.55": {
+      "sensitivity": 0.710889994472084,
+      "fp_per_image": 14.869158878504672
+    },
+    "0.575": {
+      "sensitivity": 0.7081260364842454,
+      "fp_per_image": 14.542056074766355
+    },
+    "0.6": {
+      "sensitivity": 0.7059148700939746,
+      "fp_per_image": 14.25233644859813
+    },
+    "0.625": {
+      "sensitivity": 0.7014925373134329,
+      "fp_per_image": 13.813084112149532
+    },
+    "0.65": {
+      "sensitivity": 0.6998341625207297,
+      "fp_per_image": 13.30841121495327
+    },
+    "0.675": {
+      "sensitivity": 0.6948590381426202,
+      "fp_per_image": 12.962616822429906
+    },
+    "0.7": {
+      "sensitivity": 0.6926478717523493,
+      "fp_per_image": 12.644859813084112
+    },
+    "0.725": {
+      "sensitivity": 0.6849087893864013,
+      "fp_per_image": 12.242990654205608
+    },
+    "0.75": {
+      "sensitivity": 0.6804864566058596,
+      "fp_per_image": 11.91588785046729
+    },
+    "0.775": {
+      "sensitivity": 0.6749585406301825,
+      "fp_per_image": 11.607476635514018
+    },
+    "0.8": {
+      "sensitivity": 0.6705362078496406,
+      "fp_per_image": 11.271028037383177
+    },
+    "0.825": {
+      "sensitivity": 0.6644555002763958,
+      "fp_per_image": 10.88785046728972
+    },
+    "0.85": {
+      "sensitivity": 0.6567164179104478,
+      "fp_per_image": 10.271028037383177
+    },
+    "0.875": {
+      "sensitivity": 0.6456605859590934,
+      "fp_per_image": 9.700934579439252
+    },
+    "0.9": {
+      "sensitivity": 0.6346047540077391,
+      "fp_per_image": 9.177570093457945
+    },
+    "0.925": {
+      "sensitivity": 0.6174682144831398,
+      "fp_per_image": 8.467289719626168
+    },
+    "0.95": {
+      "sensitivity": 0.5964621337755666,
+      "fp_per_image": 7.579439252336448
+    },
+    "0.975": {
+      "sensitivity": 0.5555555555555556,
+      "fp_per_image": 6.308411214953271
+    }
+  },
+  "ma_lesion_threshold": 0.95,
+  "weights_sha256": "783a3fbeb0809e2a04bbdb21a9f41818b72c49429923c3c0b06cbc1adc61caa5",
+  "inference": {
+    "long_side": 1536,
+    "tile": 1024,
+    "overlap": 128
+  }
+}

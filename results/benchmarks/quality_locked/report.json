@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "tier": "TF",
+  "lock_sha256": "3569552c35d960d566d52dabb921dae86e72e8eca298ec24815cbf7398b0cbae",
+  "evaluated_utc": "2026-10-22T07:26:48.750569+00:00",
+  "population": {
+    "primary_images": 392,
+    "ungradable": 212,
+    "patients": 98,
+    "unlabelled_primary_images": []
+  },
+  "results": {
+    "stacked": {
+      "auc_ungradable": {
+        "estimate": 0.8215932914046122,
+        "ci95": [
+          0.7745422681602842,
+          0.8641109959608843
+        ],
+        "valid_replicates": 2000
+      },
+      "operating_point_frozen": {
+        "reject_recall": 0.41037735849056606,
+        "false_reject_rate": 0.05
+      }
+    },
+    "eyeq_candidate": {
+      "auc_ungradable": {
+        "estimate": 0.7327830188679245,
+        "ci95": [
+          0.6830598823582846,
+          0.7794116069295611
+        ],
+        "valid_replicates": 2000
+      },
+      "operating_point_candidate_0.375": {
+        "reject_recall": 0.44339622641509435,
+        "false_reject_rate": 0.18333333333333332
+      }
+    },
+    "heuristic_iqs": {
+      "auc_ungradable": {
+        "estimate": 0.5495807127882599,
+        "ci95": [
+          0.4816548268834333,
+          0.618448699003101
+        ],
+        "valid_replicates": 2000
+      }
+    }
+  },
+  "comparisons": {
+    "stacked_minus_eyeq_candidate": {
+      "a": 0.8215932914046122,
+      "b": 0.7327830188679245,
+      "difference": 0.08881027253668772,
+      "difference_ci95": [
+        0.05726506827286357,
+        0.12101328194339106
+      ],
+      "valid_replicates": 2000
+    },
+    "stacked_minus_heuristic_iqs": {
+      "a": 0.8215932914046122,
+      "b": 0.5495807127882599,
+      "difference": 0.2720125786163523,
+      "difference_ci95": [
+        0.19267587285044283,
+        0.349114337489205
+      ],
+      "valid_replicates": 2000
+    }
+  },
+  "secondary_factor_heads": {
+    "artifact": {
+      "auc": 0.9232648769021403,
+      "positives": 118,
+      "spearman_with_severity": 0.7306259143395666
+    },
+    "clarity": {
+      "auc": 0.9578746950675313,
+      "positives": 49,
+      "spearman_with_severity": 0.7048594972123692
+    },
+    "field": {
+      "auc": 0.8500442086648984,
+      "positives": 15,
+      "spearman_with_severity": 0.4802539766059395
+    }
+  },
+  "limitations": [
+    "Ungradable prevalence is high in DeepDRiD (about half): metrics are not transferable to screening populations.",
+    "The EyeQ-trained candidate and DeepDRiD factor heads share one frozen ImageNet encoder at 224 px.",
+    "Challenge-2 images come from the same release as the DeepDRiD training/validation images used to fit the heads (same camera family)."
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "sites": {
+    "deepdrid": {
+      "n": 1980,
+      "grading": {
+        "auc": 0.9616289451827242
+      },
+      "probe": {
+        "auc": 0.9147612126245848
+      },
+      "stack": {
+        "auc": 0.963018064784053
+      },
+      "probe_minus_grading": {
+        "estimate": -0.046867732558139474,
+        "ci95": [
+          -0.06193893417168558,
+          -0.032390720954414615
+        ],
+        "valid_replicates": 1000
+      },
+      "stack_minus_grading": {
+        "estimate": 0.0013891196013288143,
+        "ci95": [
+          0.0008232355398975655,
+          0.0019395921609341115
+        ],
+        "valid_replicates": 1000
+      }
+    },
+    "fdr26": {
+      "n": 2833,
+      "grading": {
+        "auc": 0.9073610848175815
+      },
+      "probe": {
+        "auc": 0.8538371139118461
+      },
+      "stack": {
+        "auc": 0.9090571467882411
+      },
+      "probe_minus_grading": {
+        "estimate": -0.05352397090573535,
+        "ci95": [
+          -0.06797251095162159,
+          -0.04012535998496759
+        ],
+        "valid_replicates": 1000
+      },
+      "stack_minus_grading": {
+        "estimate": 0.0016960619706596347,
+        "ci95": [
+          -0.0007530969533304039,
+          0.004207721831191565
+        ],
+        "valid_replicates": 1000
+      }
+    },
+    "messidor": {
+      "n": 1744,
+      "grading": {
+        "auc": 0.9426311592613562
+      },
+      "probe": {
+        "auc": 0.5900088241444916
+      },
+      "stack": {
+        "auc": 0.9423166184654149
+      },
+      "probe_minus_grading": {
+        "estimate": -0.3526223351168646,
+        "ci95": [
+          -0.3937053144695271,
+          -0.31133174086628695
+        ],
+        "valid_replicates": 1000
+      },
+      "stack_minus_grading": {
+        "estimate": -0.00031454079594128714,
+        "ci95": [
+          -0.0007787379853306296,
+          9.417702213144196e-05
+        ],
+        "valid_replicates": 1000
+      }
+    },
+    "odir": {
+      "n": 4408,
+      "grading": {
+        "auc": 0.9367319384051118
+      },
+      "probe": {
+        "auc": 0.7575548328476382
+      },
+      "stack": {
+        "auc": 0.9360545673986832
+      },
+      "probe_minus_grading": {
+        "estimate": -0.17917710555747357,
+        "ci95": [
+          -0.20164912482879135,
+          -0.16021735079146407
+        ],
+        "valid_replicates": 1000
+      },
+      "stack_minus_grading": {
+        "estimate": -0.0006773710064286176,
+        "ci95": [
+          -0.002172563815287126,
+          0.0005516339766490236
+        ],
+        "valid_replicates": 1000
+      }
+    }
+  },
+  "rule_probe_alone": {
+    "sites_with_gain_ge_0.02": 0,
+    "success": false
+  },
+  "rule_stack": {
+    "mean_auc_gain": 0.0005233174424046361,
+    "sites_ci_excludes_zero": 1,
+    "worst_site_gain": -0.0006773710064286176,
+    "success": false
+  },
+  "tier": "TL (leave-dataset-out held-out sources; RETFound never fine-tuned)",
+  "c": 0.05
+}

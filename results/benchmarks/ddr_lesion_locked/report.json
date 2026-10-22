@@ -1,0 +1,313 @@
+{
+  "tier": "TF",
+  "lock": "../results/model_improvement/x8_lock/lock.json",
+  "primary": {
+    "images": 202,
+    "heuristic_failures": 0,
+    "lesions": {
+      "EX": {
+        "aupr": 0.6104332201745155,
+        "auc": 0.9512838342535502,
+        "positive_pixels": 3615767,
+        "dice": 0.5993621634429689,
+        "iou": 0.4279208713340824,
+        "threshold": 0.68,
+        "aupr_ci95": [
+          0.5305928732083268,
+          0.6856065187095663
+        ],
+        "dice_ci95": [
+          0.5449547526499462,
+          0.6472288216246355
+        ],
+        "vs_heuristic": {
+          "images_annotated": 202,
+          "learned_dice": 0.5993621634429689,
+          "heuristic_dice": 0.1614515426002211,
+          "paired_dice_difference": {
+            "difference": 0.4379106208427478,
+            "ci95": [
+              0.38988918711545884,
+              0.48093928781706113
+            ]
+          },
+          "lesion_level": {
+            "learned": {
+              "detected": 5584,
+              "gt_lesions": 7619,
+              "sensitivity": 0.7329045806536291,
+              "false_positives_per_image": 23.831683168316832
+            },
+            "heuristic": {
+              "detected": 497,
+              "gt_lesions": 7619,
+              "sensitivity": 0.06523165769786061,
+              "false_positives_per_image": 2.6435643564356437
+            }
+          }
+        }
+      },
+      "HE": {
+        "aupr": 0.38997475512778146,
+        "auc": 0.9413065656874632,
+        "positive_pixels": 5608011,
+        "dice": 0.43231110812295326,
+        "iou": 0.2757633292950954,
+        "threshold": 0.908,
+        "aupr_ci95": [
+          0.28383132010962087,
+          0.564002003409539
+        ],
+        "dice_ci95": [
+          0.30941331387887216,
+          0.554274735931489
+        ],
+        "vs_heuristic": {
+          "images_annotated": 202,
+          "learned_dice": 0.43231110812295326,
+          "heuristic_dice": 0.008615210802943024,
+          "paired_dice_difference": {
+            "difference": 0.42369589732001023,
+            "ci95": [
+              0.2992494980280952,
+              0.5453173753402
+            ]
+          },
+          "lesion_level": {
+            "learned": {
+              "detected": 2550,
+              "gt_lesions": 5703,
+              "sensitivity": 0.4471330878485008,
+              "false_positives_per_image": 7.247524752475248
+            },
+            "heuristic": {
+              "detected": 138,
+              "gt_lesions": 5703,
+              "sensitivity": 0.0241977906365071,
+              "false_positives_per_image": 65.46534653465346
+            }
+          }
+        }
+      },
+      "MA": {
+        "aupr": 0.15923188159886278,
+        "auc": 0.9254738401363993,
+        "positive_pixels": 157390,
+        "dice": 0.2567584723755737,
+        "iou": 0.14728795081279822,
+        "threshold": 0.899,
+        "aupr_ci95": [
+          0.11711006009351789,
+          0.2079338703711647
+        ],
+        "dice_ci95": [
+          0.20706770983555464,
+          0.3030395018985105
+        ],
+        "vs_heuristic": {
+          "images_annotated": 202,
+          "learned_dice": 0.2567584723755737,
+          "heuristic_dice": 0.0013707723535346516,
+          "paired_dice_difference": {
+            "difference": 0.25538770002203903,
+            "ci95": [
+              0.20537596176738415,
+              0.3016170993290636
+            ]
+          },
+          "lesion_level": {
+            "learned": {
+              "detected": 1220,
+              "gt_lesions": 1975,
+              "sensitivity": 0.6177215189873417,
+              "false_positives_per_image": 14.202970297029703
+            },
+            "heuristic": {
+              "detected": 2,
+              "gt_lesions": 1975,
+              "sensitivity": 0.0010126582278481013,
+              "false_positives_per_image": 4.861386138613861
+            }
+          }
+        }
+      },
+      "SE": {
+        "aupr": 0.4239654520223029,
+        "auc": 0.9542936148184942,
+        "positive_pixels": 285108,
+        "dice": 0.4234598870404285,
+        "iou": 0.2686007692157514,
+        "threshold": 0.898,
+        "aupr_ci95": [
+          0.2712426864977831,
+          0.5524173169322809
+        ],
+        "dice_ci95": [
+          0.3080326038988354,
+          0.5122311629515143
+        ]
+      }
+    }
+  },
+  "success_rule_primary": {
+    "EX": true,
+    "HE": true,
+    "MA": true,
+    "MA_lesion_sensitivity": true,
+    "all": true
+  },
+  "secondary_all_images_contains_near_copies": {
+    "images": 225,
+    "heuristic_failures": 0,
+    "lesions": {
+      "EX": {
+        "aupr": 0.6075243178003029,
+        "auc": 0.9548824838782711,
+        "positive_pixels": 3776471,
+        "dice": 0.5986798389529495,
+        "iou": 0.42722559454623327,
+        "threshold": 0.68,
+        "aupr_ci95": [
+          0.5312107394227477,
+          0.6791528712912013
+        ],
+        "dice_ci95": [
+          0.5480962768707444,
+          0.6449250742056337
+        ],
+        "vs_heuristic": {
+          "images_annotated": 225,
+          "learned_dice": 0.5986798389529495,
+          "heuristic_dice": 0.14273323470256175,
+          "paired_dice_difference": {
+            "difference": 0.4559466042503878,
+            "ci95": [
+              0.4122322525787847,
+              0.49734081152151177
+            ]
+          },
+          "lesion_level": {
+            "learned": {
+              "detected": 6165,
+              "gt_lesions": 8502,
+              "sensitivity": 0.7251235003528581,
+              "false_positives_per_image": 22.715555555555557
+            },
+            "heuristic": {
+              "detected": 521,
+              "gt_lesions": 8502,
+              "sensitivity": 0.061279698894377795,
+              "false_positives_per_image": 4.711111111111111
+            }
+          }
+        }
+      },
+      "HE": {
+        "aupr": 0.39508408352017743,
+        "auc": 0.9425143389822745,
+        "positive_pixels": 5943419,
+        "dice": 0.4346432703979501,
+        "iou": 0.2776640379656122,
+        "threshold": 0.908,
+        "aupr_ci95": [
+          0.2892155481179269,
+          0.5585704871547694
+        ],
+        "dice_ci95": [
+          0.3119122745601,
+          0.5451153995101526
+        ],
+        "vs_heuristic": {
+          "images_annotated": 225,
+          "learned_dice": 0.4346432703979501,
+          "heuristic_dice": 0.013408490077167767,
+          "paired_dice_difference": {
+            "difference": 0.4212347803207823,
+            "ci95": [
+              0.2983966817936634,
+              0.53332739224624
+            ]
+          },
+          "lesion_level": {
+            "learned": {
+              "detected": 2761,
+              "gt_lesions": 6665,
+              "sensitivity": 0.41425356339084773,
+              "false_positives_per_image": 6.653333333333333
+            },
+            "heuristic": {
+              "detected": 271,
+              "gt_lesions": 6665,
+              "sensitivity": 0.04066016504126031,
+              "false_positives_per_image": 72.07111111111111
+            }
+          }
+        }
+      },
+      "MA": {
+        "aupr": 0.15169141093874988,
+        "auc": 0.9284765280957828,
+        "positive_pixels": 167014,
+        "dice": 0.24716699329195121,
+        "iou": 0.14101000628471122,
+        "threshold": 0.899,
+        "aupr_ci95": [
+          0.11171342059859331,
+          0.19395513929656802
+        ],
+        "dice_ci95": [
+          0.2002400453654067,
+          0.2896792458318747
+        ],
+        "vs_heuristic": {
+          "images_annotated": 225,
+          "learned_dice": 0.24716699329195121,
+          "heuristic_dice": 0.0016615255187885586,
+          "paired_dice_difference": {
+            "difference": 0.24550546777316265,
+            "ci95": [
+              0.19860281644404382,
+              0.28808663606321344
+            ]
+          },
+          "lesion_level": {
+            "learned": {
+              "detected": 1274,
+              "gt_lesions": 2073,
+              "sensitivity": 0.6145682585624699,
+              "false_positives_per_image": 14.346666666666666
+            },
+            "heuristic": {
+              "detected": 4,
+              "gt_lesions": 2073,
+              "sensitivity": 0.001929570670525808,
+              "false_positives_per_image": 6.017777777777778
+            }
+          }
+        }
+      },
+      "SE": {
+        "aupr": 0.39902293049521925,
+        "auc": 0.9461905452409302,
+        "positive_pixels": 297556,
+        "dice": 0.4084758265826514,
+        "iou": 0.2566570042763252,
+        "threshold": 0.898,
+        "aupr_ci95": [
+          0.25288808113909506,
+          0.527390392423872
+        ],
+        "dice_ci95": [
+          0.2980676784981347,
+          0.49926383492222826
+        ]
+      }
+    }
+  },
+  "limitations": [
+    "DDR has no patient ids: independence is image-identity evidence, not proof.",
+    "Test is in-distribution (same hospitals/cameras as most training data).",
+    "MA and SE have few annotated pixels: intervals are wide.",
+    "The heuristic has no soft-exudate detector; SE is learned-only."
+  ]
+}

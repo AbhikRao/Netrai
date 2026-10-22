@@ -390,7 +390,7 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
 
 
 def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
-                 referral_probe='none'):
+                 referral_probe='none', lesions='none', lesion_weights=None, lesion_thresholds=None):
     """Run the full NetrAI pipeline on a single image."""
     print(f"\n{'='*60}")
     print(f"  NetrAI — Analyzing: {os.path.basename(image_path)}")
@@ -522,6 +522,22 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
 
     overlay = generate_lesion_overlay(proc_img, seg_results)
 
+    learned_lesions = None
+    if lesions == 'learned':  # opt-in research module; default pipeline output is unchanged
+        from modules import lesions_learned
+        if not lesion_weights or not lesion_thresholds:
+            raise ValueError('--lesions learned needs --lesion-weights and --lesion-thresholds')
+        print("[M2+] Learned lesion candidates (research opt-in)...")
+        learned = lesions_learned.segment(image_rgb, Path(lesion_weights), Path(lesion_thresholds))
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        lesions_learned.save_panel(learned, Path(output_dir) / 'learned_lesions_panel.png')
+        learned_lesions = {'count': learned['count'], 'area_fraction': learned['area_fraction'],
+                           'thresholds': learned['thresholds'], 'panel': 'learned_lesions_panel.png',
+                           'status': 'research_candidates_dice_EX0.60_HE0.43_MA0.26_on_locked_DDR_test'}
+        print('     Components: ' + ', '.join(f"{k} {v}" for k, v in learned['count'].items()))
+    elif lesions != 'none':
+        raise ValueError(f'Unsupported lesion module: {lesions}')
+
     model_display = _model_display_image(image_rgb)
     report_path = generate_clinical_report(
         proc_img, seg_results, grade, probs, heatmap, overlay, output_dir,
@@ -566,6 +582,8 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
             'vessel_pct': vessel_pct,
         },
     }
+    if learned_lesions is not None:
+        result['learned_lesions'] = learned_lesions
     result.update(schema_version=2, research_only=True,
                   preprocessing_version='legacy-area-v1',
                   explanation_target='referral_logit',
@@ -630,7 +648,12 @@ def main():
                         help='Experimental IDRiD-trained MA candidate, off by default')
     parser.add_argument('--referral-probe', choices=('none', 'idrid'), default='none',
                         help='Experimental IDRiD-trained binary referral score; no triage effect')
+    parser.add_argument('--lesions', choices=('none', 'learned'), default='none',
+                        help='Opt-in learned lesion candidates (EX/HE/MA/SE) panel; needs --lesion-weights/--lesion-thresholds')
+    parser.add_argument('--lesion-weights', type=str, default=None, help='X8 lesion segmenter checkpoint (best.pt)')
+    parser.add_argument('--lesion-thresholds', type=str, default=None, help='thresholds.json of the lesion segmenter')
     args = parser.parse_args()
+    lesion_kw = dict(lesions=args.lesions, lesion_weights=args.lesion_weights, lesion_thresholds=args.lesion_thresholds)
 
     if args.demo:
         # Try APTOS images first, then patient sample
@@ -651,24 +674,24 @@ def main():
                         if os.path.exists(img_path):
                             grade_dir = os.path.join(args.output, f'grade{grade_val}')
                             run_pipeline(img_path, grade_dir, ma_detector=args.ma_detector,
-                                         referral_probe=args.referral_probe)
+                                         referral_probe=args.referral_probe, **lesion_kw)
                 return
             # If no CSV, just pick first 3 images
             imgs = sorted([f for f in os.listdir(aptos_dir) if f.endswith('.png')])[:3]
             for img_file in imgs:
                 run_pipeline(os.path.join(aptos_dir, img_file), args.output,
                              ma_detector=args.ma_detector,
-                             referral_probe=args.referral_probe)
+                             referral_probe=args.referral_probe, **lesion_kw)
             return
 
         if os.path.exists(sample):
             run_pipeline(sample, args.output, ma_detector=args.ma_detector,
-                         referral_probe=args.referral_probe)
+                         referral_probe=args.referral_probe, **lesion_kw)
         else:
             parser.error('No local sample images found. Provide --image PATH; datasets are not bundled.')
     elif args.image:
         run_pipeline(args.image, args.output, ma_detector=args.ma_detector,
-                     referral_probe=args.referral_probe)
+                     referral_probe=args.referral_probe, **lesion_kw)
     else:
         parser.error('Provide --image PATH or --demo')
 

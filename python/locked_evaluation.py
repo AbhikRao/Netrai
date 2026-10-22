@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 import torch
 
+import exposure
 from export_adapted_variant import adapted_model
 from models.netrai_model import NetrAIModel
 from utils.artifacts import atomic_json
@@ -222,6 +223,9 @@ def freeze(args):
     args.output.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(args.threads)
     setup = ROUNDS[args.round]
+    development = getattr(args, 'development', False) is True
+    for cohort in setup['cohorts']:  # refuse exposed/training cohorts unless declared as a development run
+        exposure.assert_fresh_allowed(cohort, development)
     cache, inventories, spot_checks = {}, [], {}
     for cohort, info in setup['cohorts'].items():
         frame = inventory(cohort)
@@ -260,12 +264,16 @@ def freeze(args):
                 + [ROOT / s['policy'] for s in config['variants'] if s.get('policy')]}
     atomic_json(lock_path, {'schema_version': 2 if args.round == 3 else 1, 'round': args.round,
                             'locked_utc': datetime.now(timezone.utc).isoformat(), 'tests': setup['tests'],
+                            'fresh': not development,
                             'precomputed_logits_cpu_spot_check_max_abs': spot_checks,
                             'logits_provenance': config.get('logits_provenance'),
                             'labels_read': False, 'primary_variant': config['primary'],
                             'reference_variant': config['reference'], 'bootstrap_seed': config['bootstrap_seed'],
                             'bootstrap_replicates': config['bootstrap_replicates'], 'bindings': bindings})
     print(f'Locked {len(bindings)} artifacts -> {lock_path}')
+    if not development:
+        for cohort in setup['cohorts']:
+            exposure.record_locked(cohort, lock_path)
 
 
 def thresholds_for(spec):
@@ -412,6 +420,9 @@ def evaluate(args):
               'cohorts': cohorts,
               'exposure': setup['exposure']}
     atomic_json(report_path, report)
+    if lock.get('fresh', True):  # a development run does not change a cohort's exposure status
+        for cohort in cohorts:
+            exposure.record_exposure(cohort, args.output / 'lock.json', report_path)
     for cohort, block in cohorts.items():
         for name, result in block['results'].items():
             print(cohort, name, {k: (round(v, 4) if isinstance(v, float) else [round(x, 4) for x in v])
@@ -427,6 +438,9 @@ def main():
     parser.add_argument('--round', type=int, choices=sorted(ROUNDS), default=2,
                         help='freeze only; evaluate follows the round recorded in the lock')
     parser.add_argument('--protocol', type=Path, help='default: the round plan')
+    parser.add_argument('--development', action='store_true',
+                        help='freeze cohorts that are already exposed/training as a non-fresh development run '
+                             '(the lock records fresh=false and the exposure registry is not updated)')
     parser.add_argument('--threads', type=int, default=6)
     args = parser.parse_args()
     args.protocol = args.protocol or ROUNDS[args.round]['protocol']

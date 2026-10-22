@@ -1,0 +1,44 @@
+{
+  "tier": "TD (DeepDRiD validation; development)",
+  "prevalence_ungradable": {
+    "train": 0.52,
+    "valid": 0.545
+  },
+  "regularisation_C": {
+    "ungradable": 0.003,
+    "artifact": 0.003,
+    "clarity": 0.003,
+    "field": 0.003
+  },
+  "operating_threshold_5pct_false_reject_oof": 1.276264986787131,
+  "temperature": 0.706358021779812,
+  "validation_auc": {
+    "a_eyeq_candidate": 0.7244933965117452,
+    "b_direct_ungradable_head": 0.7949642101018248,
+    "c_stacked": 0.8119266055045872
+  },
+  "stacked_minus_candidate": {
+    "a": 0.8119266055045872,
+    "b": 0.7244933965117452,
+    "difference": 0.08743320899284202,
+    "difference_ci95": [
+      0.0500734130948575,
+      0.12481820358367497
+    ],
+    "valid_replicates": 1000
+  },
+  "operating_point_on_validation": {
+    "reject_recall": 0.3577981651376147,
+    "false_reject_rate": 0.03296703296703297
+  },
+  "factor_head_validation_auc": {
+    "artifact": 0.9287808568996501,
+    "clarity": 0.9534615123310008,
+    "field": 0.7438934122871946
+  },
+  "gate": {
+    "rule": "AUC(c) >= AUC(a) + 0.02",
+    "gain": 0.08743320899284202,
+    "passed": true
+  }
+}

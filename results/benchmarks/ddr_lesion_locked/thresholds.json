@@ -1,0 +1,11 @@
+{
+  "dice_thresholds": {
+    "EX": 0.68,
+    "HE": 0.908,
+    "MA": 0.899,
+    "SE": 0.898
+  },
+  "ma_lesion_threshold": 0.95,
+  "selected_on": "validation images only, native resolution",
+  "max_fp_per_image": 8.0
+}

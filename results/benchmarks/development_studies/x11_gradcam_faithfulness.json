@@ -1,0 +1,151 @@
+{
+  "tier": "TX (post hoc; lesion masks of exposed test sets)",
+  "legacy/idrid": {
+    "images": 27,
+    "images_with_lesions": 27,
+    "energy_ratio": {
+      "mean": 2.4097511770873488,
+      "median": 2.3422621784198596,
+      "ci95_mean": [
+        2.1773058701326904,
+        2.640851515900214
+      ],
+      "fraction_above_1": 0.9629629629629629
+    },
+    "pointing_game": {
+      "hit_rate": 0.9259259259259259,
+      "ci95": [
+        0.8148148148148148,
+        1.0
+      ],
+      "chance": 0.3558355340489534,
+      "hit_minus_chance": 0.5700903918769725,
+      "ci95_diff": [
+        0.4663911870566195,
+        0.6555006220265623
+      ]
+    },
+    "deletion": {
+      "images_called_referable": 22,
+      "auc_cam": 0.4280828982379965,
+      "auc_random": 0.8527782919732005,
+      "cam_minus_random": -0.4246953937352042,
+      "ci95": [
+        -0.4909328146251872,
+        -0.360919842815069
+      ],
+      "note": "negative = Grad-CAM order lowers the referral score faster than random"
+    }
+  },
+  "legacy/ddr": {
+    "images": 202,
+    "images_with_lesions": 202,
+    "energy_ratio": {
+      "mean": 3.2910273085695523,
+      "median": 2.48220742647947,
+      "ci95_mean": [
+        2.9224173238522244,
+        3.709189027793105
+      ],
+      "fraction_above_1": 0.8861386138613861
+    },
+    "pointing_game": {
+      "hit_rate": 0.6435643564356436,
+      "ci95": [
+        0.5792079207920792,
+        0.7079207920792079
+      ],
+      "chance": 0.17466445636091338,
+      "hit_minus_chance": 0.4688999000747302,
+      "ci95_diff": [
+        0.4101289425665583,
+        0.5285044603783383
+      ]
+    },
+    "deletion": {
+      "images_called_referable": 91,
+      "auc_cam": 0.30643541311701583,
+      "auc_random": 0.767969181724302,
+      "cam_minus_random": -0.46153376860728623,
+      "ci95": [
+        -0.5032342652106436,
+        -0.41782918085088355
+      ],
+      "note": "negative = Grad-CAM order lowers the referral score faster than random"
+    }
+  },
+  "R5_768_s17/idrid": {
+    "images": 27,
+    "images_with_lesions": 27,
+    "energy_ratio": {
+      "mean": 3.4874748234388933,
+      "median": 2.675375897495382,
+      "ci95_mean": [
+        2.4272601541577026,
+        5.183547146588637
+      ],
+      "fraction_above_1": 1.0
+    },
+    "pointing_game": {
+      "hit_rate": 0.9629629629629629,
+      "ci95": [
+        0.8888888888888888,
+        1.0
+      ],
+      "chance": 0.3476988345641596,
+      "hit_minus_chance": 0.6152641283988033,
+      "ci95_diff": [
+        0.5153786159017869,
+        0.6908995753820465
+      ]
+    },
+    "deletion": {
+      "images_called_referable": 26,
+      "auc_cam": 0.6293303411883803,
+      "auc_random": 0.9880113585637165,
+      "cam_minus_random": -0.35868101737533625,
+      "ci95": [
+        -0.45946953616499037,
+        -0.2637638342566789
+      ],
+      "note": "negative = Grad-CAM order lowers the referral score faster than random"
+    }
+  },
+  "R5_768_s17/ddr": {
+    "images": 202,
+    "images_with_lesions": 202,
+    "energy_ratio": {
+      "mean": 7.075632024730403,
+      "median": 4.458145160860521,
+      "ci95_mean": [
+        6.1547576946303435,
+        8.01891289643471
+      ],
+      "fraction_above_1": 0.9900990099009901
+    },
+    "pointing_game": {
+      "hit_rate": 0.905940594059406,
+      "ci95": [
+        0.8613861386138614,
+        0.9455445544554455
+      ],
+      "chance": 0.16991665449343624,
+      "hit_minus_chance": 0.7360239395659698,
+      "ci95_diff": [
+        0.6902984078396468,
+        0.7782891128473575
+      ]
+    },
+    "deletion": {
+      "images_called_referable": 185,
+      "auc_cam": 0.4547442031420163,
+      "auc_random": 0.952923774219848,
+      "cam_minus_random": -0.4981795710778318,
+      "ci95": [
+        -0.5356083600013203,
+        -0.45935672123761645
+      ],
+      "note": "negative = Grad-CAM order lowers the referral score faster than random"
+    }
+  }
+}

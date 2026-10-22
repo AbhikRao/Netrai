@@ -60,3 +60,9 @@ python python/audit_datasets.py --strict --output results/dataset_audit/dataset_
 
 The generated audit and checksums remain local. Exclude credentials, personal
 identifiers, medical images and generated patient reports from commits.
+
+## Added in the October 2026 research branch
+
+- **RFMiD 2.0** (Zenodo 7505822, CC BY 4.0, 860 fundus images from Nanded, Jalna and Pune clinics, multi-disease labels incl. `DR` = any diabetic retinopathy): downloaded under `data/rfmid2/` and used once as a locked fresh any-DR test; six images have no label row in the release. Not a referable-DR or ICDR-graded set.
+- **DDR lesion segmentation test** (225 images; 202 used after removing 23 same-retina near-copies of training images) and **DeepDRiD Challenge-2 quality labels** were each evaluated once under a lock; both are now exposed development data.
+- **RETFound weights** (`RETFound_mae_natureCFP.pth`, CC BY-NC 4.0, non-commercial research only) were downloaded for a negative frozen-probe study and are kept out of the repository.
