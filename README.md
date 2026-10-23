@@ -11,13 +11,11 @@ The simulation explores how connectivity, staffing and recapture demand affect
 screening completion.
 
 <!-- current-state:start -->
-> **Current state (2026-10-13):** the deployed MATLAB model is unchanged. The 768-pixel research
-> models refer far more referable eyes than the deployed model on cameras they never saw:
-> **90.5% / 84.5%** (sensitivity / specificity) on ODIR-5K (round 3; AUC 0.948 vs 0.885 deployed)
-> and **78.0% / 92.4%** on the new Moroccan FDR26 set (round 4), where the deployed model reaches
-> 50.3% / 99.7%. On FDR26, ranking (AUC 0.910) is no better than the deployed model's (0.911):
-> moderate (grade-2) eyes and some camera formats are the main weaknesses. No candidate meets
-> both targets, so they remain opt-in research variants. See [validation](docs/VALIDATION.md).
+> **Current state (2026-10-22):** the deployed MATLAB model is unchanged. On a fresh any-DR test (RFMiD 2.0) it ranks
+> DR better (AUC 0.84) than the 768-pixel research models (0.72–0.76), which mainly over-flag other retinal disease;
+> those models remain opt-in research variants for referable DR (90.5% / 84.5% on ODIR-5K, 78.0% / 92.4% on FDR26).
+> Opt-in learned lesion candidates (locked-test Dice 0.60 / 0.43 / 0.26 for exudates / haemorrhages / microaneurysms)
+> and a DeepDRiD-aware quality score (AUC 0.82 vs 0.73) are research additions. Details and limits: [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)

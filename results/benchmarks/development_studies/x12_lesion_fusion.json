@@ -1,0 +1,236 @@
+{
+  "sites": {
+    "deepdrid": {
+      "n": 1980,
+      "prevalence": 0.43434343434343436,
+      "grading": {
+        "auc": 0.9616289451827242,
+        "spec_at_sens90": 0.9214285714285714
+      },
+      "lesion_only": {
+        "auc": 0.9470857558139534,
+        "spec_at_sens90": 0.8053571428571429
+      },
+      "fused": {
+        "auc": 0.9681592607973422,
+        "spec_at_sens90": 0.9258928571428572
+      },
+      "fused_minus_grading": {
+        "auc": {
+          "estimate": 0.006530315614617921,
+          "ci95": [
+            0.0032023979586594475,
+            0.01042601633401235
+          ],
+          "valid_replicates": 1000
+        },
+        "spec90": {
+          "estimate": 0.0044642857142858094,
+          "ci95": [
+            -0.014349482622877042,
+            0.026758408771138092
+          ],
+          "valid_replicates": 1000
+        }
+      },
+      "lesion_only_minus_grading": {
+        "auc": {
+          "estimate": -0.014543189368770859,
+          "ci95": [
+            -0.024960668931961333,
+            -0.0036809838432069223
+          ],
+          "valid_replicates": 1000
+        },
+        "spec90": {
+          "estimate": -0.11607142857142849,
+          "ci95": [
+            -0.15434234192052593,
+            -0.07713034410844634
+          ],
+          "valid_replicates": 1000
+        }
+      }
+    },
+    "fdr26": {
+      "n": 2833,
+      "prevalence": 0.5954818213907519,
+      "grading": {
+        "auc": 0.9073610848175815,
+        "spec_at_sens90": 0.643979057591623
+      },
+      "lesion_only": {
+        "auc": 0.8989195686964582,
+        "spec_at_sens90": 0.6614310645724258
+      },
+      "fused": {
+        "auc": 0.9166886497815654,
+        "spec_at_sens90": 0.6841186736474695
+      },
+      "fused_minus_grading": {
+        "auc": {
+          "estimate": 0.009327564963983903,
+          "ci95": [
+            0.0026149755690708294,
+            0.01632195989031606
+          ],
+          "valid_replicates": 1000
+        },
+        "spec90": {
+          "estimate": 0.04013961605584648,
+          "ci95": [
+            -0.0009198889432090532,
+            0.0954658406941295
+          ],
+          "valid_replicates": 1000
+        }
+      },
+      "lesion_only_minus_grading": {
+        "auc": {
+          "estimate": -0.008441516121123316,
+          "ci95": [
+            -0.020226336771439167,
+            0.0031957178008026324
+          ],
+          "valid_replicates": 1000
+        },
+        "spec90": {
+          "estimate": 0.017452006980802848,
+          "ci95": [
+            -0.03292056497367293,
+            0.08637843338245507
+          ],
+          "valid_replicates": 1000
+        }
+      }
+    },
+    "messidor": {
+      "n": 1744,
+      "prevalence": 0.26204128440366975,
+      "grading": {
+        "auc": 0.9426311592613562,
+        "spec_at_sens90": 0.8251748251748252
+      },
+      "lesion_only": {
+        "auc": 0.9479987554385804,
+        "spec_at_sens90": 0.8282828282828283
+      },
+      "fused": {
+        "auc": 0.9556820519621395,
+        "spec_at_sens90": 0.8547008547008547
+      },
+      "fused_minus_grading": {
+        "auc": {
+          "estimate": 0.013050892700783301,
+          "ci95": [
+            0.007776495955763177,
+            0.01875105522311386
+          ],
+          "valid_replicates": 1000
+        },
+        "spec90": {
+          "estimate": 0.02952602952602945,
+          "ci95": [
+            0.005387527459073428,
+            0.07803268013073465
+          ],
+          "valid_replicates": 1000
+        }
+      },
+      "lesion_only_minus_grading": {
+        "auc": {
+          "estimate": 0.005367596177224154,
+          "ci95": [
+            -0.004230497998270149,
+            0.015718963401011032
+          ],
+          "valid_replicates": 1000
+        },
+        "spec90": {
+          "estimate": 0.0031080031080030768,
+          "ci95": [
+            -0.043380597369753,
+            0.06439412898220676
+          ],
+          "valid_replicates": 1000
+        }
+      }
+    },
+    "odir": {
+      "n": 4408,
+      "prevalence": 0.2588475499092559,
+      "grading": {
+        "auc": 0.9367319384051118,
+        "spec_at_sens90": 0.8105295378022651
+      },
+      "lesion_only": {
+        "auc": 0.8693781895120434,
+        "spec_at_sens90": 0.588613406795225
+      },
+      "fused": {
+        "auc": 0.9155172150152631,
+        "spec_at_sens90": 0.7275788184879094
+      },
+      "fused_minus_grading": {
+        "auc": {
+          "estimate": -0.021214723389848755,
+          "ci95": [
+            -0.02776957904299727,
+            -0.014737031613236704
+          ],
+          "valid_replicates": 1000
+        },
+        "spec90": {
+          "estimate": -0.08295071931435571,
+          "ci95": [
+            -0.11091054047209048,
+            -0.03859026120360132
+          ],
+          "valid_replicates": 1000
+        }
+      },
+      "lesion_only_minus_grading": {
+        "auc": {
+          "estimate": -0.06735374889306844,
+          "ci95": [
+            -0.0781343865625169,
+            -0.05660109565963384
+          ],
+          "valid_replicates": 1000
+        },
+        "spec90": {
+          "estimate": -0.2219161310070401,
+          "ci95": [
+            -0.2688430324290292,
+            -0.17068135902030063
+          ],
+          "valid_replicates": 1000
+        }
+      }
+    }
+  },
+  "rule": {
+    "mean_auc_gain": 0.0019235124723840924,
+    "sites_ci_excludes_zero": 3,
+    "worst_site_gain": -0.021214723389848755,
+    "success": false
+  },
+  "tier": "TL (leave-dataset-out held-out sources; lesion model never saw them)",
+  "thresholds": {
+    "dice_thresholds": {
+      "EX": 0.68,
+      "HE": 0.908,
+      "MA": 0.899,
+      "SE": 0.898
+    },
+    "ma_lesion_threshold": 0.95,
+    "selected_on": "validation images only, native resolution",
+    "max_fp_per_image": 8.0
+  },
+  "runs": [
+    "../results/model_improvement/experiments/X2/p_messidor_s2/run",
+    "../results/model_improvement/experiments/X2/p_fdr26_s1/run",
+    "../results/model_improvement/experiments/X2/p_odir_s1/run",
+    "../results/model_improvement/experiments/X2/p_deepdrid_s1/run"
+  ]
+}

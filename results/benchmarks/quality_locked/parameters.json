@@ -1,0 +1,11 @@
+{
+  "regularisation_C": {
+    "ungradable": 0.003,
+    "artifact": 0.003,
+    "clarity": 0.003,
+    "field": 0.003
+  },
+  "operating_threshold_5pct_false_reject_oof": 1.276264986787131,
+  "temperature": 0.706358021779812,
+  "candidate_reject_threshold": 0.375
+}

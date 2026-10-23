@@ -1,0 +1,57 @@
+{
+  "tier": "TL (leave-dataset-out held-out sources, previously exposed data)",
+  "folds": {
+    "p_messidor_s2": {
+      "n": 1744,
+      "auc_identity": 0.9426311592613562,
+      "auc_tta": 0.9451304834237,
+      "auc_difference": {
+        "estimate": 0.0024993241623437745,
+        "ci95": [
+          -0.0007547348649651579,
+          0.00560595684596645
+        ],
+        "valid_replicates": 1000
+      }
+    },
+    "p_fdr26_s1": {
+      "n": 2833,
+      "auc_identity": 0.9073616020673438,
+      "auc_tta": 0.9124311669878787,
+      "auc_difference": {
+        "estimate": 0.005069564920534897,
+        "ci95": [
+          0.002816009996587518,
+          0.00750680299784856
+        ],
+        "valid_replicates": 1000
+      }
+    },
+    "p_odir_s1": {
+      "n": 4408,
+      "auc_identity": 0.9367316701393668,
+      "auc_tta": 0.9397110295046716,
+      "auc_difference": {
+        "estimate": 0.002979359365304801,
+        "ci95": [
+          0.0010683091242978987,
+          0.004724151955125263
+        ],
+        "valid_replicates": 1000
+      }
+    },
+    "p_deepdrid_s1": {
+      "n": 1980,
+      "auc_identity": 0.9616289451827242,
+      "auc_tta": 0.9633502906976743,
+      "auc_difference": {
+        "estimate": 0.0017213455149500678,
+        "ci95": [
+          -2.944379572727136e-05,
+          0.0034560612715287846
+        ],
+        "valid_replicates": 1000
+      }
+    }
+  }
+}

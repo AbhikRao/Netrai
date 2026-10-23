@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "locked_utc": "2026-10-21T17:55:00.150497+00:00",
+  "tests": {
+    "ddr_lesion_seg_test": {
+      "images_all": 225,
+      "images_primary": 202
+    }
+  },
+  "fresh": true,
+  "labels_read": false,
+  "weights": "../results/model_improvement/x8_lock_candidate/best.pt",
+  "thresholds": "../results/model_improvement/x8_lock_candidate/thresholds.json",
+  "exclusions": "../results/model_improvement/ddr_lesion_test_exclusions_v1.csv",
+  "inference": {
+    "long_side": 1536,
+    "tile": 1024,
+    "overlap": 128,
+    "enhance": "ben"
+  },
+  "bootstrap_replicates": 2000,
+  "bootstrap_seed": 20261030,
+  "bindings": {
+    "results/model_improvement/x8_lock_candidate/best.pt": "783a3fbeb0809e2a04bbdb21a9f41818b72c49429923c3c0b06cbc1adc61caa5",
+    "results/model_improvement/x8_lock_candidate/thresholds.json": "fcebaf0e77d3280513566db45c0c72e1735d5c6b73a923627b78181e1f58de26",
+    "results/model_improvement/ddr_lesion_test_exclusions_v1.csv": "5cdd424e93918da7039743accd6d4ec8f023df0be0ef799b92be9cf6ae64355d",
+    "results/model_improvement/x8_lock/inventory.json": "f0853ce5b419992d238c972c0464782e218f89b126b1cf1a04ca54265cd5b7ae",
+    "python/locked_segmentation_eval.py": "137f7413a2758173a04009bf9d1aca94a7e64bef5a1775352d2be9b1683f1087",
+    "python/lesion_data.py": "59f095408db0fb5cff6521d25c675fa5bc1f9c63f7f2b31073a5f97260efaf66",
+    "python/lesion_metrics.py": "f212ed6bf91cdbf4721313e25d498d1ea20ba96167cec818eb9534a93ebcce72",
+    "python/models/lesion_unet.py": "1bb69af4a2ddea47073fb04ec67df7f2dfacee8324f5e04d16515cfa62cf81ba",
+    "python/train_lesion_seg.py": "3c79751f6280cea2a8afc2d412e6b6a622243f1fd74d28e5a6469ee6e1404136",
+    "python/lesion_heuristic_baseline.py": "cc01696f1f7596d9b413cc4588a8514b37b6f7463d245fb1835e1b36927116a3",
+    "python/exposure.py": "1e969e6c4a7b444bbf1343e1d936b002c01030411134675f4084161e867cc3f2"
+  }
+}

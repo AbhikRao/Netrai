@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "locked_utc": "2026-10-22T07:25:27.473286+00:00",
+  "tests": {
+    "deepdrid_challenge2_quality": "400 images, primary subset 392"
+  },
+  "fresh": true,
+  "labels_read": false,
+  "bootstrap_seed": 20261107,
+  "bootstrap_replicates": 2000,
+  "operating_threshold": 1.276264986787131,
+  "bindings": {
+    "results/model_improvement/x9_lock/inventory.csv": "5aa48fd8498f11b0284b71bef8b4bd5640133bac4bbd0392bfa207227518774f",
+    "results/model_improvement/x9_lock/scores.npz": "821c83d90af40307714d24757882b56a48520ae041e8ce9cbdc860042bbcee35",
+    "results/model_improvement/x9_lock/parameters.json": "94cca737334f032e52310aa84f0606183a719ea22173ad8d1fee612a2e1a44cf",
+    "results/model_improvement/experiments/X9/embeddings_dev.npz": "a2c9c879f9918d70be74ed42cf59184a98ee8edd2010d5704d218776604e87bd",
+    ".project-notes/docs/X9_PREREG.md": "ea320a00426458f6d6a4cbd2401eecf8f11d5920c451fdb4f55cba5dd4c18972",
+    "python/weights/quality_model_candidate.pth": "0cddeade514f9eb50e3e7419b6b4216304c23c41dce47919db5e555dd7d0da75",
+    "python/weights/quality_model_candidate.json": "a6426e8013111d8efb9021bc1f813f4a00036c1a7bf18edea2b4b3b98e2af36a",
+    "python/locked_quality_eval.py": "5d5c6af83d0a36649f2675e888eeb85f9696311f39cf50a548d4ecb87f310bee",
+    "python/train_quality_x9.py": "374ec595a19cbd9d8457fc02f4b1587990602698c04ffe8dcf39d4c6ce97a03f",
+    "python/models/quality_model.py": "8bccffa49b0a4f3ffb95122c5580297561cb3acbc1c8c8373f211d7e5bb865dc",
+    "python/modules/quality.py": "179e3e91c92d5cba4be3d4e659e61c7ce357b5403fb5da2ea99b3aef30336705",
+    "python/exposure.py": "1e969e6c4a7b444bbf1343e1d936b002c01030411134675f4084161e867cc3f2",
+    "python/netrai_eval/metrics.py": "f54fbe56b8f247f946b85cd00338d3eceabe477889492547e255da5f6e76041a",
+    "python/netrai_eval/bootstrap.py": "0db57e7fd53784980dc8fdbf3956b64564a635f260a1a80b731418252169b582"
+  }
+}

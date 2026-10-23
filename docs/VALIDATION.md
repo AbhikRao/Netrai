@@ -4,6 +4,26 @@ NetrAI has implementations for acquisition quality, retinal analysis, grading,
 explanation reporting and capacity simulation. This describes component coverage,
 not a percentage of clinical readiness or completion of all challenge requirements.
 
+## Research results of October 20–22, 2026 (branch `research/q4-2026`; nothing here changes the deployed model)
+
+Evidence tiers: **TF** fresh locked test (single use, lock cited) · **TX** exposed data, post hoc · **TL** leave-dataset-out
+(sources never trained on or selected on; previously exposed data) · **TD** development/selection data. The registry of
+every cohort's exposure status is [exposure_registry.json](../results/benchmarks/exposure_registry.json).
+
+| Question | Result | Tier and evidence |
+| --- | --- | --- |
+| Do the 768-px research models beat the deployed model on a fresh any-DR test? | **No.** RFMiD 2.0 (853 labelled eyes, 70 with DR): any-DR AUC deployed 0.844 (0.816–0.871), R5_768_s17 0.716 (0.674–0.757), E_768 0.758; paired differences −0.128 and −0.086, CIs exclude 0. DR vs normal eyes AUC ≥ 0.994 for all; the deficit is against eyes with other retinal disease (post hoc). At each policy's grade ≥ 1 (any-DR) boundary, which is not the grade ≥ 2 referral decision, every model flags 97–100% of DR eyes at about 50% specificity. | TF, [RFMiD 2.0](../results/benchmarks/rfmid2_locked/report.json) |
+| Does a learned lesion segmenter beat the hand-crafted detectors? | **Yes, by an order of magnitude, with moderate absolute quality.** DDR lesion test, 202 images after removing 23 same-retina near-copies: Dice EX 0.60 (0.55–0.65), HE 0.43 (0.31–0.55), MA 0.26 (0.21–0.30) vs 0.16 / 0.01 / 0.001. MA lesion-level sensitivity 61.8% at 14.2 false-positive components per image. Validation numbers were optimistic (HE 0.67, MA 0.36). | TF, [DDR lesion](../results/benchmarks/ddr_lesion_locked/report.json) |
+| Does a DeepDRiD-aware quality score improve on the EyeQ-trained one? | **Yes in ranking.** Challenge-2 (392 images, 54% ungradable): AUC 0.822 (0.775–0.864) vs 0.733 vs heuristic IQS 0.550; at ≤ 5% false-reject only 41% of ungradable images are rejected. Research candidate; deployed M1 unchanged. | TF, [quality](../results/benchmarks/quality_locked/report.json) |
+| How well does grading transfer to unseen sources? | Referable-DR AUC 0.907–0.962 (Messidor-2 0.929/0.943, FDR26 0.907, ODIR 0.937, DeepDRiD 0.962); one fixed threshold does not transfer (sensitivity 0.75–0.97, specificity 0.68–0.95). Seed noise about 0.01–0.015 AUC. | TL, [LODO baseline](../results/benchmarks/lodo_baseline) |
+| Can a per-site calibration set fix the thresholds? | Sensitivity ≥ 90% from about 100–200 labelled clusters; 90% sensitivity with 85% specificity is reachable only on some sites (DeepDRiD yes; Messidor-2, ODIR, FDR26 no). | TL, [site calibration](../results/benchmarks/lodo_baseline/site_calibration_lodo.json) |
+| Did lesion evidence, flip averaging, a retina foundation model or decoding rules improve grading? | No pre-registered rule was met: lesion fusion (3 of 4 sites +0.007…+0.013, ODIR −0.021; with per-site standardisation mean +0.006 < +0.010), flip averaging (+0.003 AUC, below +0.005), frozen RETFound probe (fails to transfer; −0.05…−0.35 AUC), grade-decoding rules (Grade-1 recall 0.08 → 0.2 at a Grade-3/QWK cost). | TL, [development studies](../results/benchmarks/development_studies) |
+
+Limits that apply to all rows: RFMiD's `DR` label is any-DR, not referable DR, and the set shares an institute family with
+IDRiD; DDR has no patient ids (identity evidence only); Grade-1 recall is 1–11% on unseen sources; locks and the two
+voided first attempts (before any value was seen) are documented next to each report. RETFound weights (CC BY-NC 4.0)
+were used for a negative research probe only and are not part of any deliverable.
+
 ## MATLAB grading
 
 The September 28, 2026 model-mode evaluation processed all 733 legacy APTOS
@@ -431,7 +451,7 @@ warnings; clinician explanation usefulness remains unmeasured.
 ## Acceptance work remaining
 
 - Portable-camera quality validation and factor-specific robustness.
-- Reliable annotated lesion evaluation, including appropriate subtype/NV labels.
+- Lesion evaluation beyond DDR (the locked DDR test is in-distribution), including subtype/NV labels; microaneurysm quality is weak (Dice 0.26).
 - Prospective, camera-specific validation of the site-adapted candidate and severe-grade (Grade-4) recall.
 - For the 768-pixel candidates: specificity just below target on ODIR, grade-2 sensitivity and rectangular-format cameras on FDR26, grade-1 recognition, and a fresh adjudicated test with other eye diseases included.
 - Broader full-image runtime checks, including quality and retinal analysis.

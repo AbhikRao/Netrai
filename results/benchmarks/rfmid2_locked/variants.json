@@ -1,0 +1,16 @@
+{
+  "primary": "R5_768_s17",
+  "reference": "A_legacy",
+  "bootstrap_seed": 20261104,
+  "bootstrap_replicates": 2000,
+  "matlab_primary_variant": "matlab/variant_R5_768_s17",
+  "logits_provenance": "all logits computed on the laptop CPU (fp32, legacy-area-v1 preprocessing at each model's input size) at freeze; ensemble = mean of member logits",
+  "operating_points": {"primary": "each model's own balanced 0.90 policy (frozen JSON); the any-DR endpoint uses the policy's grade >= 1 boundary and temperature-scaled 1 - p(grade 0)"},
+  "variants": [
+    {"id": "A_legacy", "kind": "legacy"},
+    {"id": "R3_768_s2026", "kind": "full", "size": 768, "checkpoint": "results/model_improvement/kaggle_output_768_s2026/run/best.pt", "policy": "results/model_improvement/round3_eval/policy_R3_768_s2026_balanced.json"},
+    {"id": "R3_768_s17", "kind": "full", "size": 768, "checkpoint": "results/model_improvement/kaggle_output_768_s17/run/best.pt", "policy": "results/model_improvement/round3_eval/policy_R3_768_s17_balanced.json"},
+    {"id": "E_768", "kind": "ensemble", "size": 768, "members": ["R3_768_s2026", "R3_768_s17"], "policy": "results/model_improvement/round3_eval/policy_E_768_balanced.json"},
+    {"id": "R5_768_s17", "kind": "full", "size": 768, "checkpoint": "results/model_improvement/kaggle_output_r5_s17/run/best.pt", "policy": "results/model_improvement/round5_eval/policy_R5_768_s17_balanced.json"}
+  ]
+}

@@ -261,3 +261,12 @@ attribution rather than lesion-boundary evidence. Fresh external grading,
 portable-camera robustness, clinician usefulness and review-time evaluation remain
 open. See [model documentation](../docs/MODEL_CARD.md) and
 [artifact terms](../LICENSE_STATUS.md).
+
+## Learned lesion candidates (opt-in research module)
+
+`matlab/src/m2_lesion/segmentLesionsLearned.m` runs an exported lesion segmenter (ONNX, fixed 1024-pixel window) and
+`matlab/demo_lesions.m` writes an EX/HE/MA/SE overlay for one image; `matlab/verifyLesionLearned.m` measures parity with the
+Python reference. It does not change `main_pipeline.m`. Parity on three validation images: network difference ≤ 7.4e-6
+in probability, frozen-threshold mask disagreement ≤ 2.5e-6 of pixels, isolated pixel differences up to 0.19 caused by
+1–4 grey-level differences in the Ben Graham blur rounding versus OpenCV. The ONNX file and checkpoint are not distributed
+with the repository. Pixel Dice on the locked DDR test: exudates 0.60, haemorrhages 0.43, microaneurysms 0.26.

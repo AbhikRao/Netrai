@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "updated": "2026-10-22",
+  "description": "Evidence-exposure registry. A cohort whose labels were read in a locked evaluation (or used for training/selection) can never again be presented as a fresh independent test. Code refuses to lock an exposed or training cohort as fresh and refuses to read a reserved cohort's labels without a valid lock. Update this file in the same commit as any lock or exposure.",
+  "statuses": {
+    "training": "used to fit models or select epochs/policies",
+    "exposed": "labels read in a locked evaluation or inspected during development; development data only",
+    "reserved": "labels never read; protected until a lock exists",
+    "locked": "a lock exists (predictions frozen) but labels have not been read",
+    "planned": "not acquired yet"
+  },
+  "cohorts": {
+    "messidor2": {
+      "kind": "grading",
+      "status": "exposed",
+      "exposed_on": "2026-10-12",
+      "lock": "results/model_improvement/round2_eval/lock.json",
+      "report": "results/model_improvement/round2_eval/report.json",
+      "marker": "data/messidor2/EVALUATION_OUTCOMES_EXPOSED.json",
+      "also_used_as": "validation (rounds 3-5)",
+      "notes": "1,748 images, Krause 2018 adjudicated labels"
+    },
+    "ddr_test": {
+      "kind": "grading",
+      "status": "exposed",
+      "exposed_on": "2026-10-12",
+      "lock": "results/model_improvement/round2_eval/lock.json",
+      "report": "results/model_improvement/round2_eval/report.json",
+      "marker": "data/DDR/EVALUATION_OUTCOMES_EXPOSED.json",
+      "also_used_as": "training (rounds 3-5)",
+      "notes": "DDR DR_grading test split, 4,105 images"
+    },
+    "odir": {
+      "kind": "grading",
+      "status": "exposed",
+      "exposed_on": "2026-10-12",
+      "lock": "results/model_improvement/round3_lock/lock.json",
+      "report": "results/model_improvement/round3_lock/report.json",
+      "marker": "data/odir/EVALUATION_OUTCOMES_EXPOSED.json",
+      "also_used_as": "training/validation (rounds 4-5)",
+      "notes": "6,784 images after DDR-overlap exclusion"
+    },
+    "eyeq_remainder": {
+      "kind": "grading",
+      "status": "exposed",
+      "exposed_on": "2026-10-12",
+      "lock": "results/model_improvement/round3_lock/lock.json",
+      "report": "results/model_improvement/round3_lock/report.json",
+      "marker": "data/eyeq/DR_GRADES_EXPOSED_ROUND3.json",
+      "also_used_as": "training (rounds 4-5)",
+      "notes": "4,000-image EyeQ test-remainder patient subset"
+    },
+    "eyeq_test": {
+      "kind": "grading+quality",
+      "status": "exposed",
+      "exposed_on": "2026-09-20",
+      "marker": "data/eyeq/DR_GRADES_EXPOSED_ROUND3.json",
+      "notes": "all EyeQ test DR grades exposed (round-2 selection subset used as validation, remainder in round 3); quality labels exposed since September 2026"
+    },
+    "fdr26": {
+      "kind": "grading",
+      "status": "exposed",
+      "exposed_on": "2026-10-13",
+      "lock": "results/model_improvement/round4_lock_v3/lock.json",
+      "report": "results/model_improvement/round4_lock_v3/report.json",
+      "marker": "data/fdr26/EVALUATION_OUTCOMES_EXPOSED.json",
+      "also_used_as": "training/validation (round 5)",
+      "notes": "2,833 images after removing repeated photographs; ALFEDIAM grades"
+    },
+    "deepdrid_validation": {
+      "kind": "grading",
+      "status": "exposed",
+      "exposed_on": "2026-09-28",
+      "notes": "396/400 processed in the MATLAB development run; later used for training (round 5)"
+    },
+    "deepdrid_grading_evaluation": {
+      "kind": "grading",
+      "status": "exposed",
+      "exposed_on": "2026-10-11",
+      "lock": "results/model_improvement/acceptance/acceptance_lock_v2.json",
+      "notes": "Challenge1_labels.xlsx (DR grades) read once under acceptance lock v2; images used for training in rounds 3-5"
+    },
+    "idrid_test": {
+      "kind": "grading+segmentation",
+      "status": "exposed",
+      "exposed_on": "2026-09-18",
+      "notes": "IDRiD grading test (103) and segmentation test (27) examined repeatedly during development"
+    },
+    "aptos": {
+      "kind": "grading",
+      "status": "training",
+      "notes": "training source; legacy internal holdout contaminated by 35 duplicates"
+    },
+    "ddr_lesion_seg_test": {
+      "kind": "segmentation",
+      "status": "exposed",
+      "images": 225,
+      "label_paths": [
+        "data/DDR/extracted/DDR-dataset/lesion_segmentation/test/label",
+        "data/DDR/extracted/DDR-dataset/lesion_detection/test"
+      ],
+      "notes": "225 test images with EX/HE/MA/SE masks (segmentation) and the same 225 images' bounding-box XML (detection): both are labels of one protected set. Provenance (2026-10-19, images/filenames only): 152 of the 225 images are also in DDR DR_grading train, 12 in valid, 59 in test (2 in none), so every NetrAI grading checkpoint since round 2 saw most of them; a lesion model must start from ImageNet weights. Identity: 23 test images have a vessel-correlation >= 0.6 near-copy (0.79-0.95) among DDR lesion train/valid + IDRiD-train images (28 at >= 0.5); the release has a 49-image same-retina cluster spanning lesion train and valid. Predeclare exclusion of test images with max correlation >= 0.5 and split train/valid by cluster before any lock. Masks and XML must not be read before a lock exists. Lock v1 (2026-10-21 23:14) voided before any label read (evaluation memory defect); see results/model_improvement/x8_lock_void_v1/VOID.md.",
+      "identity_evidence": [
+        "results/model_improvement/ddr_lesion_test_near_copies/near_copies_against_reference.csv",
+        "results/model_improvement/lesion_train_valid_clusters/clusters.csv"
+      ],
+      "lock": "results/model_improvement/x8_lock/lock.json",
+      "exposed_on": "2026-10-21",
+      "report": "results/model_improvement/x8_lock/report.json"
+    },
+    "deepdrid_challenge2_quality": {
+      "kind": "quality",
+      "status": "exposed",
+      "images": 400,
+      "label_paths": [
+        "data/DRiD/DeepDRiD-master/regular_fundus_images/Online-Challenge1&2-Evaluation/Challenge2_labels.xlsx"
+      ],
+      "notes": "Quality annotations for the 400 regular-fundus evaluation images (100 patients); same schema as the training CSV (image_id, Overall quality, Artifact, Clarity, Field definition); 400 data rows. File SHA-256 9a76b7ea16747b7a1413a66a443072a70de20a13ee063b3533c58bdf79d98f8b. Headers and row count only were read (2026-10-19). Challenge1_labels.xlsx (grades) is exposed; this workbook was never opened by project code. Predeclared primary identity subset excludes patients 420 and 454 (repeat of validation patient 410's retina). Scale semantics RESOLVED (2026-10-20) from the release regular-fundus-training/Readme.docx: Overall quality 1 = good enough for diagnosis, 0 = not; Artifact 0 none ... 10 covers whole posterior pole (lower is better); Clarity 1..10 and Field definition 1..10 (higher is better). Labels remain reserved; see .project-notes/docs/X9_PREREG.md.",
+      "lock": "results/model_improvement/x9_lock/lock.json",
+      "exposed_on": "2026-10-22",
+      "report": "results/model_improvement/x9_lock/report.json"
+    },
+    "eyepacs_kaggle2015_remainder": {
+      "kind": "grading",
+      "status": "planned",
+      "notes": "Kaggle 2015 EyePACS images outside the EyeQ subset; needs the owner to accept Kaggle rules; official test-label availability unverified"
+    },
+    "rfmid2": {
+      "kind": "grading(any-DR)",
+      "status": "exposed",
+      "images": 860,
+      "label_paths": [
+        "data/rfmid2/extracted/Training_set/RFMiD_2_Training_labels.csv",
+        "data/rfmid2/extracted/Validation_set/RFMiD_2_Validation_labels.csv",
+        "data/rfmid2/extracted/Test_set/RFMiD_2_Testing_labels.csv"
+      ],
+      "notes": "RFMiD 2.0 (Zenodo 10.5281/zenodo.7505822, CC BY 4.0, Nanded/Jalna/Pune India, 860 images, 51 conditions, binary per-condition columns incl. DR and WNL). Downloaded 2026-10-19, zip md5 f9fe268dd74825fd89a9e212c1e48624 verified. Only CSV column names were read. Vessel screen vs all exported training images: max correlation 0.72 (top 5 pairs visibly different retinas); no exclusions. The DR column is any-DR presence, not ICDR grades; no patient ids. All three splits are treated as one test set. Lock v1 (2026-10-22) halted at the label join (6 images without a label row; CSVs opened, no value inspected); voided, see results/model_improvement/rfmid2_lock_void_v1/VOID.md.",
+      "lock": "results/model_improvement/rfmid2_lock/lock.json",
+      "exposed_on": "2026-10-22",
+      "report": "results/model_improvement/rfmid2_lock/report.json"
+    },
+    "rfmid1": {
+      "kind": "grading(any-DR)",
+      "status": "planned",
+      "notes": "RFMiD 1.0 (3,200 images, IEEE DataPort, login needed; licence unconfirmed); owner action to download"
+    }
+  }
+}
