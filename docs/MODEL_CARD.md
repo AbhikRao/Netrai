@@ -102,9 +102,7 @@ predicted. The legacy model remains available (`Variant='legacy'`). See [validat
 
 ## Obtaining the E_768 weights and their terms
 
-The 143 MB ONNX file is not part of the Git history, and **no public release of it exists yet** (pending a check of the training datasets' terms; available to the project team only). Once a release exists,
-`scripts/fetch_e768.sh` (or `fetchE768Weights` in MATLAB) downloads it and verifies the SHA-256 recorded in the committed `matlab/variant_R3_E_768/netrai_bundle.json`, installing nothing on a mismatch. Without the file the public
-checkout runs the legacy model (`Variant='auto'`).
+The 143 MB ONNX file is not part of the Git history. It is the asset of the GitHub release [`e768-v1`](https://github.com/AbhikRao/Netrai/releases/tag/e768-v1) (research and evaluation use only). `scripts/fetch_e768.sh` (or `fetchE768Weights` in MATLAB) downloads it and verifies the SHA-256 recorded in the committed `matlab/variant_R3_E_768/netrai_bundle.json`, installing nothing on a mismatch. Without the file the public checkout runs the legacy model (`Variant='auto'` in MATLAB, `--variant auto` in Python). Python: `python inference.py --image IMG --variant E_768 [--site-policy site_policy.json]` runs the ONNX graph (no Grad-CAM: the graph has no gradients).
 
 **The MIT licence covers this project's original code and documentation, not the weights.** The weights were trained from an ImageNet-pretrained
 EfficientNet-B4 backbone on APTOS 2019, EyePACS/EyeQ, IDRiD, DeepDRiD and DDR training images, and were selected on validation images from

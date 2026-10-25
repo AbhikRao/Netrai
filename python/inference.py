@@ -268,6 +268,12 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
                 f"{'DISAGREES - human review' if safety['head_disagreement'] else 'agrees with grade policy'}"
             ),
         })
+        if safety.get('calibration_status'):
+            checklist.append({
+                'criterion': 'Referral cut-off (' + str(safety.get('model_variant')) + ')',
+                'status': 'HIGH' if str(safety['calibration_status']).startswith('UNCALIBRATED') else 'CANDIDATE',
+                'detail': str(safety['calibration_status']),
+            })
         research = safety.get('research_referral')
         if research is not None:
             checklist.append({
@@ -389,9 +395,30 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
     return png_path
 
 
+def resolve_variant(variant='auto', site_policy=None):
+    """('legacy', None) or ('E_768', runtime). ``auto`` picks E_768 when its verified local ONNX exists, else legacy."""
+    from modules import variant_e768
+    if variant not in ('auto', 'legacy', 'E_768'):
+        raise ValueError(f'Unsupported variant: {variant}')
+    if variant == 'legacy':
+        if site_policy:
+            raise ValueError('A site policy belongs to E_768; it cannot be applied to the legacy model.')
+        return 'legacy', None
+    if variant == 'auto' and not variant_e768.weights_present():
+        if site_policy:
+            raise ValueError('A site policy needs the E_768 weights (matlab/variant_R3_E_768/netrai_fold0.onnx), which are not installed.')
+        print('[i] E_768 weights not installed; using the legacy model (see scripts/fetch_e768.sh).')
+        return 'legacy', None
+    return 'E_768', variant_e768.E768Runtime(site_policy=site_policy)
+
+
 def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
-                 referral_probe='none', lesions='none', lesion_weights=None, lesion_thresholds=None):
+                 referral_probe='none', lesions='none', lesion_weights=None, lesion_thresholds=None,
+                 variant='auto', site_policy=None):
     """Run the full NetrAI pipeline on a single image."""
+    variant_name, runtime = resolve_variant(variant, site_policy)
+    if runtime is not None and referral_probe != 'none':
+        raise ValueError('--referral-probe needs the legacy PyTorch model; use --variant legacy.')
     print(f"\n{'='*60}")
     print(f"  NetrAI — Analyzing: {os.path.basename(image_path)}")
     print(f"{'='*60}\n")
@@ -418,7 +445,8 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
                 quality_rejected=True, grade_referable=False,
                 referable_head_positive=False),
         }
-        result.update(schema_version=2, research_only=True, quality_metrics=metrics)
+        result.update(schema_version=2, research_only=True, quality_metrics=metrics, model_variant=variant_name,
+                      calibration_status=(runtime.status['calibration_status'] if runtime else 'UNCALIBRATED: frozen thresholds'))
         atomic_json(Path(output_dir) / 'result.json', result)
         return result
 
@@ -480,10 +508,15 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
     # Model grading always uses the original RGB image.  The model's own
     # Legacy-area-v1 preprocessing reproduces the published inference path;
     # the old notebook's training resize differed. M1 enhancement is for M2/report.
-    prediction = predict_with_model_details(image_rgb)
+    if runtime is not None:
+        details = runtime.predict([image_rgb])
+        prediction = {k: (v[0].item() if np.ndim(v[0]) == 0 and hasattr(v[0], 'item') else v[0]) for k, v in details.items()}
+        calibration_temperature = runtime.temperature
+    else:
+        prediction = predict_with_model_details(image_rgb)
+        calibration_temperature = get_calibration_temperature()
     grade = int(prediction['grades'])
     probs = prediction['grade_probabilities']
-    calibration_temperature = get_calibration_temperature()
     calibrated_probs = calibrate_confidence(probs, calibration_temperature)
     print(f"     Grade: Level {grade} ({GRADE_NAMES[grade]})")
     print(f"     Probabilities: [{', '.join(f'{p:.3f}' for p in probs)}]")
@@ -494,7 +527,10 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
           f"{prediction['referable_head_probabilities']*100:.1f}%")
     print(f"     Head disagreement: {bool(prediction['head_disagreements'])}")
     print(f"     Triage: {prediction['triage_actions']}")
-    print("     Method: Legacy EfficientNet-B4 research checkpoint")
+    if runtime is not None:
+        print(f"     Method: E_768 research variant (ONNX) | {runtime.status['calibration_status']}")
+    else:
+        print("     Method: Legacy EfficientNet-B4 research checkpoint")
     research_referral = None
     if referral_probe == 'idrid':
         model, _, _ = _get_model()
@@ -507,7 +543,7 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
 
     # Module 4: Model attribution and candidate evidence
     print("[M4] Model attribution and candidate evidence...")
-    heatmap = generate_real_gradcam(image_rgb)
+    heatmap = None if runtime is not None else generate_real_gradcam(image_rgb)
     gradcam_qc = None
     if heatmap is not None:
         gradcam_qc = assess_gradcam_quality(
@@ -518,7 +554,8 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
               f"outside-FOV attention {gradcam_qc['outside_fov_attention_fraction']:.3f}, "
               f"flag={gradcam_qc['shortcut_flag']}")
     else:
-        print("     Grad-CAM: unavailable (no synthetic substitute generated)")
+        print("     Grad-CAM: unavailable " + ("for the ONNX E_768 variant (no gradients)" if runtime is not None else "(no synthetic substitute generated)")
+              + "; no synthetic substitute generated")
 
     overlay = generate_lesion_overlay(proc_img, seg_results)
 
@@ -549,6 +586,8 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
             'head_disagreement': bool(prediction['head_disagreements']),
             'triage_action': str(prediction['triage_actions']),
             'research_referral': research_referral,
+            'calibration_status': runtime.status['calibration_status'] if runtime else None,
+            'model_variant': variant_name,
         })
 
     # Also save individual panels for PPT
@@ -584,13 +623,19 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
     }
     if learned_lesions is not None:
         result['learned_lesions'] = learned_lesions
+    result['model_variant'] = variant_name
+    result['calibration_status'] = runtime.status['calibration_status'] if runtime else 'UNCALIBRATED: frozen thresholds'
+    if runtime is not None:
+        result['site_policy'] = runtime.status
+        result['model_sha256'] = runtime.identity['model_sha256']
     result.update(schema_version=2, research_only=True,
                   preprocessing_version='legacy-area-v1',
                   explanation_target='referral_logit',
                   explanation_coordinate_frame='classifier_crop_resize',
                   lesion_evidence_status='unverified_candidates')
     from utils.artifacts import sha256_file
-    result['bundle_sha256'] = sha256_file(Path(__file__).parent / 'weights/bundle.json')
+    result['bundle_sha256'] = sha256_file(
+        (Path(__file__).parents[1] / 'matlab/variant_R3_E_768/netrai_bundle.json') if runtime is not None else Path(__file__).parent / 'weights/bundle.json')
     result = json_value(result)
     atomic_json(Path(output_dir) / 'result.json', result)
     return result
@@ -652,8 +697,12 @@ def main():
                         help='Opt-in learned lesion candidates (EX/HE/MA/SE) panel; needs --lesion-weights/--lesion-thresholds')
     parser.add_argument('--lesion-weights', type=str, default=None, help='X8 lesion segmenter checkpoint (best.pt)')
     parser.add_argument('--lesion-thresholds', type=str, default=None, help='thresholds.json of the lesion segmenter')
+    parser.add_argument('--variant', choices=('auto', 'legacy', 'E_768'), default='auto',
+                        help='E_768 (research default when its ONNX weights are installed) or the legacy model')
+    parser.add_argument('--site-policy', type=str, default=None, help='per-site referral policy from calibrate_site.py (E_768 only)')
     args = parser.parse_args()
-    lesion_kw = dict(lesions=args.lesions, lesion_weights=args.lesion_weights, lesion_thresholds=args.lesion_thresholds)
+    lesion_kw = dict(lesions=args.lesions, lesion_weights=args.lesion_weights, lesion_thresholds=args.lesion_thresholds,
+                     variant=args.variant, site_policy=args.site_policy)
 
     if args.demo:
         # Try APTOS images first, then patient sample
