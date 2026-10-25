@@ -1,0 +1,397 @@
+{
+  "enriched_calibration_samples": {
+    "mbrset_eyer_smartphone": {
+      "20": {
+        "referable_patients": 20,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.114,
+        "p_sensitivity_target": 0.642,
+        "sensitivity_mean": 0.9117598082178537,
+        "sensitivity_p10": 0.8544776119402985,
+        "specificity_mean": 0.8079690519375211,
+        "specificity_p10": 0.6126455430315778
+      },
+      "40": {
+        "referable_patients": 40,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.17,
+        "p_sensitivity_target": 0.692,
+        "sensitivity_mean": 0.9145447388401702,
+        "sensitivity_p10": 0.8744776894931694,
+        "specificity_mean": 0.8336518875112465,
+        "specificity_p10": 0.7675772050241647
+      },
+      "80": {
+        "referable_patients": 80,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.206,
+        "p_sensitivity_target": 0.716,
+        "sensitivity_mean": 0.9138044440241226,
+        "sensitivity_p10": 0.8812199036918138,
+        "specificity_mean": 0.8442446800947299,
+        "specificity_p10": 0.7997103649437522
+      },
+      "160": {
+        "referable_patients": 160,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.22,
+        "p_sensitivity_target": 0.824,
+        "sensitivity_mean": 0.9196461911230167,
+        "sensitivity_p10": 0.8920237433956415,
+        "specificity_mean": 0.8418102764992411,
+        "specificity_p10": 0.813911328269102
+      }
+    },
+    "brset_canon": {
+      "20": {
+        "referable_patients": 20,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.308,
+        "p_sensitivity_target": 0.63,
+        "sensitivity_mean": 0.9052986018041908,
+        "sensitivity_p10": 0.8249534450651769,
+        "specificity_mean": 0.8760205054423102,
+        "specificity_p10": 0.797055208093735
+      },
+      "40": {
+        "referable_patients": 40,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.396,
+        "p_sensitivity_target": 0.68,
+        "sensitivity_mean": 0.9135394932166166,
+        "sensitivity_p10": 0.8576510446075664,
+        "specificity_mean": 0.8814181084613042,
+        "specificity_p10": 0.8142909575009306
+      },
+      "80": {
+        "referable_patients": 80,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.544,
+        "p_sensitivity_target": 0.732,
+        "sensitivity_mean": 0.9153433451844162,
+        "sensitivity_p10": 0.8781328460193867,
+        "specificity_mean": 0.8874826452076816,
+        "specificity_p10": 0.8412953605879651
+      },
+      "160": {
+        "referable_patients": 160,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.698,
+        "p_sensitivity_target": 0.762,
+        "sensitivity_mean": 0.9171274659476923,
+        "sensitivity_p10": 0.8830404889228418,
+        "specificity_mean": 0.8893265104238289,
+        "specificity_p10": 0.8510736262027948
+      }
+    },
+    "brset_nikon": {
+      "20": {
+        "referable_patients": 20,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.516,
+        "p_sensitivity_target": 0.606,
+        "sensitivity_mean": 0.9076091217850113,
+        "sensitivity_p10": 0.8256535269709543,
+        "specificity_mean": 0.9280322292137312,
+        "specificity_p10": 0.8570007469492561
+      },
+      "40": {
+        "referable_patients": 40,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.656,
+        "p_sensitivity_target": 0.678,
+        "sensitivity_mean": 0.9152063731951839,
+        "sensitivity_p10": 0.864054879438443,
+        "specificity_mean": 0.9462312305951023,
+        "specificity_p10": 0.9313683891432628
+      },
+      "80": {
+        "referable_patients": 80,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.688,
+        "p_sensitivity_target": 0.688,
+        "sensitivity_mean": 0.9160697639557119,
+        "sensitivity_p10": 0.8689655172413793,
+        "specificity_mean": 0.9548493465424319,
+        "specificity_p10": 0.9457981913556827
+      },
+      "160": {
+        "referable_patients": 160,
+        "non_referable_patients": 200,
+        "p_both_targets": 0.662,
+        "p_sensitivity_target": 0.662,
+        "sensitivity_mean": 0.9184075082442782,
+        "sensitivity_p10": 0.8274362818590705,
+        "specificity_mean": 0.9577599296214493,
+        "specificity_p10": 0.9560329752685486
+      }
+    }
+  },
+  "tier": "TX (exposed mBRSET and BRSET labels; post hoc; E_768 frozen round-3 policy, no refit of the model)",
+  "targets": {
+    "sensitivity": 0.9,
+    "specificity": 0.85
+  },
+  "unit": "patients (clusters)",
+  "config": {
+    "output": "../results/benchmarks/site_calibration_brazil/site_calibration_e768.json",
+    "sizes": [
+      25,
+      50,
+      100,
+      200,
+      400
+    ],
+    "replicates": 500,
+    "calib_sensitivity": 0.92,
+    "min_positives": 5,
+    "seed": 20261025
+  },
+  "frozen_boundary": 1.092308373535268,
+  "results": {
+    "mbrset_eyer_smartphone": {
+      "n_images": 4859,
+      "n_clusters": 1285,
+      "referable_prevalence": 0.1771969541057831,
+      "frozen_threshold": 1.092308373535268,
+      "frozen": {
+        "sensitivity": 0.89198606271777,
+        "specificity": 0.892696348174087,
+        "both_targets": false
+      },
+      "oracle": {
+        "both_targets_possible": true,
+        "sensitivity": 0.9175377468060395,
+        "specificity": 0.8501750875437719,
+        "threshold": 0.9459044766747257,
+        "auc": 0.9475730896807288,
+        "spec_at_sens90": 0.8776888444222111
+      },
+      "site": {
+        "25": {
+          "p_both_targets": 0.09,
+          "p_sensitivity_target": 0.506,
+          "sensitivity_mean": 0.8793954770273964,
+          "sensitivity_p10": 0.7572440216673273,
+          "specificity_mean": 0.7855531308379826,
+          "specificity_p10": 0.4808611621363052
+        },
+        "50": {
+          "p_both_targets": 0.112,
+          "p_sensitivity_target": 0.572,
+          "sensitivity_mean": 0.8993925643355392,
+          "sensitivity_p10": 0.8183581505270331,
+          "specificity_mean": 0.8050699986966994,
+          "specificity_p10": 0.6114651093568393
+        },
+        "100": {
+          "p_both_targets": 0.202,
+          "p_sensitivity_target": 0.672,
+          "sensitivity_mean": 0.9082353728393123,
+          "sensitivity_p10": 0.8536553772273474,
+          "specificity_mean": 0.8321887360482858,
+          "specificity_p10": 0.7384725754744506
+        },
+        "200": {
+          "p_both_targets": 0.178,
+          "p_sensitivity_target": 0.728,
+          "sensitivity_mean": 0.916026313776648,
+          "sensitivity_p10": 0.874090565815671,
+          "specificity_mean": 0.832725995668403,
+          "specificity_p10": 0.7731494150886123
+        },
+        "400": {
+          "p_both_targets": 0.204,
+          "p_sensitivity_target": 0.818,
+          "sensitivity_mean": 0.920741487167015,
+          "sensitivity_p10": 0.8882667864050843,
+          "specificity_mean": 0.8334595060794702,
+          "specificity_p10": 0.7891136057192341
+        }
+      }
+    },
+    "brset_canon": {
+      "n_images": 9661,
+      "n_clusters": 5270,
+      "referable_prevalence": 0.05889659455542905,
+      "frozen_threshold": 1.092308373535268,
+      "frozen": {
+        "sensitivity": 0.9912126537785588,
+        "specificity": 0.43444786625604925,
+        "both_targets": false
+      },
+      "oracle": {
+        "both_targets_possible": true,
+        "sensitivity": 0.9367311072056239,
+        "specificity": 0.8500879894412671,
+        "threshold": 1.578437182167864,
+        "auc": 0.9514569675189067,
+        "spec_at_sens90": 0.9139903211614606
+      },
+      "site": {
+        "25": {
+          "p_both_targets": 0.026,
+          "p_sensitivity_target": 0.87,
+          "sensitivity_mean": 0.9556222426440539,
+          "sensitivity_p10": 0.8466025471448547,
+          "specificity_mean": 0.5275619622261102,
+          "specificity_p10": 0.4339706044866836
+        },
+        "50": {
+          "p_both_targets": 0.07,
+          "p_sensitivity_target": 0.702,
+          "sensitivity_mean": 0.9176944964861794,
+          "sensitivity_p10": 0.7548344208043942,
+          "specificity_mean": 0.6692359776129401,
+          "specificity_p10": 0.4338388055829067
+        },
+        "100": {
+          "p_both_targets": 0.16,
+          "p_sensitivity_target": 0.532,
+          "sensitivity_mean": 0.8796494380287841,
+          "sensitivity_p10": 0.7236773239276368,
+          "specificity_mean": 0.8178974822223706,
+          "specificity_p10": 0.43545256264269167
+        },
+        "200": {
+          "p_both_targets": 0.218,
+          "p_sensitivity_target": 0.556,
+          "sensitivity_mean": 0.8936168981611545,
+          "sensitivity_p10": 0.7934662281405422,
+          "specificity_mean": 0.8632427611002383,
+          "specificity_p10": 0.7565725963206263
+        },
+        "400": {
+          "p_both_targets": 0.306,
+          "p_sensitivity_target": 0.6,
+          "sensitivity_mean": 0.9058375640665072,
+          "sensitivity_p10": 0.8424052128459418,
+          "specificity_mean": 0.8776392954043624,
+          "specificity_p10": 0.7972878144695036
+        }
+      }
+    },
+    "brset_nikon": {
+      "n_images": 4619,
+      "n_clusters": 2806,
+      "referable_prevalence": 0.058887205022732196,
+      "frozen_threshold": 1.092308373535268,
+      "frozen": {
+        "sensitivity": 0.9705882352941176,
+        "specificity": 0.8221762134805614,
+        "both_targets": false
+      },
+      "oracle": {
+        "both_targets_possible": true,
+        "sensitivity": 0.9705882352941176,
+        "specificity": 0.8500115021854152,
+        "threshold": 1.1471095585883715,
+        "auc": 0.9705239583756208,
+        "spec_at_sens90": 0.9625028755463538
+      },
+      "site": {
+        "25": {
+          "p_both_targets": 0.05,
+          "p_sensitivity_target": 0.924,
+          "sensitivity_mean": 0.9520153550124882,
+          "sensitivity_p10": 0.9388801070904715,
+          "specificity_mean": 0.828343012451106,
+          "specificity_p10": 0.8213289962825279
+        },
+        "50": {
+          "p_both_targets": 0.142,
+          "p_sensitivity_target": 0.71,
+          "sensitivity_mean": 0.9019828834631867,
+          "sensitivity_p10": 0.7437075835656558,
+          "specificity_mean": 0.8543725829842802,
+          "specificity_p10": 0.8205062057951652
+        },
+        "100": {
+          "p_both_targets": 0.308,
+          "p_sensitivity_target": 0.596,
+          "sensitivity_mean": 0.8870384330393553,
+          "sensitivity_p10": 0.7170944741532977,
+          "specificity_mean": 0.8669132716039298,
+          "specificity_p10": 0.6661806818115811
+        },
+        "200": {
+          "p_both_targets": 0.416,
+          "p_sensitivity_target": 0.522,
+          "sensitivity_mean": 0.8861310111612647,
+          "sensitivity_p10": 0.7913435392034613,
+          "specificity_mean": 0.9240407955143362,
+          "specificity_p10": 0.774004767633319
+        },
+        "400": {
+          "p_both_targets": 0.498,
+          "p_sensitivity_target": 0.566,
+          "sensitivity_mean": 0.9010183198940318,
+          "sensitivity_p10": 0.8193832599118943,
+          "specificity_mean": 0.9366087099987694,
+          "specificity_p10": 0.8819984752669466
+        }
+      }
+    },
+    "brset_all_cameras": {
+      "n_images": 14280,
+      "n_clusters": 8070,
+      "referable_prevalence": 0.05889355742296919,
+      "frozen_threshold": 1.092308373535268,
+      "frozen": {
+        "sensitivity": 0.9845422116527943,
+        "specificity": 0.559863085050971,
+        "both_targets": false
+      },
+      "oracle": {
+        "both_targets_possible": true,
+        "sensitivity": 0.9512485136741974,
+        "specificity": 0.8500632487536275,
+        "threshold": 1.5025086957794185,
+        "auc": 0.9565455359616301,
+        "spec_at_sens90": 0.9294590371307389
+      },
+      "site": {
+        "25": {
+          "p_both_targets": 0.024,
+          "p_sensitivity_target": 0.894,
+          "sensitivity_mean": 0.9537911055028737,
+          "sensitivity_p10": 0.8929474543735495,
+          "specificity_mean": 0.6184240941438611,
+          "specificity_p10": 0.5595128763862109
+        },
+        "50": {
+          "p_both_targets": 0.096,
+          "p_sensitivity_target": 0.714,
+          "sensitivity_mean": 0.9172277754088546,
+          "sensitivity_p10": 0.7832075417510304,
+          "specificity_mean": 0.722564797329768,
+          "specificity_p10": 0.5594028646763912
+        },
+        "100": {
+          "p_both_targets": 0.198,
+          "p_sensitivity_target": 0.502,
+          "sensitivity_mean": 0.8745753015191643,
+          "sensitivity_p10": 0.7147608195820702,
+          "specificity_mean": 0.8362439325823265,
+          "specificity_p10": 0.5597840842019746
+        },
+        "200": {
+          "p_both_targets": 0.31,
+          "p_sensitivity_target": 0.536,
+          "sensitivity_mean": 0.8936943065614894,
+          "sensitivity_p10": 0.8009529216171283,
+          "specificity_mean": 0.8806282048332245,
+          "specificity_p10": 0.7664949616231473
+        },
+        "400": {
+          "p_both_targets": 0.438,
+          "p_sensitivity_target": 0.618,
+          "sensitivity_mean": 0.9069684451577289,
+          "sensitivity_p10": 0.8415585839026707,
+          "specificity_mean": 0.8906778250966233,
+          "specificity_p10": 0.8316294121200082
+        }
+      }
+    }
+  }
+}

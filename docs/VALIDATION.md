@@ -4,6 +4,70 @@ NetrAI has implementations for acquisition quality, retinal analysis, grading,
 explanation reporting and capacity simulation. This describes component coverage,
 not a percentage of clinical readiness or completion of all challenge requirements.
 
+## Desktop-camera confirmation: BRSET, and the default-model decision (October 25, 2026)
+
+BRSET 1.0.2 (PhysioNet, credentialed; three São Paulo centres 2010–2020; Canon CR and Nikon NF5050 desktop cameras) was locked before its labels
+were read and evaluated once ([report](../results/benchmarks/round5_brset_confirmation/report.json), tier **TF**, a confirmation of a variant
+chosen on mBRSET). Referable DR = `DR_ICDR` ≥ 2; 14,280 adequate-quality graded images (841 referable) from 8,070 patients; 1,986 inadequate images
+are outside the DR metrics. Each model at its own frozen policy:
+
+| Model | Sensitivity | Specificity | AUC | Sensitivity at 85% specificity |
+| --- | --- | --- | --- | --- |
+| Deployed model (legacy) | 76.8% (73.6–79.9) | 84.6% (83.9–85.3) | 0.887 (0.874–0.899) | 75.9% |
+| E_768 (pre-registered primary) | 98.5% (97.5–99.3) | 56.0% (55.1–57.0) | 0.957 (0.949–0.963) | 95.1% |
+| R4_768_s17 | 98.9% (98.1–99.6) | 44.3% (43.3–45.3) | 0.957 (0.950–0.964) | 95.6% |
+
+- **The pre-registered pass rule was not met** (specificity 56.0% < 85%). The paired AUC gain of E_768 over the deployed model is +0.070
+  (+0.060 to +0.081) and sensitivity at 85% specificity is +19.3 points; at the frozen cut-off specificity is −28.6 points.
+- **Ranking transfers, the cut-off does not:** specificity is 43% on Canon images and 82% on Nikon images. The deployed model's own cut-off sits near its
+  design point here (76.8% / 84.6%) but misses 23% of referable eyes. Over-referral is also concentrated in eyes with another retinal disease
+  (E_768 specificity 0.47 with another labelled disease vs 0.64 without).
+- **Image quality:** the DeepDRiD-aware score ranks inadequate images worse than the EyeQ-trained candidate here (AUC 0.678 vs 0.752); neither operating
+  point fires (reject recall 5% / 9%). Quality-score ranking is camera-dependent and no threshold transfers.
+- Five-grade output is unreliable at 93% grade-0 prevalence (QWK 0.27 for E_768; grade-1 recall 2%).
+
+**Decision (owner, October 25, 2026):** the presented screening model is **E_768 with a required per-site calibration of its referral cut-off**; the legacy
+model stays available. This is a product decision informed by the results, not a promotion by the pre-registered rule. The calibration step is supported only by
+post hoc and leave-dataset-out evidence ([curves](../results/benchmarks/site_calibration_brazil/site_calibration_e768.json), tier **TX**): with the cut-off re-fitted
+on a sample containing 80 referable plus 200 other patients, mean specificity rose to 0.89 on Canon and 0.96 on Nikon images at mean sensitivity 0.91–0.92, but
+meeting 90% sensitivity and 85% specificity together in one draw had probability only 0.5–0.7 on BRSET and about 0.2 on smartphone images (the smartphone ceiling for any
+single cut-off is 91.8% / 85.0%). At screening prevalence (6% referable) a sample of 100–200 *patients* holds only 6–12 referable cases and is too small; the number of
+referable cases matters (40–80 or more advised). A site policy is not a validation. Citations: Nakayama LF et al., BRSET (v1.0.2), PhysioNet 2026,
+<https://doi.org/10.13026/mysn-8b26>; Nakayama LF et al., PLOS Digit Health 2024, <https://doi.org/10.1371/journal.pdig.0000454>; Pollard T et al., Nature Health 2026,
+<https://doi.org/10.1038/s44360-026-00096-z>. Only aggregates are published.
+
+## Smartphone-camera fresh test: mBRSET (October 23, 2026; nothing here changes the deployed model)
+
+mBRSET (PhysioNet, credentialed; Phelcom Eyer handheld smartphone camera, Itabuna, Brazil, November 2022) was locked before
+its labels were read and evaluated once ([report](../results/benchmarks/round5_mbrset_fresh_test/report.json), tier **TF**).
+Referable DR = ICDR ≥ 2; 4,859 gradable graded images (861 referable) from 1,285 patients; 292 ungradable (5.7%) and 13 ungraded
+images are outside the DR metrics. Each model at its own frozen policy:
+
+| Model | Sensitivity | Specificity | AUC | Sensitivity at 85% specificity |
+| --- | --- | --- | --- | --- |
+| Deployed model (legacy) | 52.6% (47.3–57.4) | 96.6% (95.8–97.3) | 0.918 | 84.4% |
+| R5_768_s17 (pre-registered primary) | 84.1% (80.8–87.0) | 89.6% (88.4–90.8) | 0.928 | 87.8% |
+| R4_768_s17 | 85.9% (83.0–88.7) | 91.5% (90.4–92.6) | 0.945 | 90.7% |
+| E_768 (two-model mean) | 89.2% (86.7–91.6) | 89.3% (88.1–90.4) | 0.948 | 91.8% |
+
+- **The pre-registered pass rule was not met** (sensitivity > 90% and specificity > 85% at the primary policy): no model is promoted
+  and the deployed default is unchanged.
+- **The deployed model's frozen threshold misses about 47% of referable eyes on this smartphone data** (specificity 96.6%).
+  All 768-pixel research variants cut that to 11–16% at 89–92% specificity (paired sensitivity gain of R5 over the deployed model
+  +31.5 points, CI +27.2 to +36.1; specificity −7.0 points). The ranking gap (AUC) is small; the difference is mainly the threshold.
+- R5_768_s17 ranked below R4_768_s17 on every measure here (AUC −0.016, CI −0.021 to −0.012); R5 changed several things at once
+  (FDR26 data, more epochs, glare augmentation), so the cause is not attributed. Five-grade quality is low: Grade-1 recall 7–16%.
+- **Image quality:** the DeepDRiD-aware score ranks ungradable smartphone images with AUC 0.855 (0.828–0.880) vs 0.838 for the
+  EyeQ-trained candidate and 0.610 for the heuristic score. Only the ranking carries over: at its frozen operating point it rejected
+  23.9% of usable images (designed for 5%), so a smartphone deployment needs its own threshold.
+- Limits: one site, one device and one country; the vessel-pattern identity screen cannot detect same-retina re-captures in this
+  cohort (no same-patient pair reached its copy threshold), so independence from the training sources rests on provenance
+  (none of them is Brazilian); the 768-px variants' weakness against other retinal disease (RFMiD) is unchanged.
+- Citation: Nakayama LF et al., mBRSET, a Mobile Brazilian Retinal Dataset (version 1.0), PhysioNet, 2024,
+  <https://doi.org/10.13026/qxpd-1y65>; Pollard T et al., PhysioNet as a global platform for biomedical research, Nature Health 2026,
+  <https://doi.org/10.1038/s44360-026-00096-z>. Only aggregate results are published; images and per-image outputs stay local
+  under the PhysioNet data use agreement. A confirmation test of E_768 on BRSET (three São Paulo centres) is pre-registered but not run.
+
 ## Research results of October 20–22, 2026 (branch `research/q4-2026`; nothing here changes the deployed model)
 
 Evidence tiers: **TF** fresh locked test (single use, lock cited) · **TX** exposed data, post hoc · **TL** leave-dataset-out

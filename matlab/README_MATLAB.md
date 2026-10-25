@@ -238,21 +238,42 @@ results = main_pipeline('/absolute/path/to/fundus.jpg', ...
 The variant's `netrai_bundle.json` binds the weights by SHA-256, so a different
 file is refused.
 
-## 768-pixel grading candidate (opt-in)
+## Default grading variant: E_768 with required site calibration
 
-`variant_R3_E_768/` holds the round-3 research candidate: two models trained at
-768 × 768 pixels, averaged inside one ONNX graph. In one locked test on ODIR-5K
-(cameras not used in training) it reached 90.5% sensitivity and 84.5% specificity,
-just under the 85% target ([validation](../docs/VALIDATION.md)). The configuration sets
-`input_size` to 768; the grading code accepts any square size from 256 to 1024 that is
-a multiple of 32. The weights are not distributed. With a local copy, run from the
-`matlab` folder:
+The project's presented screening model is `variant_R3_E_768/` (two 768 × 768 models averaged inside one ONNX graph). Two fresh Brazilian
+tests ranked referable DR better than the legacy model (AUC 0.948 vs 0.918 on smartphone images, 0.957 vs 0.887 on desktop cameras), but no
+frozen cut-off met the pre-registered 90% / 85% rule: on Canon desktop images it over-refers (specificity 0.43). **Its referral cut-off must be
+calibrated on a labelled sample of each camera/site before screening**; every report says `UNCALIBRATED` until a site policy is loaded
+([validation](../docs/VALIDATION.md)). The 143 MB weights exceed GitHub's file limit and are **not publicly released yet** (the training datasets' terms are being checked). `fetchE768Weights` (MATLAB) and `scripts/fetch_e768.sh`
+will download them from a project release and verify the SHA-256 from `variant_R3_E_768/netrai_bundle.json`; until a release exists, the public checkout runs the legacy model. See [the model card](../docs/MODEL_CARD.md) for the weights' terms. `main_pipeline` chooses the variant like this:
+
+- `Variant='auto'` (default): E_768 when `matlab/variant_R3_E_768/netrai_fold0.onnx` exists locally, otherwise the legacy model;
+- `Variant='E_768'` fails with a clear error when the weights are missing; `Variant='legacy'` always uses `models/netrai_fold0.onnx`;
+- explicit `ModelPath`/`ConfigPath` (both, or neither) bypass the choice (variant reported as `custom`);
+- a site policy is bound to the model it was fitted for (SHA-256 of model and config); loading it with another model is an error;
+- **switching variants inside one MATLAB session needs `clear functions` first** (MATLAB's ONNX import cache).
+
+Site calibration (Python, from a labelled sample of the site; 40+ referable cases advised, 150+ non-referable):
+
+```bash
+python python/calibrate_site.py score --images sample.csv --root /path/to/images --out logits.npy     # E_768 research checkpoints (local)
+python python/calibrate_site.py fit --logits logits.npy --labels labels.csv --site "clinic A" --output site_policy.json
+```
 
 ```matlab
-results = main_pipeline('/absolute/path/to/fundus.jpg', ...
-    ModelPath=fullfile(pwd,'variant_R3_E_768','netrai_fold0.onnx'), ...
-    ConfigPath=fullfile(pwd,'variant_R3_E_768','netrai_config.json'));
+results = main_pipeline('/absolute/path/to/fundus.jpg', SitePolicy='/path/to/site_policy.json');
+disp(results.calibration.calibration_status)   % "site-calibrated (not independently validated)"
 ```
+
+The policy replaces only the four ordinal boundaries (and the referral-head threshold if present); the bundle-bound configuration is never
+edited, and the policy file's SHA-256 is recorded in `results.calibration`. A site policy is not a validation: re-check it on a separate
+labelled sample. Post hoc evidence on 14,280 BRSET and 4,859 mBRSET images ([curves](../results/benchmarks/site_calibration_brazil)): with
+about 80 referable plus 200 other patients the mean specificity rose from 0.43 to 0.89 (Canon) while mean sensitivity stayed near 0.91; at
+the prevalence of a screening population (6% referable) 100–200 *patients* contain too few referable cases — the number of referable cases
+matters, not the total.
+
+Run the legacy model explicitly with `Variant='legacy'`; opt-in alternatives such as `variant_C_site/` still work through
+`ModelPath`/`ConfigPath`.
 
 ## Interpretation
 
@@ -265,7 +286,7 @@ open. See [model documentation](../docs/MODEL_CARD.md) and
 ## Learned lesion candidates (opt-in research module)
 
 `matlab/src/m2_lesion/segmentLesionsLearned.m` runs an exported lesion segmenter (ONNX, fixed 1024-pixel window) and
-`matlab/demo_lesions.m` writes an EX/HE/MA/SE overlay for one image; `matlab/verifyLesionLearned.m` measures parity with the
+`matlab/demo_lesions.m` writes an EX/HE/MA/SE overlay for one image, and `main_pipeline(img, 'LearnedLesions', true, 'LesionOnnxPath', p, 'LesionThresholdsPath', t)` adds `results.learnedLesions` (counts, field fractions, overlay PNG); the option is off by default and does not change the grade or triage; `matlab/verifyLesionLearned.m` measures parity with the
 Python reference. It does not change `main_pipeline.m`. Parity on three validation images: network difference ≤ 7.4e-6
 in probability, frozen-threshold mask disagreement ≤ 2.5e-6 of pixels, isolated pixel differences up to 0.19 caused by
 1–4 grey-level differences in the Ben Graham blur rounding versus OpenCV. The ONNX file and checkpoint are not distributed

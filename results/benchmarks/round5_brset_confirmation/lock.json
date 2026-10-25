@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "locked_utc": "2026-10-24T18:39:05.736425+00:00",
+  "tests": {
+    "brset": "16266 images, 0 identity-excluded; referable-DR endpoint (DR_ICDR >= 2)"
+  },
+  "fresh": true,
+  "labels_read": false,
+  "primary_variant": "E_768",
+  "references": [
+    "A_legacy",
+    "R4_768_s17"
+  ],
+  "bootstrap_seed": 20261124,
+  "bootstrap_replicates": 2000,
+  "logits_provenance": "all logits computed on the laptop CPU (fp32, legacy-area-v1 preprocessing at each model's input size, python locked_brset.py logits); ensemble = mean of member logits; CPU spot check at freeze",
+  "selection_note": "E_768 was chosen as primary on mBRSET (exposed) by the threshold-free criterion AUC / sensitivity at 85% specificity (plan v5 Addendum 4); BRSET is its confirmation test.",
+  "precomputed_logits_cpu_spot_check_max_abs": {
+    "A_legacy": 8.344650268554688e-07,
+    "R4_768_s17": 1.430511474609375e-06,
+    "R3_768_s2026": 4.76837158203125e-07,
+    "R3_768_s17": 9.5367431640625e-07
+  },
+  "quality_operating_threshold": 1.276264986787131,
+  "bindings": {
+    "results/model_improvement/brset_eval/variants.json": "4ca9d677c2e77e8c30d9849ecfb59e82c603a6772ff18dff0920a20aadff98f2",
+    "results/model_improvement/brset_lock/inventory_brset.csv": "ff67f15fce6c8b59767d869dab3ea5871cd6d425fad00e02b3e91b7291160d2f",
+    ".project-notes/docs/MODEL_IMPROVEMENT_PLAN_v5.md": "b76b455885a7a78b92baa41ca1741dab15f5238bf72619301ade58eb812275a5",
+    "python/weights/calibration.json": "0bddf7789262e01da3d9c1f66457c0115a03fb0bd8e873138c8bf9ed5caacf2f",
+    "results/model_improvement/x9_lock/parameters.json": "94cca737334f032e52310aa84f0606183a719ea22173ad8d1fee612a2e1a44cf",
+    "results/model_improvement/brset_lock/quality_scores.npz": "69cf52de4108363dd57118015b9c58f8641b79f1a7d12f2ab0522dd0ef51a96f",
+    "data/brset/label_brset.csv": "4cd000ec1f651deb5cfb4f018ed1dec7a874da59a20c47f1e59a421d4a112adf",
+    "results/model_improvement/brset_identity/patients.csv": "9dc7c680536d5356912734eb3d2b7eed7c7bd0f9ed79e5d2bd436084b7ea45b3",
+    "python/locked_brset.py": "aeb2684c1a3b543dad8bff978305aebdb5d797d36e21fdf28466d6525853edba",
+    "python/locked_mbrset.py": "7a3ef91b4916ae9ef55412875664940ca7429df81dfbfdfb0a6c6da73862f169",
+    "python/locked_evaluation.py": "4baceb814a5f2e52ccb8608e5e836c6e0d4289ad68e8255b82359f6bc601bf8b",
+    "python/locked_rfmid.py": "4de389ec2895e31e6c694e291f4166fb8783635273602de3894c37e95505931d",
+    "python/exposure.py": "1e969e6c4a7b444bbf1343e1d936b002c01030411134675f4084161e867cc3f2",
+    "python/utils/preprocessing.py": "5aeb4322512e619d1693fe61c0fd4ce5c02295a00b762dcc50e2e523f29be744",
+    "python/models/netrai_model.py": "e62b91db78247ac37038f815ae6b2e6870708e2809cfea44ea23f540d0a3a8d1",
+    "python/export_adapted_variant.py": "7b4a53fbea4f6ce886ed62cc8e898ffdb1e8d88de911c81029ac2b84c8d7faeb",
+    "python/netrai_eval/metrics.py": "f54fbe56b8f247f946b85cd00338d3eceabe477889492547e255da5f6e76041a",
+    "python/netrai_eval/bootstrap.py": "0db57e7fd53784980dc8fdbf3956b64564a635f260a1a80b731418252169b582",
+    "python/train_quality_x9.py": "374ec595a19cbd9d8457fc02f4b1587990602698c04ffe8dcf39d4c6ce97a03f",
+    "python/models/quality_model.py": "8bccffa49b0a4f3ffb95122c5580297561cb3acbc1c8c8373f211d7e5bb865dc",
+    "python/modules/quality.py": "179e3e91c92d5cba4be3d4e659e61c7ce357b5403fb5da2ea99b3aef30336705",
+    "results/model_improvement/brset_identity/exclusions_v1.txt": "c5034e0d4cca2e70204cdca8f273ca7a6d35dd0202ddd86294c25edf93f9841c",
+    "results/model_improvement/brset_lock/logits_A_legacy.npy": "31a80f329ebc42e1010be59096e0806c40a3e374436202ca7d0e3149e292cc2f",
+    "results/model_improvement/brset_lock/logits_R4_768_s17.npy": "75a3585bade0d3f84d696c7375b495043c4d62cc0fd511a6d3cdebd4eaf89a4f",
+    "results/model_improvement/brset_lock/logits_R3_768_s2026.npy": "cc0770702d1b296d1633cae69da277ceb1fbf5347bc46cbceb241bed2b1fde65",
+    "results/model_improvement/brset_lock/logits_R3_768_s17.npy": "9a221ed86827c47463e6c1629a34e80a11b72a2accc484216affd9babee47c1a",
+    "results/model_improvement/brset_lock/logits_E_768.npy": "b79240499f29fc9ca77c2ba84837b24ee3c3b45fb27c4dfedde65246a2ed30bd",
+    "results/model_improvement/kaggle_output_r4_s17/run/best.pt": "064ce4673d0000c0e75a2e29610c8ab8446a119430d2a92bb57cca14ccc76c30",
+    "results/model_improvement/kaggle_output_768_s2026/run/best.pt": "06490c827ef69793e1f305a1d3bce9a8f04e32034410bedc6989032e8d669a21",
+    "results/model_improvement/kaggle_output_768_s17/run/best.pt": "09404bc778cd5ceb7623857e773427ed71c479c9445e5b9045abd8a389be5d30",
+    "results/model_improvement/round4_eval/policy_R4_768_s17_balanced.json": "ed6319541e8110b75c8935a5d08cfb5e67b07d133d5ed6503319103c19aae05f",
+    "results/model_improvement/round3_eval/policy_R3_768_s2026_balanced.json": "ed2911f44361f10a5fb4ca608c4ba8a57c437bfb3700bfaf3d558a9da89b3ab3",
+    "results/model_improvement/round3_eval/policy_R3_768_s17_balanced.json": "e7998913c72e14987980169d52c826fa1503b01c0b0906c939cbd3f69a5dda1e",
+    "results/model_improvement/round3_eval/policy_E_768_balanced.json": "90c6f2b363e69fc5fcc448920ae9df425fed95c7b057217b8daca7b892866e02"
+  }
+}

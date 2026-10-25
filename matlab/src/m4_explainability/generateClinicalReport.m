@@ -80,6 +80,9 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
             string(safety.headDisagreement))];
         str = [str sprintf('Triage: %s\n', string(safety.triageAction))];
     end
+    if isfield(safety, 'calibrationStatus') && startsWith(string(safety.calibrationStatus), "UNCALIBRATED")
+        str = [str sprintf('\nUNCALIBRATED referral cut-off:\nrun site calibration before screening\n')];
+    end
     text(0, 0.95, str, 'Units', 'normalized', 'VerticalAlignment', 'top', ...
         'FontSize', 12, 'Interpreter', 'none');
     
@@ -113,6 +116,9 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
         identity=safety.deploymentIdentity;
         footer=sprintf('%s\nModel SHA256: %.12s | Input SHA256: %.12s | Input contract: %s', ...
             footer,identity.model_sha256,safety.inputSha256,identity.preprocessing_version);
+    end
+    if isfield(safety,'modelVariant') && isfield(safety,'calibrationStatus')
+        footer=sprintf('%s\nModel variant: %s | Referral cut-off: %s',footer,string(safety.modelVariant),string(safety.calibrationStatus));
     end
     annotation('textbox',[0,0,1,0.055],'String',footer,'EdgeColor','none', ...
         'HorizontalAlignment','center','Interpreter','none','FontSize',9);

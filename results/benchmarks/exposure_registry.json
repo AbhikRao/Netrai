@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-10-22",
+  "updated": "2026-10-25",
   "description": "Evidence-exposure registry. A cohort whose labels were read in a locked evaluation (or used for training/selection) can never again be presented as a fresh independent test. Code refuses to lock an exposed or training cohort as fresh and refuses to read a reserved cohort's labels without a valid lock. Update this file in the same commit as any lock or exposure.",
   "statuses": {
     "training": "used to fit models or select epochs/policies",
@@ -143,6 +143,30 @@
       "kind": "grading(any-DR)",
       "status": "planned",
       "notes": "RFMiD 1.0 (3,200 images, IEEE DataPort, login needed; licence unconfirmed); owner action to download"
+    },
+    "mbrset": {
+      "kind": "grading",
+      "status": "exposed",
+      "images": 5164,
+      "label_paths": [
+        "data/mbrset/labels_mbrset.csv"
+      ],
+      "notes": "mBRSET 1.0 (PhysioNet credentialed, DUA; Phelcom Eyer smartphone camera, Brazil; 5,164 images / 1,291 patients; final_icdr 0-4, final_quality). Downloaded 2026-10-23 via the PhysioNet AWS access point; all 5,166 SHA256SUMS entries verified. Pre-lock label-file access (permitted by plan v5): header line; distinct spellings only of final_quality {no, yes}, final_icdr {\"\", 0-4} and laterality {left, right}; row count equals image count and the file-name sets are equal. No counts and no per-image value were seen. The public PhysioNet descriptor (incl. its published grade prevalences, Table 3) was viewed. Primary fresh test of plan v5 + Addendum 2/3. Data stays on the owner laptop; never Kaggle/third party.",
+      "lock": "results/model_improvement/mbrset_lock/lock.json",
+      "exposed_on": "2026-10-23",
+      "report": "results/model_improvement/mbrset_lock/report.json"
+    },
+    "brset": {
+      "kind": "grading",
+      "status": "exposed",
+      "images": 16266,
+      "label_paths": [
+        "data/brset/label_brset.csv"
+      ],
+      "notes": "BRSET 1.0.2 (PhysioNet credentialed, DUA; Brazil, desktop cameras; DR_ICDR). Downloaded 2026-10-23 via the PhysioNet AWS access point; all 16,268 SHA256SUMS entries verified. Label file NOT opened (not even the header). Secondary fresh test (own lock) per Addendum 2 item 5; identity review pending (run after the mBRSET logits finish). Pre-lock label-file access (Addendum 4 item 3, 2026-10-23): header; distinct spellings (no counts) of DR_ICDR {0-4}, DR_SDRG {0-4}, quality {Adequate, Inadequate} and camera {Canon CR, NIKON NF5050}; image_id and patient_id columns (16,266 unique image ids == file stems; 8,524 patients). No other value or count was seen. Public descriptor viewed (three Sao Paulo centres, 2010-2020).",
+      "lock": "results/model_improvement/brset_lock/lock.json",
+      "exposed_on": "2026-10-25",
+      "report": "results/model_improvement/brset_lock/report.json"
     }
   }
 }
