@@ -9,6 +9,7 @@ function results = main_pipeline(imagePath, varargin)
     baseDir = fileparts(mfilename('fullpath'));
     defaultModel = fullfile(baseDir, 'models', 'netrai_fold0.onnx');
     defaultConfig = fullfile(baseDir, 'models', 'netrai_config.json');
+    variantDir = fullfile(baseDir, 'variant_R3_E_768');
 
     p = inputParser;
     addRequired(p, 'imagePath', @(x) ischar(x) || isstring(x));
@@ -19,16 +20,43 @@ function results = main_pipeline(imagePath, varargin)
     addParameter(p, 'GenerateReport', true, @(x) islogical(x) && isscalar(x));
     addParameter(p, 'RunGradCAM', true, @(x) islogical(x) && isscalar(x));
     addParameter(p, 'EnforceQuality', true, @(x) islogical(x) && isscalar(x));
+    addParameter(p, 'Variant', "auto", @(x) any(string(x) == ["auto" "legacy" "E_768"]));   % E_768 = research default when its local ONNX exists
+    addParameter(p, 'SitePolicy', "", @(x) ischar(x) || isstring(x));                       % per-site referral boundary (python/calibrate_site.py)
+    addParameter(p, 'LearnedLesions', false, @(x) islogical(x) && isscalar(x));   % opt-in research module, off by default
+    addParameter(p, 'LesionOnnxPath', fullfile(baseDir, 'models', 'lesion_unet_b2_1024.onnx'), @(x) ischar(x) || isstring(x));
+    addParameter(p, 'LesionThresholdsPath', fullfile(baseDir, 'models', 'lesion_thresholds.json'), @(x) ischar(x) || isstring(x));
     parse(p, imagePath, varargin{:});
+    variant = string(p.Results.Variant);
+    nExplicit = nnz(~ismember(["ModelPath" "ConfigPath"], p.UsingDefaults));
+    if nExplicit == 1
+        error('NetrAI:PartialModelPaths', 'Give both ModelPath and ConfigPath, or neither (use Variant to choose a bundled model).');
+    end
+    if nExplicit == 0
+        haveE768 = isfile(fullfile(variantDir, 'netrai_fold0.onnx')) && isfile(fullfile(variantDir, 'netrai_config.json'));
+        if variant == "E_768" && ~haveE768
+            error('NetrAI:VariantMissing', ['The E_768 weights (143 MB) are a local research artifact and are not in this checkout: ' ...
+                'place them in matlab/variant_R3_E_768/ or use ''Variant'',''legacy''.']);
+        end
+        if variant == "auto", variant = ternary(haveE768, "E_768", "legacy"); end
+        if variant == "E_768"
+            defaultModel = fullfile(variantDir, 'netrai_fold0.onnx');
+            defaultConfig = fullfile(variantDir, 'netrai_config.json');
+        end
+    else
+        variant = "custom";
+    end
+    if any(strcmp(p.UsingDefaults, 'ModelPath')), modelPathDefault = defaultModel; else, modelPathDefault = string(p.Results.ModelPath); end
+    if any(strcmp(p.UsingDefaults, 'ConfigPath')), configPathDefault = defaultConfig; else, configPathDefault = string(p.Results.ConfigPath); end
 
     imagePath = string(p.Results.imagePath);
-    modelPath = string(p.Results.ModelPath);
-    configPath = string(p.Results.ConfigPath);
+    modelPath = modelPathDefault;
+    configPath = configPathDefault;
     outDir = string(p.Results.OutputDir);
     verbose = p.Results.Verbose;
     generateReport = p.Results.GenerateReport;
     runGradCAM = p.Results.RunGradCAM;
     enforceQuality = p.Results.EnforceQuality;
+    learnedLesionsOn = p.Results.LearnedLesions;
 
     addpath(genpath(fullfile(baseDir, 'src')));
     if ~isfile(imagePath)
@@ -44,7 +72,9 @@ function results = main_pipeline(imagePath, varargin)
     [iqs, qualityMetrics] = assessImageQuality(rawImg);
     qualityFeedback = generateRecaptureFeedback(qualityMetrics);
     if enforceQuality && iqs < 0.3
+        [~, rejectedCalibration] = applySitePolicy(struct(), "");
         results = struct( ...
+            'model_variant', variant, 'calibration', rejectedCalibration, ...
             'status', "rejected", 'imagePath', imagePath, 'input_sha256', imageDigest, 'iqs', iqs, ...
             'qualityMetrics', qualityMetrics, 'qualityFeedback', qualityFeedback, ...
             'grade', NaN, 'probabilities', nan(1, 5), 'rawProbabilities', nan(1, 5), ...
@@ -89,6 +119,10 @@ function results = main_pipeline(imagePath, varargin)
     clinicalFeatures = extractClinicalFeatures(segResults);
 
     [net, config] = loadNetrAIModel(modelPath, configPath);
+    [config, calibration] = applySitePolicy(config, string(p.Results.SitePolicy));
+    if verbose
+        fprintf('Model variant: %s | calibration: %s\n', variant, calibration.calibration_status);
+    end
     [modelInput, modelFov] = preprocessModelInput(rawImg, config);
     modelDisplay = min(max(double(modelInput) .* reshape([0.229 0.224 0.225],1,1,3) ...
         + reshape([0.485 0.456 0.406],1,1,3),0),1);
@@ -121,6 +155,15 @@ function results = main_pipeline(imagePath, varargin)
             end
         end
     end
+    learnedLesions = struct('status', "disabled");
+    if learnedLesionsOn
+        overlayPng = "";
+        if generateReport
+            overlayPng = string(fullfile(outDir, 'learned_lesions_overlay.png'));
+        end
+        learnedLesions = runLearnedLesions(rawImg, string(p.Results.LesionOnnxPath), ...
+            string(p.Results.LesionThresholdsPath), overlayPng);
+    end
     checklist = generateEvidenceChecklist(segResults, grade, calProbs);
     overlayImg = generateLesionOverlay(procImg, segResults);
 
@@ -129,7 +172,8 @@ function results = main_pipeline(imagePath, varargin)
         safety = struct('referableHeadProbability', referableHeadProbability, ...
             'referableHeadPositive', referableHeadPositive, ...
             'headDisagreement', headDisagreement, 'triageAction', triageAction, ...
-            'deploymentIdentity',config.deployment_identity,'inputSha256',imageDigest);
+            'deploymentIdentity',config.deployment_identity,'inputSha256',imageDigest, ...
+            'modelVariant',variant,'calibrationStatus',calibration.calibration_status);
         reportPath = string(generateClinicalReport(procImg, segResults, grade, ...
             calProbs, checklist, heatmap, overlayImg, outDir, gradcamStatus, ...
             gradcamQC, safety, modelDisplay));
@@ -162,6 +206,8 @@ function results = main_pipeline(imagePath, varargin)
         'segResults', segResults, 'gradcamStatus', gradcamStatus, ...
         'gradcamQC', gradcamQC, 'explanationTarget',"referral_logit", ...
         'researchOnly',true, ...
+        'model_variant', variant, 'calibration', calibration, ...
+        'learnedLesions', learnedLesions, ...
         'reportPath', reportPath);
 end
 
@@ -189,4 +235,9 @@ function showResults(procImg, overlayImg, heatmap, gradcamStatus, probabilities,
     b.CData(grade + 1, :) = [0.85 0.32 0.09];
     xticks(0:4); xticklabels({'No DR','Mild','Moderate','Severe','PDR'});
     ylabel('Calibrated confidence'); ylim([0 1]); title('DR Grade Probabilities');
+end
+
+
+function out = ternary(condition, a, b)
+    if condition, out = a; else, out = b; end
 end

@@ -87,16 +87,31 @@ APTOS, EyePACS, IDRiD, DeepDRiD and DDR train/valid). In one locked test it reac
 (see [validation](VALIDATION.md)). Specificity on the unseen camera is below target and
 grade 1 is never predicted, so it is a research variant; its weights are kept outside Git.
 
-## Round-3 candidate E_768 (not deployed)
+## E_768: presented default, with required site calibration (owner decision, October 25, 2026)
 
-`matlab/variant_R3_E_768/` holds the mean of two full-network models trained at
-768 × 768 pixels (same architecture, `legacy-area-v1` preprocessing at 768 px, one
-two-member ONNX graph with the standard six outputs). In one locked test on ODIR-5K,
-a set of cameras not used in training, it reached 90.5% sensitivity / 84.5% specificity
-(AUC 0.948, vs 0.935 for K3 and 0.885 for the deployed model). On the EyePACS test
-remainder it reached 87.6% / 92.0%. It missed 1 of 182 grade-3/4 ODIR eyes. Specificity is
-0.5 points under the 85% target and grade 1 is almost never predicted, so it is a research
-variant; its weights (143 MB) are kept outside Git. See [validation](VALIDATION.md).
+`matlab/variant_R3_E_768/` holds the mean of two full-network models trained at 768 × 768 pixels (same architecture, `legacy-area-v1`
+preprocessing at 768 px, one two-member ONNX graph with the standard six outputs; weights, 143 MB, are kept outside Git).
+Locked results (all against the deployed legacy model): ODIR-5K 90.5% / 84.5% (AUC 0.948 vs 0.885); mBRSET smartphone images 89.2% / 89.3%
+(AUC 0.948 vs 0.918; legacy 52.6% / 96.6%); BRSET desktop cameras 98.5% / 56.0% (AUC 0.957 vs 0.887; legacy 76.8% / 84.6%). No pre-registered
+rule (> 90% / > 85% at the frozen cut-off) was met, so this is a product decision informed by the results, not a promotion by rule. What the
+evidence supports: E_768 **ranks** referable DR better on three fresh external sets; its frozen **cut-off does not transfer** between cameras, so
+a per-site calibration step is required and every report is marked `UNCALIBRATED` until one is loaded. The calibration step itself has only
+post hoc evidence (leave-dataset-out and the exposed Brazilian sets); it has had no fresh test. E_768 also over-refers non-DR retinal disease
+(BRSET specificity 0.47 with another labelled disease vs 0.64 without; RFMiD any-DR AUC 0.758 vs 0.844 for legacy), and grade 1 is almost never
+predicted. The legacy model remains available (`Variant='legacy'`). See [validation](VALIDATION.md).
+
+## Obtaining the E_768 weights and their terms
+
+The 143 MB ONNX file is not part of the Git history, and **no public release of it exists yet** (pending a check of the training datasets' terms; available to the project team only). Once a release exists,
+`scripts/fetch_e768.sh` (or `fetchE768Weights` in MATLAB) downloads it and verifies the SHA-256 recorded in the committed `matlab/variant_R3_E_768/netrai_bundle.json`, installing nothing on a mismatch. Without the file the public
+checkout runs the legacy model (`Variant='auto'`).
+
+**The MIT licence covers this project's original code and documentation, not the weights.** The weights were trained from an ImageNet-pretrained
+EfficientNet-B4 backbone on APTOS 2019, EyePACS/EyeQ, IDRiD, DeepDRiD and DDR training images, and were selected on validation images from
+those sources plus Messidor-2. Each source has its own access/redistribution terms (see `data/README.md`); the project has **not** verified
+that any of them permits redistribution of derived models, so the weights are offered for research and evaluation only, without any warranty of
+rights, and anyone who uses them must check the sources' terms. (RETFound weights, CC BY-NC 4.0, were used only for a negative probe and are not part of
+E_768.) No patient images or per-image outputs from the credentialed PhysioNet sets (mBRSET, BRSET) are included in any release.
 
 ## Round-4 candidate R4_768_s17 (not deployed)
 

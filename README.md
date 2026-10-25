@@ -11,14 +11,15 @@ The simulation explores how connectivity, staffing and recapture demand affect
 screening completion.
 
 <!-- current-state:start -->
-> **Current state (2026-10-22):** the deployed MATLAB model is unchanged. On a fresh any-DR test (RFMiD 2.0) it ranks
-> DR better (AUC 0.84) than the 768-pixel research models (0.72–0.76), which mainly over-flag other retinal disease;
-> those models remain opt-in research variants for referable DR (90.5% / 84.5% on ODIR-5K, 78.0% / 92.4% on FDR26).
-> Opt-in learned lesion candidates (locked-test Dice 0.60 / 0.43 / 0.26 for exudates / haemorrhages / microaneurysms)
-> and a DeepDRiD-aware quality score (AUC 0.82 vs 0.73) are research additions. Details and limits: [validation](docs/VALIDATION.md).
+> **Current state (2026-10-25):** the presented screening model is **E_768 with a required per-site calibration of its referral cut-off** (weights kept
+> because of their size not in Git; a hash-checked fetch script is ready, but no public release exists until the training datasets' terms are checked; without the weights the checkout runs the legacy model). On two fresh Brazilian tests (smartphone mBRSET, desktop BRSET)
+> E_768 ranks referable DR better than the legacy model (AUC 0.948 vs 0.918 and 0.957 vs 0.887), but no frozen cut-off met the pre-registered 90% / 85% rule:
+> on Canon desktop images it refers 57% of healthy eyes, while legacy misses 47% (smartphone) and 23% (desktop) of referable eyes. The calibration step has only
+> post hoc evidence. On a fresh any-DR test (RFMiD 2.0) legacy ranks DR better (AUC 0.84 vs 0.72–0.76). Opt-in learned lesion candidates are research additions.
+> Details and limits: [validation](docs/VALIDATION.md).
 <!-- current-state:end -->
 
-[Run the prototype](matlab/README_MATLAB.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)
+[Run the prototype](matlab/README_MATLAB.md) · [Evidence card](docs/EVIDENCE_CARD.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)
 
 ## Screening workflow
 

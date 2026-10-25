@@ -1,0 +1,1331 @@
+{
+ "schema_version": 1,
+ "tier": "TF (confirmation of a variant selected on mBRSET)",
+ "lock_sha256": "f5d844eb4a1ae97d71f83e3e37afb9179bdaf91f52ff8391759344f656485a19",
+ "evaluated_utc": "2026-10-24T18:54:25.508451+00:00",
+ "primary_variant": "E_768",
+ "references": [
+  "A_legacy",
+  "R4_768_s17"
+ ],
+ "population": {
+  "images_in_lock": 16266,
+  "identity_excluded": 0,
+  "without_label_row": "(file names omitted from the curated copy)",
+  "inadequate_quality": 1986,
+  "adequate_without_grade": "(file names omitted from the curated copy)",
+  "primary_images": 14280,
+  "referable": 841,
+  "any_dr": 984,
+  "patients": 8070,
+  "grade_support": [
+   13296,
+   143,
+   405,
+   75,
+   361
+  ],
+  "cameras": {
+   "Canon CR": 9661,
+   "NIKON NF5050": 4619
+  },
+  "non_referable_with_other_disease": 5995,
+  "factor_column_spellings": {
+   "focus": [
+    "0",
+    "1",
+    "2"
+   ],
+   "illumination": [
+    "1",
+    "2"
+   ],
+   "image_field": [
+    "1",
+    "2"
+   ],
+   "artifacts": [
+    "1",
+    "2"
+   ]
+  },
+  "without_label_row_count": 0,
+  "adequate_without_grade_count": 0
+ },
+ "results": {
+  "A_legacy": {
+   "sensitivity": {
+    "estimate": 0.7681331747919143,
+    "ci95": [
+     0.7356857048223482,
+     0.7987873349478176
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "estimate": 0.8461939132375921,
+    "ci95": [
+     0.8391144639499902,
+     0.8533862848756315
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "estimate": 0.8865464145517167,
+    "ci95": [
+     0.8743880923040346,
+     0.8987780314314353
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "estimate": 0.7586206896551724,
+    "ci95": [
+     0.7260943357032924,
+     0.7938834652309289
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R4_768_s17": {
+   "sensitivity": {
+    "estimate": 0.9892984542211652,
+    "ci95": [
+     0.9808660469583517,
+     0.9964329239876745
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "estimate": 0.44281568569089963,
+    "ci95": [
+     0.4333255895356185,
+     0.4531079080497125
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "estimate": 0.95730414939606,
+    "ci95": [
+     0.9496151483174512,
+     0.9640296142809653
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "estimate": 0.9560047562425684,
+    "ci95": [
+     0.9410979291150946,
+     0.9702207995499627
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R3_768_s2026": {
+   "sensitivity": {
+    "estimate": 0.9845422116527943,
+    "ci95": [
+     0.9747776521575278,
+     0.9927713018137532
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "estimate": 0.5254111168985788,
+    "ci95": [
+     0.5155616160132446,
+     0.5358910002538314
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "estimate": 0.9527656520646999,
+    "ci95": [
+     0.9448768669146814,
+     0.9597106695028654
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "estimate": 0.93935790725327,
+    "ci95": [
+     0.9230769230769231,
+     0.9562057099271847
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R3_768_s17": {
+   "sensitivity": {
+    "estimate": 0.9845422116527943,
+    "ci95": [
+     0.9746678545929327,
+     0.992762582295406
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "estimate": 0.5388049706079321,
+    "ci95": [
+     0.5293457796656208,
+     0.5493199047148889
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "estimate": 0.9535582411882855,
+    "ci95": [
+     0.9459146695144016,
+     0.9604662142216529
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "estimate": 0.9524375743162902,
+    "ci95": [
+     0.9360431722954923,
+     0.9657559305045105
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "E_768": {
+   "sensitivity": {
+    "estimate": 0.9845422116527943,
+    "ci95": [
+     0.9746678545929327,
+     0.992762582295406
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "estimate": 0.559863085050971,
+    "ci95": [
+     0.550586686232047,
+     0.5704441117058422
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "estimate": 0.9565455359616301,
+    "ci95": [
+     0.94890289735899,
+     0.9631680915841699
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "estimate": 0.9512485136741974,
+    "ci95": [
+     0.936329169543657,
+     0.966120711986086
+    ],
+    "valid_replicates": 2000
+   }
+  }
+ },
+ "decision_summaries": {
+  "A_legacy": {
+   "tp": 646,
+   "fn": 195,
+   "tn": 11372,
+   "fp": 2067,
+   "ppv": 0.23811279026907484,
+   "npv": 0.9831416962047204,
+   "qwk": 0.23731044195148,
+   "per_grade_recall": [
+    0.08927496991576414,
+    0.5804195804195804,
+    0.5382716049382716,
+    0.32,
+    0.4986149584487535
+   ],
+   "per_grade_support": [
+    13296,
+    143,
+    405,
+    75,
+    361
+   ],
+   "confusion_matrix": [
+    [
+     1187,
+     10063,
+     1556,
+     322,
+     168
+    ],
+    [
+     39,
+     83,
+     21,
+     0,
+     0
+    ],
+    [
+     4,
+     171,
+     218,
+     10,
+     2
+    ],
+    [
+     0,
+     5,
+     44,
+     24,
+     2
+    ],
+    [
+     2,
+     13,
+     55,
+     111,
+     180
+    ]
+   ]
+  },
+  "R4_768_s17": {
+   "tp": 832,
+   "fn": 9,
+   "tn": 5951,
+   "fp": 7488,
+   "ppv": 0.1,
+   "npv": 0.998489932885906,
+   "qwk": 0.19361286901427632,
+   "per_grade_recall": [
+    0.3570246690734055,
+    0.055944055944055944,
+    0.5728395061728395,
+    0.72,
+    0.4376731301939058
+   ],
+   "per_grade_support": [
+    13296,
+    143,
+    405,
+    75,
+    361
+   ],
+   "confusion_matrix": [
+    [
+     4747,
+     1176,
+     6969,
+     260,
+     144
+    ],
+    [
+     20,
+     8,
+     99,
+     16,
+     0
+    ],
+    [
+     5,
+     1,
+     232,
+     160,
+     7
+    ],
+    [
+     0,
+     0,
+     11,
+     54,
+     10
+    ],
+    [
+     3,
+     0,
+     38,
+     162,
+     158
+    ]
+   ]
+  },
+  "R3_768_s2026": {
+   "tp": 828,
+   "fn": 13,
+   "tn": 7061,
+   "fp": 6378,
+   "ppv": 0.11490424646128226,
+   "npv": 0.9981622844218264,
+   "qwk": 0.25725328153642346,
+   "per_grade_recall": [
+    0.5290312876052948,
+    0.0,
+    0.6567901234567901,
+    0.52,
+    0.6703601108033241
+   ],
+   "per_grade_support": [
+    13296,
+    143,
+    405,
+    75,
+    361
+   ],
+   "confusion_matrix": [
+    [
+     7034,
+     4,
+     5828,
+     220,
+     210
+    ],
+    [
+     23,
+     0,
+     112,
+     8,
+     0
+    ],
+    [
+     10,
+     0,
+     266,
+     107,
+     22
+    ],
+    [
+     0,
+     0,
+     13,
+     39,
+     23
+    ],
+    [
+     3,
+     0,
+     26,
+     90,
+     242
+    ]
+   ]
+  },
+  "R3_768_s17": {
+   "tp": 828,
+   "fn": 13,
+   "tn": 7241,
+   "fp": 6198,
+   "ppv": 0.11784799316823227,
+   "npv": 0.9982078853046595,
+   "qwk": 0.2578227343391337,
+   "per_grade_recall": [
+    0.539485559566787,
+    0.0,
+    0.5555555555555556,
+    0.6933333333333334,
+    0.5235457063711911
+   ],
+   "per_grade_support": [
+    13296,
+    143,
+    405,
+    75,
+    361
+   ],
+   "confusion_matrix": [
+    [
+     7173,
+     40,
+     5639,
+     274,
+     170
+    ],
+    [
+     28,
+     0,
+     101,
+     12,
+     2
+    ],
+    [
+     9,
+     0,
+     225,
+     160,
+     11
+    ],
+    [
+     0,
+     0,
+     10,
+     52,
+     13
+    ],
+    [
+     4,
+     0,
+     28,
+     140,
+     189
+    ]
+   ]
+  },
+  "E_768": {
+   "tp": 828,
+   "fn": 13,
+   "tn": 7524,
+   "fp": 5915,
+   "ppv": 0.12279400860151268,
+   "npv": 0.9982751757993896,
+   "qwk": 0.2694849034203043,
+   "per_grade_recall": [
+    0.5412906137184116,
+    0.02097902097902098,
+    0.6666666666666666,
+    0.6666666666666666,
+    0.5817174515235457
+   ],
+   "per_grade_support": [
+    13296,
+    143,
+    405,
+    75,
+    361
+   ],
+   "confusion_matrix": [
+    [
+     7197,
+     301,
+     5399,
+     233,
+     166
+    ],
+    [
+     23,
+     3,
+     109,
+     8,
+     0
+    ],
+    [
+     9,
+     0,
+     270,
+     116,
+     10
+    ],
+    [
+     0,
+     0,
+     10,
+     50,
+     15
+    ],
+    [
+     4,
+     0,
+     25,
+     122,
+     210
+    ]
+   ]
+  }
+ },
+ "any_dr_auc": {
+  "A_legacy": {
+   "estimate": 0.8563372259399489,
+   "ci95": [
+    0.8354259645551897,
+    0.8770945505977507
+   ],
+   "valid_replicates": 2000
+  },
+  "R4_768_s17": {
+   "estimate": 0.9244428607417843,
+   "ci95": [
+    0.912821564334515,
+    0.9349169793913976
+   ],
+   "valid_replicates": 2000
+  },
+  "R3_768_s2026": {
+   "estimate": 0.8602442784919726,
+   "ci95": [
+    0.8483156123818476,
+    0.8711157626604596
+   ],
+   "valid_replicates": 2000
+  },
+  "R3_768_s17": {
+   "estimate": 0.9065872247170125,
+   "ci95": [
+    0.8945500820410375,
+    0.917508736249214
+   ],
+   "valid_replicates": 2000
+  },
+  "E_768": {
+   "estimate": 0.8942623950720553,
+   "ci95": [
+    0.8823979048665758,
+    0.9048018774369158
+   ],
+   "valid_replicates": 2000
+  }
+ },
+ "other_disease_specificity": {
+  "A_legacy": {
+   "specificity_with_other_disease": {
+    "estimate": 0.7422852376980817,
+    "ci95": [
+     0.7292729073141169,
+     0.755479035613242
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity_without_other_disease": {
+    "estimate": 0.929876410531972,
+    "ci95": [
+     0.9235188788425364,
+     0.9361899834489381
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R4_768_s17": {
+   "specificity_with_other_disease": {
+    "estimate": 0.3312760633861551,
+    "ci95": [
+     0.31822598898119814,
+     0.34456368059826814
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity_without_other_disease": {
+    "estimate": 0.5326437399247717,
+    "ci95": [
+     0.5199025363016189,
+     0.5458618355591862
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R3_768_s2026": {
+   "specificity_with_other_disease": {
+    "estimate": 0.4360300250208507,
+    "ci95": [
+     0.4220464707954662,
+     0.45050701250548925
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity_without_other_disease": {
+    "estimate": 0.5973938742611499,
+    "ci95": [
+     0.5849911674058483,
+     0.6100336916728903
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R3_768_s17": {
+   "specificity_with_other_disease": {
+    "estimate": 0.43669724770642204,
+    "ci95": [
+     0.42337195197594124,
+     0.45065142147947085
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity_without_other_disease": {
+    "estimate": 0.6210370768404084,
+    "ci95": [
+     0.6087885505545252,
+     0.6345585022798839
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "E_768": {
+   "specificity_with_other_disease": {
+    "estimate": 0.46672226855713095,
+    "ci95": [
+     0.45263492188567594,
+     0.4814630805852105
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity_without_other_disease": {
+    "estimate": 0.6348737238044062,
+    "ci95": [
+     0.6228930593277773,
+     0.6476836290827391
+    ],
+    "valid_replicates": 2000
+   }
+  }
+ },
+ "comparisons": {
+  "R4_768_s17_vs_A_legacy": {
+   "sensitivity": {
+    "a": 0.9892984542211652,
+    "b": 0.7681331747919143,
+    "difference": 0.2211652794292509,
+    "difference_ci95": [
+     0.19097164735099337,
+     0.25387506431477563
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "a": 0.44281568569089963,
+    "b": 0.8461939132375921,
+    "difference": -0.40337822754669245,
+    "difference_ci95": [
+     -0.4150052448490567,
+     -0.39174918383620116
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "a": 0.95730414939606,
+    "b": 0.8865464145517167,
+    "difference": 0.07075773484434333,
+    "difference_ci95": [
+     0.06008332824202295,
+     0.08226291182990753
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "a": 0.9560047562425684,
+    "b": 0.7586206896551724,
+    "difference": 0.19738406658739605,
+    "difference_ci95": [
+     0.163932586336958,
+     0.22809416218856854
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R3_768_s2026_vs_A_legacy": {
+   "sensitivity": {
+    "a": 0.9845422116527943,
+    "b": 0.7681331747919143,
+    "difference": 0.21640903686087998,
+    "difference_ci95": [
+     0.1866641791044776,
+     0.24806716257586334
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "a": 0.5254111168985788,
+    "b": 0.8461939132375921,
+    "difference": -0.3207827963390133,
+    "difference_ci95": [
+     -0.3324677216645238,
+     -0.3088043285848815
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "a": 0.9527656520646999,
+    "b": 0.8865464145517167,
+    "difference": 0.0662192375129832,
+    "difference_ci95": [
+     0.055829665077569465,
+     0.07716259769735342
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "a": 0.93935790725327,
+    "b": 0.7586206896551724,
+    "difference": 0.18073721759809758,
+    "difference_ci95": [
+     0.14753396586570858,
+     0.21523997543787649
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R3_768_s17_vs_A_legacy": {
+   "sensitivity": {
+    "a": 0.9845422116527943,
+    "b": 0.7681331747919143,
+    "difference": 0.21640903686087998,
+    "difference_ci95": [
+     0.18704759623799047,
+     0.24782250825349583
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "a": 0.5388049706079321,
+    "b": 0.8461939132375921,
+    "difference": -0.30738894262966,
+    "difference_ci95": [
+     -0.3182362454143404,
+     -0.2961930151573558
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "a": 0.9535582411882855,
+    "b": 0.8865464145517167,
+    "difference": 0.0670118266365688,
+    "difference_ci95": [
+     0.05630765142709897,
+     0.07871946244538469
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "a": 0.9524375743162902,
+    "b": 0.7586206896551724,
+    "difference": 0.1938168846611178,
+    "difference_ci95": [
+     0.1590355059815232,
+     0.2242236997991106
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "E_768_vs_A_legacy": {
+   "sensitivity": {
+    "a": 0.9845422116527943,
+    "b": 0.7681331747919143,
+    "difference": 0.21640903686087998,
+    "difference_ci95": [
+     0.18704759623799047,
+     0.24782250825349583
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "a": 0.559863085050971,
+    "b": 0.8461939132375921,
+    "difference": -0.28633082818662103,
+    "difference_ci95": [
+     -0.29762228863929385,
+     -0.27477832193262336
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "a": 0.9565455359616301,
+    "b": 0.8865464145517167,
+    "difference": 0.06999912140991338,
+    "difference_ci95": [
+     0.05950155128424457,
+     0.08138341004781101
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "a": 0.9512485136741974,
+    "b": 0.7586206896551724,
+    "difference": 0.192627824019025,
+    "difference_ci95": [
+     0.15964144376771733,
+     0.22402180357025228
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "A_legacy_vs_R4_768_s17": {
+   "sensitivity": {
+    "a": 0.7681331747919143,
+    "b": 0.9892984542211652,
+    "difference": -0.2211652794292509,
+    "difference_ci95": [
+     -0.25387506431477563,
+     -0.19097164735099337
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "a": 0.8461939132375921,
+    "b": 0.44281568569089963,
+    "difference": 0.40337822754669245,
+    "difference_ci95": [
+     0.39174918383620116,
+     0.41500524484905665
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "a": 0.8865464145517167,
+    "b": 0.95730414939606,
+    "difference": -0.07075773484434333,
+    "difference_ci95": [
+     -0.08226291182990754,
+     -0.06008332824202295
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "a": 0.7586206896551724,
+    "b": 0.9560047562425684,
+    "difference": -0.19738406658739605,
+    "difference_ci95": [
+     -0.22809416218856854,
+     -0.163932586336958
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R3_768_s2026_vs_R4_768_s17": {
+   "sensitivity": {
+    "a": 0.9845422116527943,
+    "b": 0.9892984542211652,
+    "difference": -0.0047562425683709275,
+    "difference_ci95": [
+     -0.0115095782558548,
+     0.0012391958083887986
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "a": 0.5254111168985788,
+    "b": 0.44281568569089963,
+    "difference": 0.08259543120767915,
+    "difference_ci95": [
+     0.07512551076362396,
+     0.09021894595032291
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "a": 0.9527656520646999,
+    "b": 0.95730414939606,
+    "difference": -0.004538497331360136,
+    "difference_ci95": [
+     -0.008369866513876693,
+     -0.0008079304715629933
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "a": 0.93935790725327,
+    "b": 0.9560047562425684,
+    "difference": -0.01664684898929847,
+    "difference_ci95": [
+     -0.029596430472208037,
+     -0.002397938108843057
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "R3_768_s17_vs_R4_768_s17": {
+   "sensitivity": {
+    "a": 0.9845422116527943,
+    "b": 0.9892984542211652,
+    "difference": -0.0047562425683709275,
+    "difference_ci95": [
+     -0.009806655004009108,
+     -0.001136235088440938
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "a": 0.5388049706079321,
+    "b": 0.44281568569089963,
+    "difference": 0.09598928491703246,
+    "difference_ci95": [
+     0.0900893605716649,
+     0.10198490971293415
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "a": 0.9535582411882855,
+    "b": 0.95730414939606,
+    "difference": -0.00374590820777454,
+    "difference_ci95": [
+     -0.0057985590741593115,
+     -0.0017849502024811358
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "a": 0.9524375743162902,
+    "b": 0.9560047562425684,
+    "difference": -0.003567181926278251,
+    "difference_ci95": [
+     -0.015421115065243133,
+     0.006418691487009628
+    ],
+    "valid_replicates": 2000
+   }
+  },
+  "E_768_vs_R4_768_s17": {
+   "sensitivity": {
+    "a": 0.9845422116527943,
+    "b": 0.9892984542211652,
+    "difference": -0.0047562425683709275,
+    "difference_ci95": [
+     -0.009806655004009108,
+     -0.001136235088440938
+    ],
+    "valid_replicates": 2000
+   },
+   "specificity": {
+    "a": 0.559863085050971,
+    "b": 0.44281568569089963,
+    "difference": 0.11704739936007141,
+    "difference_ci95": [
+     0.1105191331091985,
+     0.12382396431980379
+    ],
+    "valid_replicates": 2000
+   },
+   "auc": {
+    "a": 0.9565455359616301,
+    "b": 0.95730414939606,
+    "difference": -0.0007586134344299555,
+    "difference_ci95": [
+     -0.0029854233700421975,
+     0.0013714602803321255
+    ],
+    "valid_replicates": 2000
+   },
+   "sensitivity_at_85_specificity": {
+    "a": 0.9512485136741974,
+    "b": 0.9560047562425684,
+    "difference": -0.0047562425683710385,
+    "difference_ci95": [
+     -0.013682445006885788,
+     0.005938773112431572
+    ],
+    "valid_replicates": 2000
+   }
+  }
+ },
+ "promotion_verdict": {
+  "rule": "sensitivity > 0.90 and specificity > 0.85 (point estimates) and paired sensitivity gain over A_legacy with 95% CI > 0",
+  "sensitivity": 0.9845422116527943,
+  "specificity": 0.559863085050971,
+  "sensitivity_gain_vs_A_legacy": 0.21640903686087998,
+  "sensitivity_gain_ci95": [
+   0.18704759623799047,
+   0.24782250825349583
+  ],
+  "passed": false,
+  "note": "A pass makes the primary eligible for promotion; the deployed default changes only by owner decision."
+ },
+ "per_camera": {
+  "Canon CR": {
+   "images": 9661,
+   "referable": 569,
+   "variants": {
+    "E_768": {
+     "sensitivity": {
+      "estimate": 0.9912126537785588,
+      "ci95": [
+       0.982755627394636,
+       0.9982078853046595
+      ],
+      "valid_replicates": 2000
+     },
+     "specificity": {
+      "estimate": 0.43444786625604925,
+      "ci95": [
+       0.4229495279507664,
+       0.44600278025734
+      ],
+      "valid_replicates": 2000
+     },
+     "auc": {
+      "estimate": 0.9514569675189067,
+      "ci95": [
+       0.9430741208874748,
+       0.9594504158412007
+      ],
+      "valid_replicates": 2000
+     },
+     "sensitivity_at_85_specificity": {
+      "estimate": 0.9367311072056239,
+      "ci95": [
+       0.9135560280289873,
+       0.9569540698270851
+      ],
+      "valid_replicates": 2000
+     }
+    },
+    "A_legacy": {
+     "sensitivity": {
+      "estimate": 0.7451669595782073,
+      "ci95": [
+       0.706083136637818,
+       0.7848576045517659
+      ],
+      "valid_replicates": 2000
+     },
+     "specificity": {
+      "estimate": 0.8400791904971403,
+      "ci95": [
+       0.8307198442690039,
+       0.8485502405339101
+      ],
+      "valid_replicates": 2000
+     },
+     "auc": {
+      "estimate": 0.8792719917546625,
+      "ci95": [
+       0.8646019461981556,
+       0.893963711086798
+      ],
+      "valid_replicates": 2000
+     },
+     "sensitivity_at_85_specificity": {
+      "estimate": 0.7293497363796133,
+      "ci95": [
+       0.6863781424125529,
+       0.7719713838244556
+      ],
+      "valid_replicates": 2000
+     }
+    },
+    "R4_768_s17": {
+     "sensitivity": {
+      "estimate": 0.9947275922671354,
+      "ci95": [
+       0.9879921056438447,
+       1.0
+      ],
+      "valid_replicates": 2000
+     },
+     "specificity": {
+      "estimate": 0.3214914210294765,
+      "ci95": [
+       0.3101625740893433,
+       0.3317250358751868
+      ],
+      "valid_replicates": 2000
+     },
+     "auc": {
+      "estimate": 0.953347812673727,
+      "ci95": [
+       0.9451616477878747,
+       0.9611197514194291
+      ],
+      "valid_replicates": 2000
+     },
+     "sensitivity_at_85_specificity": {
+      "estimate": 0.9472759226713533,
+      "ci95": [
+       0.9288316528516639,
+       0.967015318096476
+      ],
+      "valid_replicates": 2000
+     }
+    }
+   }
+  },
+  "NIKON NF5050": {
+   "images": 4619,
+   "referable": 272,
+   "variants": {
+    "E_768": {
+     "sensitivity": {
+      "estimate": 0.9705882352941176,
+      "ci95": [
+       0.9471746174722755,
+       0.99017398700897
+      ],
+      "valid_replicates": 2000
+     },
+     "specificity": {
+      "estimate": 0.8221762134805614,
+      "ci95": [
+       0.809651678894526,
+       0.8346174199436821
+      ],
+      "valid_replicates": 2000
+     },
+     "auc": {
+      "estimate": 0.9705239583756208,
+      "ci95": [
+       0.9576779968163981,
+       0.9806192342498108
+      ],
+      "valid_replicates": 2000
+     },
+     "sensitivity_at_85_specificity": {
+      "estimate": 0.9705882352941176,
+      "ci95": [
+       0.9465020576131687,
+       0.9898034956556879
+      ],
+      "valid_replicates": 2000
+     }
+    },
+    "A_legacy": {
+     "sensitivity": {
+      "estimate": 0.8161764705882353,
+      "ci95": [
+       0.7670161290322581,
+       0.8641509433962264
+      ],
+      "valid_replicates": 2000
+     },
+     "specificity": {
+      "estimate": 0.8589832068092937,
+      "ci95": [
+       0.8470823407250895,
+       0.8709015160371264
+      ],
+      "valid_replicates": 2000
+     },
+     "auc": {
+      "estimate": 0.9081152992598005,
+      "ci95": [
+       0.8889102832960529,
+       0.925504411257824
+      ],
+      "valid_replicates": 2000
+     },
+     "sensitivity_at_85_specificity": {
+      "estimate": 0.8345588235294118,
+      "ci95": [
+       0.7777679623085983,
+       0.880443143812709
+      ],
+      "valid_replicates": 2000
+     }
+    },
+    "R4_768_s17": {
+     "sensitivity": {
+      "estimate": 0.9779411764705882,
+      "ci95": [
+       0.956895001240387,
+       0.9960941299854086
+      ],
+      "valid_replicates": 2000
+     },
+     "specificity": {
+      "estimate": 0.6965723487462618,
+      "ci95": [
+       0.681492753433824,
+       0.7110512631367906
+      ],
+      "valid_replicates": 2000
+     },
+     "auc": {
+      "estimate": 0.9678606950026387,
+      "ci95": [
+       0.954240059266798,
+       0.9791615813947523
+      ],
+      "valid_replicates": 2000
+     },
+     "sensitivity_at_85_specificity": {
+      "estimate": 0.9669117647058824,
+      "ci95": [
+       0.9421480959846934,
+       0.9882352941176471
+      ],
+      "valid_replicates": 2000
+     }
+    }
+   }
+  }
+ },
+ "quality": {
+  "inadequate": {
+   "positives": 1986,
+   "images": 16266,
+   "results": {
+    "stacked": {
+     "auc": {
+      "estimate": 0.6775963255392792,
+      "ci95": [
+       0.6639763437599693,
+       0.6922086446113538
+      ],
+      "valid_replicates": 2000
+     },
+     "operating_point": {
+      "threshold": 1.276264986787131,
+      "reject_recall": 0.0473313192346425,
+      "false_reject_rate": 0.0031512605042016808
+     }
+    },
+    "eyeq_candidate": {
+     "auc": {
+      "estimate": 0.7523917069345362,
+      "ci95": [
+       0.7399647300239519,
+       0.7654223307703916
+      ],
+      "valid_replicates": 2000
+     },
+     "operating_point": {
+      "threshold": -0.5108256237659907,
+      "reject_recall": 0.09264853977844914,
+      "false_reject_rate": 0.010224089635854342
+     }
+    },
+    "heuristic_iqs": {
+     "auc": {
+      "estimate": 0.5589050524540129,
+      "ci95": [
+       0.5442965884726207,
+       0.5754044512615968
+      ],
+      "valid_replicates": 2000
+     }
+    }
+   }
+  },
+  "any_factor_unsatisfactory": {
+   "positives": 0,
+   "images": 16266,
+   "results": {
+    "stacked": {
+     "auc": {
+      "estimate": null,
+      "ci95": [
+       null,
+       null
+      ],
+      "valid_replicates": 0
+     },
+     "operating_point": {
+      "threshold": 1.276264986787131,
+      "reject_recall": null,
+      "false_reject_rate": 0.008545432189843846
+     }
+    },
+    "eyeq_candidate": {
+     "auc": {
+      "estimate": null,
+      "ci95": [
+       null,
+       null
+      ],
+      "valid_replicates": 0
+     },
+     "operating_point": {
+      "threshold": -0.5108256237659907,
+      "reject_recall": null,
+      "false_reject_rate": 0.02028771670970122
+     }
+    },
+    "heuristic_iqs": {
+     "auc": {
+      "estimate": null,
+      "ci95": [
+       null,
+       null
+      ],
+      "valid_replicates": 0
+     }
+    }
+   }
+  }
+ },
+ "limitations": [
+  "Three Sao Paulo centres, 2010-2020, two desktop cameras; not a smartphone test (that is mBRSET).",
+  "The primary variant was selected on mBRSET (exposed): this is a confirmation, not a fresh model selection.",
+  "Images with Inadequate quality are outside the DR metrics (counted).",
+  "Clusters are patients (patient_id column)."
+ ]
+}
