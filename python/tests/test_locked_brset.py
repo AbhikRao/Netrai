@@ -69,7 +69,9 @@ class LockedBrsetTests(unittest.TestCase):
             out[np.arange(len(g)), g] += 4.0 if spec['id'] == 'M' else 1.0
             return out
 
-        for patch in (mock.patch.object(exposure, 'REGISTRY_PATH', self.registry), mock.patch.object(lb, 'logits_for', side_effect=fake_logits)):
+        self.x9 = base / 'x9_parameters.json'  # the real file is a git-ignored local artifact; CI has none
+        self.x9.write_text(json.dumps({'operating_threshold_5pct_false_reject_oof': 1.25, 'temperature': 0.7}))
+        for patch in (mock.patch.object(exposure, 'REGISTRY_PATH', self.registry), mock.patch.object(lb, 'X9_PARAMETERS', self.x9), mock.patch.object(lb, 'logits_for', side_effect=fake_logits)):
             patch.start()
             self.addCleanup(patch.stop)
         self.pre = base / 'pre'
