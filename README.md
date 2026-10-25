@@ -12,7 +12,7 @@ screening completion.
 
 <!-- current-state:start -->
 > **Current state (2026-10-25):** the presented screening model is **E_768 with a required per-site calibration of its referral cut-off** (weights kept
-> because of their size not in Git; a hash-checked fetch script is ready, but no public release exists until the training datasets' terms are checked; without the weights the checkout runs the legacy model). On two fresh Brazilian tests (smartphone mBRSET, desktop BRSET)
+> because of their size not in Git; a hash-checked script downloads them from the project's `e768-v1` release (research use, terms in the model card); without the weights the checkout runs the legacy model; MATLAB and Python both support it). On two fresh Brazilian tests (smartphone mBRSET, desktop BRSET)
 > E_768 ranks referable DR better than the legacy model (AUC 0.948 vs 0.918 and 0.957 vs 0.887), but no frozen cut-off met the pre-registered 90% / 85% rule:
 > on Canon desktop images it refers 57% of healthy eyes, while legacy misses 47% (smartphone) and 23% (desktop) of referable eyes. The calibration step has only
 > post hoc evidence. On a fresh any-DR test (RFMiD 2.0) legacy ranks DR better (AUC 0.84 vs 0.72–0.76). Opt-in learned lesion candidates are research additions.

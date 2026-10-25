@@ -244,8 +244,7 @@ The project's presented screening model is `variant_R3_E_768/` (two 768 × 768 m
 tests ranked referable DR better than the legacy model (AUC 0.948 vs 0.918 on smartphone images, 0.957 vs 0.887 on desktop cameras), but no
 frozen cut-off met the pre-registered 90% / 85% rule: on Canon desktop images it over-refers (specificity 0.43). **Its referral cut-off must be
 calibrated on a labelled sample of each camera/site before screening**; every report says `UNCALIBRATED` until a site policy is loaded
-([validation](../docs/VALIDATION.md)). The 143 MB weights exceed GitHub's file limit and are **not publicly released yet** (the training datasets' terms are being checked). `fetchE768Weights` (MATLAB) and `scripts/fetch_e768.sh`
-will download them from a project release and verify the SHA-256 from `variant_R3_E_768/netrai_bundle.json`; until a release exists, the public checkout runs the legacy model. See [the model card](../docs/MODEL_CARD.md) for the weights' terms. `main_pipeline` chooses the variant like this:
+([validation](../docs/VALIDATION.md)). The 143 MB weights exceed GitHub's file limit and are a release asset (`e768-v1`, research use only): run `fetchE768Weights` in MATLAB or `scripts/fetch_e768.sh`; both verify the SHA-256 from `variant_R3_E_768/netrai_bundle.json`. See [the model card](../docs/MODEL_CARD.md) for the weights' terms. The Python pipeline has the same options (`python inference.py --variant E_768 --site-policy FILE`). `main_pipeline` chooses the variant like this:
 
 - `Variant='auto'` (default): E_768 when `matlab/variant_R3_E_768/netrai_fold0.onnx` exists locally, otherwise the legacy model;
 - `Variant='E_768'` fails with a clear error when the weights are missing; `Variant='legacy'` always uses `models/netrai_fold0.onnx`;
