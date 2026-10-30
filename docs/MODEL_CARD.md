@@ -95,14 +95,18 @@ Locked results (all against the deployed legacy model): ODIR-5K 90.5% / 84.5% (A
 (AUC 0.948 vs 0.918; legacy 52.6% / 96.6%); BRSET desktop cameras 98.5% / 56.0% (AUC 0.957 vs 0.887; legacy 76.8% / 84.6%). No pre-registered
 rule (> 90% / > 85% at the frozen cut-off) was met, so this is a product decision informed by the results, not a promotion by rule. What the
 evidence supports: E_768 **ranks** referable DR better on three fresh external sets; its frozen **cut-off does not transfer** between cameras, so
-a per-site calibration step is required and every report is marked `UNCALIBRATED` until one is loaded. The calibration step itself has only
-post hoc evidence (leave-dataset-out and the exposed Brazilian sets); it has had no fresh test. E_768 also over-refers non-DR retinal disease
+a per-site calibration step is required and every report is marked `UNCALIBRATED` until one is loaded. On two further fresh sets (Paraguay, Zeiss;
+SUSTech-SYSU, Topcon; both easier than screening populations) its frozen cut-off met both targets (96.7% / 96.8% and 99.4% / 95.6%), and the
+calibration rule with a 95% sample-sensitivity target was confirmed there (both targets met in 93% of 200-image samples; `calibrate_site.py` default).
+Calibration keeps sensitivity but cannot raise specificity on cameras where the model ranks poorly. Site onboarding (MATLAB `calibrateSite` then
+`verifySitePolicy` on a separate sample, or the same two steps in `python/calibrate_site.py`) is described in [README_MATLAB](../matlab/README_MATLAB.md).
+E_768 also over-refers non-DR retinal disease
 (BRSET specificity 0.47 with another labelled disease vs 0.64 without; RFMiD any-DR AUC 0.758 vs 0.844 for legacy), and grade 1 is almost never
 predicted. The legacy model remains available (`Variant='legacy'`). See [validation](VALIDATION.md).
 
 ## Obtaining the E_768 weights and their terms
 
-The 143 MB ONNX file is not part of the Git history. It is the asset of the GitHub release [`e768-v1`](https://github.com/AbhikRao/Netrai/releases/tag/e768-v1) (research and evaluation use only). `scripts/fetch_e768.sh` (or `fetchE768Weights` in MATLAB) downloads it and verifies the SHA-256 recorded in the committed `matlab/variant_R3_E_768/netrai_bundle.json`, installing nothing on a mismatch. Without the file the public checkout runs the legacy model (`Variant='auto'` in MATLAB, `--variant auto` in Python). Python: `python inference.py --image IMG --variant E_768 [--site-policy site_policy.json]` runs the ONNX graph (no Grad-CAM: the graph has no gradients).
+The 143 MB ONNX file is not part of the Git history. It is the asset of the GitHub release [`e768-v1`](https://github.com/AbhikRao/Netrai/releases/tag/e768-v1) (research and evaluation use only). `scripts/fetch_e768.sh` (or `fetchE768Weights` in MATLAB) downloads it and verifies the SHA-256 recorded in the committed `matlab/variant_R3_E_768/netrai_bundle.json`, installing nothing on a mismatch. Without the file the public checkout runs the legacy model (`Variant='auto'` in MATLAB, `--variant auto` in Python). Python: `python inference.py --image IMG --variant E_768 [--site-policy site_policy.json]` runs the ONNX graph; its Grad-CAM needs the two PyTorch member files of the same weights (`scripts/fetch_e768.sh --with-gradcam`, hash-checked against `matlab/variant_R3_E_768/torch_members.json`), otherwise the report says the map is unavailable.
 
 **The MIT licence covers this project's original code and documentation, not the weights.** The weights were trained from an ImageNet-pretrained
 EfficientNet-B4 backbone on APTOS 2019, EyePACS/EyeQ, IDRiD, DeepDRiD and DDR training images, and were selected on validation images from

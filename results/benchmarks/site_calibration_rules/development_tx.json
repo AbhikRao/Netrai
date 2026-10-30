@@ -1,0 +1,658 @@
+{
+ "tier": "TX (labels of these sites were exposed by earlier locked evaluations)",
+ "model": "E_768",
+ "frozen_cut": 1.092308373535268,
+ "protocol": "random whole-cluster calibration samples, cut fitted on the sample and scored on the remaining images",
+ "sites": {
+  "BRSET Canon CR": {
+   "images": 9661,
+   "referable": 569,
+   "clusters": 5270,
+   "100": {
+    "R1": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.08,
+     "sensitivity_mean": 0.8998911256160173,
+     "sensitivity_p10": 0.7250303409564987,
+     "specificity_mean": 0.7057210926722339,
+     "specificity_p10": 0.43395597064709807,
+     "share_cut_changed": 0.662,
+     "frozen_sensitivity": 0.9912126537785588,
+     "frozen_specificity": 0.43444786625604925
+    },
+    "R2": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.08,
+     "sensitivity_mean": 0.900849224916353,
+     "sensitivity_p10": 0.7250303409564987,
+     "specificity_mean": 0.7026731434081659,
+     "specificity_p10": 0.43395114623386133,
+     "share_cut_changed": 0.662,
+     "frozen_sensitivity": 0.9912126537785588,
+     "frozen_specificity": 0.43444786625604925
+    },
+    "R3": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.08,
+     "sensitivity_mean": 0.8998911256160173,
+     "sensitivity_p10": 0.7250303409564987,
+     "specificity_mean": 0.7057210926722339,
+     "specificity_p10": 0.43395597064709807,
+     "share_cut_changed": 0.662,
+     "frozen_sensitivity": 0.9912126537785588,
+     "frozen_specificity": 0.43444786625604925
+    },
+    "R4": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.08,
+     "sensitivity_mean": 0.900849224916353,
+     "sensitivity_p10": 0.7250303409564987,
+     "specificity_mean": 0.7026731434081659,
+     "specificity_p10": 0.43395114623386133,
+     "share_cut_changed": 0.662,
+     "frozen_sensitivity": 0.9912126537785588,
+     "frozen_specificity": 0.43444786625604925
+    }
+   },
+   "200": {
+    "R1": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.13,
+     "sensitivity_mean": 0.8787907693267168,
+     "sensitivity_p10": 0.7242133204633205,
+     "specificity_mean": 0.8262238556729141,
+     "specificity_p10": 0.5495704035828752,
+     "share_cut_changed": 0.964,
+     "frozen_sensitivity": 0.9912126537785588,
+     "frozen_specificity": 0.43444786625604925
+    },
+    "R2": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.112,
+     "sensitivity_mean": 0.9031753862609602,
+     "sensitivity_p10": 0.7563963963963964,
+     "specificity_mean": 0.7680622920623373,
+     "specificity_p10": 0.43460807677932767,
+     "share_cut_changed": 0.964,
+     "frozen_sensitivity": 0.9912126537785588,
+     "frozen_specificity": 0.43444786625604925
+    },
+    "R3": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.13,
+     "sensitivity_mean": 0.8787907693267168,
+     "sensitivity_p10": 0.7242133204633205,
+     "specificity_mean": 0.8262238556729141,
+     "specificity_p10": 0.5495704035828752,
+     "share_cut_changed": 0.964,
+     "frozen_sensitivity": 0.9912126537785588,
+     "frozen_specificity": 0.43444786625604925
+    },
+    "R4": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.112,
+     "sensitivity_mean": 0.9031753862609602,
+     "sensitivity_p10": 0.7563963963963964,
+     "specificity_mean": 0.7680622920623373,
+     "specificity_p10": 0.43460807677932767,
+     "share_cut_changed": 0.964,
+     "frozen_sensitivity": 0.9912126537785588,
+     "frozen_specificity": 0.43444786625604925
+    }
+   }
+  },
+  "BRSET Nikon NF5050": {
+   "images": 4619,
+   "referable": 272,
+   "clusters": 2806,
+   "100": {
+    "R1": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.194,
+     "sensitivity_mean": 0.8874702080326722,
+     "sensitivity_p10": 0.6726802962462336,
+     "specificity_mean": 0.8624094235805848,
+     "specificity_p10": 0.8202733529826891,
+     "share_cut_changed": 0.608,
+     "frozen_sensitivity": 0.9705882352941176,
+     "frozen_specificity": 0.8221762134805614
+    },
+    "R2": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.196,
+     "sensitivity_mean": 0.8884335158664336,
+     "sensitivity_p10": 0.6726802962462336,
+     "specificity_mean": 0.861086710799269,
+     "specificity_p10": 0.820169451635679,
+     "share_cut_changed": 0.608,
+     "frozen_sensitivity": 0.9705882352941176,
+     "frozen_specificity": 0.8221762134805614
+    },
+    "R3": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.132,
+     "sensitivity_mean": 0.9082267018690862,
+     "sensitivity_p10": 0.7245948326482677,
+     "specificity_mean": 0.8435253903956534,
+     "specificity_p10": 0.8200846660395108,
+     "share_cut_changed": 0.466,
+     "frozen_sensitivity": 0.9705882352941176,
+     "frozen_specificity": 0.8221762134805614
+    },
+    "R4": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.13,
+     "sensitivity_mean": 0.9088874940175193,
+     "sensitivity_p10": 0.7245948326482677,
+     "specificity_mean": 0.8422697981224639,
+     "specificity_p10": 0.8200126810023411,
+     "share_cut_changed": 0.466,
+     "frozen_sensitivity": 0.9705882352941176,
+     "frozen_specificity": 0.8221762134805614
+    }
+   },
+   "200": {
+    "R1": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.382,
+     "sensitivity_mean": 0.8798449641074377,
+     "sensitivity_p10": 0.7424242424242424,
+     "specificity_mean": 0.8981139971934763,
+     "specificity_p10": 0.6732365716976255,
+     "share_cut_changed": 0.97,
+     "frozen_sensitivity": 0.9705882352941176,
+     "frozen_specificity": 0.8221762134805614
+    },
+    "R2": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.382,
+     "sensitivity_mean": 0.9031734477321075,
+     "sensitivity_p10": 0.7945984384523844,
+     "specificity_mean": 0.844883718798978,
+     "specificity_p10": 0.6441512791584872,
+     "share_cut_changed": 0.97,
+     "frozen_sensitivity": 0.9705882352941176,
+     "frozen_specificity": 0.8221762134805614
+    },
+    "R3": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.324,
+     "sensitivity_mean": 0.8938759114247589,
+     "sensitivity_p10": 0.7554294085332357,
+     "specificity_mean": 0.8801375125282851,
+     "specificity_p10": 0.6732365716976255,
+     "share_cut_changed": 0.834,
+     "frozen_sensitivity": 0.9705882352941176,
+     "frozen_specificity": 0.8221762134805614
+    },
+    "R4": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.328,
+     "sensitivity_mean": 0.9132587625610497,
+     "sensitivity_p10": 0.8028799444829979,
+     "specificity_mean": 0.8303541759196406,
+     "specificity_p10": 0.6441512791584872,
+     "share_cut_changed": 0.858,
+     "frozen_sensitivity": 0.9705882352941176,
+     "frozen_specificity": 0.8221762134805614
+    }
+   }
+  },
+  "mBRSET": {
+   "images": 4859,
+   "referable": 861,
+   "clusters": 1285,
+   "100": {
+    "R1": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.068,
+     "sensitivity_mean": 0.8839903600865486,
+     "sensitivity_p10": 0.7572438162544171,
+     "specificity_mean": 0.7652547026257899,
+     "specificity_p10": 0.45043388966436476,
+     "share_cut_changed": 0.986,
+     "frozen_sensitivity": 0.89198606271777,
+     "frozen_specificity": 0.892696348174087
+    },
+    "R2": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.058,
+     "sensitivity_mean": 0.9125030129235858,
+     "sensitivity_p10": 0.8139728088244325,
+     "specificity_mean": 0.6705552133725617,
+     "specificity_p10": 0.13626835663108244,
+     "share_cut_changed": 0.986,
+     "frozen_sensitivity": 0.89198606271777,
+     "frozen_specificity": 0.892696348174087
+    },
+    "R3": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.068,
+     "sensitivity_mean": 0.9176405787228943,
+     "sensitivity_p10": 0.8892895822588964,
+     "specificity_mean": 0.7494488144325655,
+     "specificity_p10": 0.45140207983704234,
+     "share_cut_changed": 0.642,
+     "frozen_sensitivity": 0.89198606271777,
+     "frozen_specificity": 0.892696348174087
+    },
+    "R4": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.058,
+     "sensitivity_mean": 0.9336548248300885,
+     "sensitivity_p10": 0.8896673260051352,
+     "specificity_mean": 0.6599476487190938,
+     "specificity_p10": 0.13626835663108244,
+     "share_cut_changed": 0.756,
+     "frozen_sensitivity": 0.89198606271777,
+     "frozen_specificity": 0.892696348174087
+    }
+   },
+   "200": {
+    "R1": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.104,
+     "sensitivity_mean": 0.90510569545371,
+     "sensitivity_p10": 0.8276657488071782,
+     "specificity_mean": 0.7998795502253345,
+     "specificity_p10": 0.585062238120072,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.89198606271777,
+     "frozen_specificity": 0.892696348174087
+    },
+    "R2": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.084,
+     "sensitivity_mean": 0.9325734038830328,
+     "sensitivity_p10": 0.8658446473627298,
+     "specificity_mean": 0.7017316442778408,
+     "specificity_p10": 0.3570839772047016,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.89198606271777,
+     "frozen_specificity": 0.892696348174087
+    },
+    "R3": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.102,
+     "sensitivity_mean": 0.9200294028700906,
+     "sensitivity_p10": 0.8884848484848484,
+     "specificity_mean": 0.7894034260207399,
+     "specificity_p10": 0.585062238120072,
+     "share_cut_changed": 0.67,
+     "frozen_sensitivity": 0.89198606271777,
+     "frozen_specificity": 0.892696348174087
+    },
+    "R4": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.084,
+     "sensitivity_mean": 0.9388701009622177,
+     "sensitivity_p10": 0.888755980861244,
+     "specificity_mean": 0.6968899759519533,
+     "specificity_p10": 0.3570839772047016,
+     "share_cut_changed": 0.842,
+     "frozen_sensitivity": 0.89198606271777,
+     "frozen_specificity": 0.892696348174087
+    }
+   }
+  },
+  "Paraguay": {
+   "images": 705,
+   "referable": 519,
+   "clusters": 647,
+   "100": {
+    "R1": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.662,
+     "sensitivity_mean": 0.9144236943532048,
+     "sensitivity_p10": 0.8619596556571347,
+     "specificity_mean": 0.9864496989752312,
+     "specificity_p10": 0.9810126582278481,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.9672447013487476,
+     "frozen_specificity": 0.967741935483871
+    },
+    "R2": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.88,
+     "sensitivity_mean": 0.9438268045172142,
+     "sensitivity_p10": 0.9003844607757243,
+     "specificity_mean": 0.9688440207424532,
+     "specificity_p10": 0.9308176100628931,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.9672447013487476,
+     "frozen_specificity": 0.967741935483871
+    },
+    "R3": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.998,
+     "sensitivity_mean": 0.9673055387508552,
+     "sensitivity_p10": 0.9623059866962306,
+     "specificity_mean": 0.966942176448028,
+     "specificity_p10": 0.9617834394904459,
+     "share_cut_changed": 0.028,
+     "frozen_sensitivity": 0.9672447013487476,
+     "frozen_specificity": 0.967741935483871
+    },
+    "R4": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.978,
+     "sensitivity_mean": 0.9691952130323878,
+     "sensitivity_p10": 0.9623059866962306,
+     "specificity_mean": 0.9554988882131841,
+     "specificity_p10": 0.9308176100628931,
+     "share_cut_changed": 0.236,
+     "frozen_sensitivity": 0.9672447013487476,
+     "frozen_specificity": 0.967741935483871
+    }
+   },
+   "200": {
+    "R1": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.752,
+     "sensitivity_mean": 0.9178619600554175,
+     "sensitivity_p10": 0.8767086562121268,
+     "specificity_mean": 0.9888096269211374,
+     "specificity_p10": 0.984375,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.9672447013487476,
+     "frozen_specificity": 0.967741935483871
+    },
+    "R2": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.968,
+     "sensitivity_mean": 0.9470015945339756,
+     "sensitivity_p10": 0.9142091152815014,
+     "specificity_mean": 0.9791664265899891,
+     "specificity_p10": 0.9538461538461539,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.9672447013487476,
+     "frozen_specificity": 0.967741935483871
+    },
+    "R3": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 1.0,
+     "sensitivity_mean": 0.9675963587467362,
+     "sensitivity_p10": 0.9601063829787234,
+     "specificity_mean": 0.9678644177917589,
+     "specificity_p10": 0.9568345323741008,
+     "share_cut_changed": 0.002,
+     "frozen_sensitivity": 0.9672447013487476,
+     "frozen_specificity": 0.967741935483871
+    },
+    "R4": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 1.0,
+     "sensitivity_mean": 0.9681129467161863,
+     "sensitivity_p10": 0.9601063829787234,
+     "specificity_mean": 0.9646946881177659,
+     "specificity_p10": 0.9527505852309002,
+     "share_cut_changed": 0.14,
+     "frozen_sensitivity": 0.9672447013487476,
+     "frozen_specificity": 0.967741935483871
+    }
+   }
+  },
+  "ODIR": {
+   "images": 4408,
+   "referable": 1141,
+   "clusters": 2570,
+   "100": {
+    "R1": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.014,
+     "sensitivity_mean": 0.8954320769128365,
+     "sensitivity_p10": 0.8120462314567771,
+     "specificity_mean": 0.802660885812218,
+     "specificity_p10": 0.5942984663081515,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.9053461875547765,
+     "frozen_specificity": 0.8448117539026629
+    },
+    "R2": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.012,
+     "sensitivity_mean": 0.9201602507875012,
+     "sensitivity_p10": 0.8433649010062297,
+     "specificity_mean": 0.7246288189765059,
+     "specificity_p10": 0.525686632094232,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.9053461875547765,
+     "frozen_specificity": 0.8448117539026629
+    },
+    "R3": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.008,
+     "sensitivity_mean": 0.9073238763433222,
+     "sensitivity_p10": 0.8337823287542545,
+     "specificity_mean": 0.7891357407480685,
+     "specificity_p10": 0.5942984663081515,
+     "share_cut_changed": 0.75,
+     "frozen_sensitivity": 0.9053461875547765,
+     "frozen_specificity": 0.8448117539026629
+    },
+    "R4": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.004,
+     "sensitivity_mean": 0.9271118272271833,
+     "sensitivity_p10": 0.872207122167265,
+     "specificity_mean": 0.7161461552798152,
+     "specificity_p10": 0.525686632094232,
+     "share_cut_changed": 0.848,
+     "frozen_sensitivity": 0.9053461875547765,
+     "frozen_specificity": 0.8448117539026629
+    }
+   },
+   "200": {
+    "R1": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.02,
+     "sensitivity_mean": 0.9114696749207036,
+     "sensitivity_p10": 0.8536048305937605,
+     "specificity_mean": 0.7936814302501847,
+     "specificity_p10": 0.6291840094315886,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.9053461875547765,
+     "frozen_specificity": 0.8448117539026629
+    },
+    "R2": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.002,
+     "sensitivity_mean": 0.941099628038636,
+     "sensitivity_p10": 0.8941681538614726,
+     "specificity_mean": 0.6905198251629245,
+     "specificity_p10": 0.5320283466169552,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.9053461875547765,
+     "frozen_specificity": 0.8448117539026629
+    },
+    "R3": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.008,
+     "sensitivity_mean": 0.9178968388666311,
+     "sensitivity_p10": 0.8732679314713158,
+     "specificity_mean": 0.783965082116318,
+     "specificity_p10": 0.6291840094315886,
+     "share_cut_changed": 0.81,
+     "frozen_sensitivity": 0.9053461875547765,
+     "frozen_specificity": 0.8448117539026629
+    },
+    "R4": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.002,
+     "sensitivity_mean": 0.9426994453838579,
+     "sensitivity_p10": 0.9023941068139963,
+     "specificity_mean": 0.6877757576396968,
+     "specificity_p10": 0.5320283466169552,
+     "share_cut_changed": 0.928,
+     "frozen_sensitivity": 0.9053461875547765,
+     "frozen_specificity": 0.8448117539026629
+    }
+   }
+  },
+  "FDR26": {
+   "images": 2833,
+   "referable": 1687,
+   "clusters": 1817,
+   "100": {
+    "R1": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9088381444231866,
+     "sensitivity_p10": 0.8503860969112247,
+     "specificity_mean": 0.5912447025252272,
+     "specificity_p10": 0.37228260869565216,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.7735625370480143,
+     "frozen_specificity": 0.9267015706806283
+    },
+    "R2": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9372648288870232,
+     "sensitivity_p10": 0.8830625148111285,
+     "specificity_mean": 0.45399539884714607,
+     "specificity_p10": 0.2109411272870352,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.7735625370480143,
+     "frozen_specificity": 0.9267015706806283
+    },
+    "R3": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.908876358525966,
+     "sensitivity_p10": 0.8503860969112247,
+     "specificity_mean": 0.5912104920621919,
+     "specificity_p10": 0.37228260869565216,
+     "share_cut_changed": 0.994,
+     "frozen_sensitivity": 0.7735625370480143,
+     "frozen_specificity": 0.9267015706806283
+    },
+    "R4": {
+     "calibration_images": 100,
+     "draws": 500,
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9372648288870232,
+     "sensitivity_p10": 0.8830625148111285,
+     "specificity_mean": 0.45399539884714607,
+     "specificity_p10": 0.2109411272870352,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.7735625370480143,
+     "frozen_specificity": 0.9267015706806283
+    }
+   },
+   "200": {
+    "R1": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9137379170857988,
+     "sensitivity_p10": 0.8775401395982988,
+     "specificity_mean": 0.5856904707367784,
+     "specificity_p10": 0.4177196749240179,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.7735625370480143,
+     "frozen_specificity": 0.9267015706806283
+    },
+    "R2": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9442887298027339,
+     "sensitivity_p10": 0.9119672869147659,
+     "specificity_mean": 0.4270205264702248,
+     "specificity_p10": 0.26474139450557754,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.7735625370480143,
+     "frozen_specificity": 0.9267015706806283
+    },
+    "R3": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9137379170857988,
+     "sensitivity_p10": 0.8775401395982988,
+     "specificity_mean": 0.5856904707367784,
+     "specificity_p10": 0.4177196749240179,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.7735625370480143,
+     "frozen_specificity": 0.9267015706806283
+    },
+    "R4": {
+     "calibration_images": 200,
+     "draws": 500,
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9442887298027339,
+     "sensitivity_p10": 0.9119672869147659,
+     "specificity_mean": 0.4270205264702248,
+     "specificity_p10": 0.26474139450557754,
+     "share_cut_changed": 1.0,
+     "frozen_sensitivity": 0.7735625370480143,
+     "frozen_specificity": 0.9267015706806283
+    }
+   }
+  }
+ },
+ "selection_at_200": {
+  "selected": "R2",
+  "reason": "highest mean P(both) among rules with every site mean sensitivity >= 0.89 (preference order within 0.02)",
+  "mean_p_both": {
+   "R1": 0.2313333333333333,
+   "R2": 0.25799999999999995,
+   "R3": 0.26066666666666666,
+   "R4": 0.25433333333333336
+  },
+  "worst_site_mean_sensitivity": {
+   "R1": 0.8787907693267168,
+   "R2": 0.9031734477321075,
+   "R3": 0.8787907693267168,
+   "R4": 0.9031753862609602
+  },
+  "eligible": [
+   "R2",
+   "R4"
+  ]
+ }
+}

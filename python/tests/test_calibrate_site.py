@@ -53,10 +53,12 @@ class CalibrateSiteTests(unittest.TestCase):
         self.assertGreaterEqual(sens, 0.92)
         self.assertLess(sens, 0.97)
 
-    def test_monotone_thresholds_keep_the_referral_boundary_exact(self):
+    def test_monotone_thresholds_keep_the_referral_boundary_exact_and_strictly_increasing(self):
         self.assertEqual(cs.monotone_thresholds([1.0, 1.2, 2.0, 2.8], 1.5), [1.0, 1.5, 2.0, 2.8])
-        self.assertEqual(cs.monotone_thresholds([1.0, 1.2, 2.0, 2.8], 0.7), [0.7, 0.7, 2.0, 2.8])
-        self.assertEqual(cs.monotone_thresholds([1.0, 1.2, 2.0, 2.8], 2.4), [1.0, 2.4, 2.4, 2.8])
+        for cut in (0.7, 2.4, 2.9, 0.0):
+            t = cs.monotone_thresholds([1.0, 1.2, 2.0, 2.8], cut)
+            self.assertEqual(t[1], cut)
+            self.assertTrue(all(b > a for a, b in zip(t, t[1:])), t)
 
     def test_fit_writes_policy_with_provenance_and_no_validation_claim(self):
         policy = cs.fit(self.args())
@@ -101,6 +103,53 @@ class CalibrateSiteTests(unittest.TestCase):
         pd.DataFrame({'grade': [7] * len(self.grade)}).to_csv(self.dir / 'bad.csv', index=False)
         with self.assertRaises(ValueError):
             cs.fit(self.args(labels=self.dir / 'bad.csv'))
+
+
+class VerifyTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.dir = Path(self.temp.name)
+        (self.dir / 'base.json').write_text(json.dumps(BASE))
+        (self.dir / 'netrai_bundle.json').write_text(json.dumps({'schema_version': 2, 'artifacts': [
+            {'role': 'model', 'path': 'm.onnx', 'sha256': 'a' * 64}, {'role': 'config', 'path': 'c.json', 'sha256': 'b' * 64}]}))
+        rng = np.random.default_rng(3)
+        for name, seed in (('cal', 1), ('chk', 2)):
+            r = np.random.default_rng(seed)
+            score = np.r_[r.normal(2.4, 0.4, 80), r.normal(0.4, 0.3, 220)].clip(0, 3.9)
+            np.save(self.dir / f'{name}.npy', logits_for_scores(score))
+            pd.DataFrame({'grade': [2] * 80 + [0] * 220, 'patient': [f'{name}{i // 2}' for i in range(300)]}).to_csv(self.dir / f'{name}.csv', index=False)
+        cs.fit(SimpleNamespace(logits=self.dir / 'cal.npy', labels=self.dir / 'cal.csv', base_policy=self.dir / 'base.json', output=self.dir / 'site.json',
+                               site='clinic', target_sensitivity=0.95, bundle=None, variant='E_768'))
+
+    def args(self, **kw):
+        base = dict(policy=self.dir / 'site.json', logits=self.dir / 'chk.npy', labels=self.dir / 'chk.csv', output=self.dir / 'check.json',
+                    calibration_labels=self.dir / 'cal.csv', base_policy=self.dir / 'base.json', bundle=None)
+        base.update(kw)
+        return SimpleNamespace(**base)
+
+    def test_wilson_interval(self):
+        low, high = cs.wilson(9, 10)
+        self.assertAlmostEqual(low, 0.5958, places=3)
+        self.assertAlmostEqual(high, 0.9821, places=3)
+
+    def test_verify_on_a_separate_sample(self):
+        result = cs.verify(self.args())
+        self.assertEqual(result['referable'], 80)
+        self.assertTrue(result['meets_targets_point'])
+        self.assertLessEqual(result['sensitivity_ci95'][0], result['sensitivity'])
+        self.assertTrue(json.loads((self.dir / 'check.json').read_text())['meets_targets_point'])
+
+    def test_verify_refuses_the_calibration_sample_another_model_and_shared_patients(self):
+        with self.assertRaises(ValueError):
+            cs.verify(self.args(logits=self.dir / 'cal.npy', labels=self.dir / 'cal.csv'))
+        (self.dir / 'other_bundle.json').write_text(json.dumps({'schema_version': 2, 'artifacts': [
+            {'role': 'model', 'path': 'm', 'sha256': 'c' * 64}, {'role': 'config', 'path': 'c', 'sha256': 'b' * 64}]}))
+        with self.assertRaises(ValueError):
+            cs.verify(self.args(bundle=self.dir / 'other_bundle.json'))
+        shared = pd.read_csv(self.dir / 'chk.csv'); shared.loc[0, 'patient'] = 'cal0'; shared.to_csv(self.dir / 'chk_shared.csv', index=False)
+        with self.assertRaises(ValueError):
+            cs.verify(self.args(labels=self.dir / 'chk_shared.csv'))
 
 
 if __name__ == '__main__':

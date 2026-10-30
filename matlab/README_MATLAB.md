@@ -252,7 +252,21 @@ calibrated on a labelled sample of each camera/site before screening**; every re
 - a site policy is bound to the model it was fitted for (SHA-256 of model and config); loading it with another model is an error;
 - **switching variants inside one MATLAB session needs `clear functions` first** (MATLAB's ONNX import cache).
 
-Site calibration (Python, from a labelled sample of the site; 40+ referable cases advised, 150+ non-referable):
+Site calibration in MATLAB (from a labelled sample of the site; ungradable images removed; 40+ referable cases advised, 150+ non-referable):
+
+```matlab
+policy = calibrateSite(imagePaths, icdrGrades, "site_policy.json", SiteName="PHC Nanded");   % runs E_768 on the sample, 95% target
+check  = verifySitePolicy(otherPaths, otherGrades, "site_policy.json", "site_check.json");    % a SEPARATE labelled sample
+results = main_pipeline('/absolute/path/to/fundus.jpg', SitePolicy="site_policy.json");
+```
+
+Site onboarding: (1) grade a calibration sample of one camera (40–80+ referable eyes plus about 200 others; ungradable images removed);
+(2) `calibrateSite` fits the cut-off and binds it to the model; (3) `verifySitePolicy` checks it on a second, separate sample and reports
+sensitivity and specificity with Wilson 95% intervals (it refuses images that were in the calibration sample); (4) screen with `SitePolicy`.
+Reports say `UNCALIBRATED` until step 2 has been done.
+
+`calibrateSite` gives the same cut-off as the Python tool (difference 1.4e-6 on 60 fresh images; E_768 scores agree to 1.5e-6 and every grade and
+referral decision matches — [parity](../results/benchmarks/matlab_grading/e768_matlab_python_parity_sustech.json)). The same in Python:
 
 ```bash
 python python/calibrate_site.py score --images sample.csv --root /path/to/images --out logits.npy     # E_768 research checkpoints (local)
@@ -266,10 +280,10 @@ disp(results.calibration.calibration_status)   % "site-calibrated (not independe
 
 The policy replaces only the four ordinal boundaries (and the referral-head threshold if present); the bundle-bound configuration is never
 edited, and the policy file's SHA-256 is recorded in `results.calibration`. A site policy is not a validation: re-check it on a separate
-labelled sample. Post hoc evidence on 14,280 BRSET and 4,859 mBRSET images ([curves](../results/benchmarks/site_calibration_brazil)): with
-about 80 referable plus 200 other patients the mean specificity rose from 0.43 to 0.89 (Canon) while mean sensitivity stayed near 0.91; at
-the prevalence of a screening population (6% referable) 100–200 *patients* contain too few referable cases — the number of referable cases
-matters, not the total.
+labelled sample. The default target is 95% sample sensitivity (confirmed on the fresh SUSTech-SYSU test; see [validation](../docs/VALIDATION.md)).
+With about 80 referable plus 200 other patients it keeps mean sensitivity near 0.94; specificity then depends on how well the model ranks that camera
+(BRSET Nikon 0.92, BRSET Canon 0.83, mBRSET 0.74; [post hoc analysis](../results/benchmarks/site_calibration_rules/enriched_tx.json)). At screening
+prevalence (6% referable) 100–200 *patients* contain too few referable cases — collect a sample enriched with referable cases.
 
 Run the legacy model explicitly with `Variant='legacy'`; opt-in alternatives such as `variant_C_site/` still work through
 `ModelPath`/`ConfigPath`.

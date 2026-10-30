@@ -2,7 +2,8 @@
 """X11: is the referral Grad-CAM faithful to lesions? (post hoc, tier TX: the lesion masks of two exposed test sets)
 
 Images: the DDR lesion-segmentation test (the 202 primary images of the locked evaluation) and the IDRiD segmentation
-test (27). Models: the deployed legacy model (512 px) and R5_768_s17 (768 px). For each image the referral Grad-CAM
+test (27). Models: the legacy model (512 px), R5_768_s17 (768 px) and E_768 (the presented default: mean of two 768 px members;
+its Grad-CAM averages the members' referral-logit maps). For each image the referral Grad-CAM
 (``model.backbone.conv_head``, target = referral logit) is compared with the union of the expert lesion masks
 (EX, HE, MA, SE), mapped into the classifier's crop/resize space:
 
@@ -113,7 +114,30 @@ def load_model_spec(name: str):
         return load_model({'kind': 'legacy'}), 512
     if name == 'R5_768_s17':
         return load_model({'kind': 'full', 'checkpoint': 'results/model_improvement/kaggle_output_r5_s17/run/best.pt'}), 768
+    if name == 'E_768':  # the presented default: mean of the two round-3 768 px members (same outputs as the E_768 ONNX graph)
+        members = [load_model({'kind': 'full', 'checkpoint': f'results/model_improvement/kaggle_output_768_{seed}/run/best.pt'})
+                   for seed in ('s2026', 's17')]
+        return MeanEnsemble(members).eval(), 768
     raise ValueError(name)
+
+
+class MeanEnsemble(torch.nn.Module):
+    """Mean of member outputs (grade logits, referral logit), as in the locked E_768 evaluations and the E_768 ONNX graph."""
+
+    def __init__(self, members):
+        super().__init__()
+        self.members = torch.nn.ModuleList(members)
+
+    def forward(self, inputs):
+        outputs = [member(inputs) for member in self.members]
+        return torch.stack([o[0] for o in outputs]).mean(0), torch.stack([o[1] for o in outputs]).mean(0)
+
+
+def target_layers(model) -> list:
+    """Grad-CAM layers: the last convolution of each member (pytorch-grad-cam averages the per-layer maps)."""
+    if isinstance(model, MeanEnsemble):
+        return [member.backbone.conv_head for member in model.members]
+    return [model.backbone.conv_head]
 
 
 def cam_for(model, tensor: torch.Tensor) -> np.ndarray:
@@ -128,7 +152,7 @@ def cam_for(model, tensor: torch.Tensor) -> np.ndarray:
             logits, referral = self.network(inputs)
             return torch.cat([logits, referral[:, None]], dim=1)
 
-    with GradCAM(model=BothHeads(model).eval(), target_layers=[model.backbone.conv_head]) as cam:
+    with GradCAM(model=BothHeads(model).eval(), target_layers=target_layers(model)) as cam:
         return cam(input_tensor=tensor, targets=[lambda output: output[5]])[0]
 
 

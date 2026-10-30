@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "locked_utc": "2026-10-30T14:59:07.059719+00:00",
+  "tests": {
+    "sustech_sysu": "1219 images, 0 identity-excluded; referable DR (ICDR >= 2)"
+  },
+  "fresh": true,
+  "labels_read": false,
+  "primary_variant": "E_768",
+  "reference_variant": "A_legacy",
+  "bootstrap_seed": 20261130,
+  "bootstrap_replicates": 2000,
+  "calibration": {
+    "sizes": [
+      100,
+      200
+    ],
+    "draws": 500,
+    "target_sample_sensitivity": 0.92
+  },
+  "adabn_endpoint": false,
+  "precomputed_logits_cpu_spot_check_max_abs": {
+    "A_legacy": 9.5367431640625e-07,
+    "R3_768_s2026": 1.6689300537109375e-06,
+    "R3_768_s17": 1.9073486328125e-06
+  },
+  "bindings": {
+    "results/model_improvement/fresh2_eval/variants.json": "92c6871ef67220afa8df60ae04b8dba2ab173216208193cd2c8ee050caf9a4c0",
+    "results/model_improvement/fresh2_lock_sustech_sysu/inventory.csv": "7eac60d5a65235aa4cec6a660cdd49eadab43f888a519cc0ff93db14f83a9545",
+    ".project-notes/docs/MODEL_IMPROVEMENT_PLAN_v6.md": "6a184231c7a611f5db4d1004565f2348e02136d5854c48b7e5fa34dbd18f397d",
+    "data/sustech_sysu/sealed/mapping.csv": "4206c7e06a53537fda623ac696f4624fba5bdba8324acac4efe36349ed1ae64d",
+    "data/sustech_sysu/sealed/originalImages/drLabels.csv": "10e6872323b2a29d8ce9f48115cf2cf9f9bd4acb9d95a7d5893735c5676e4dca",
+    "data/sustech_sysu/sealed/originalImages/c5_DR_reclassified.csv": "843da6d091b168d35328e4e1026574ff58440036e1fc4536b34208e755e87ede",
+    "python/locked_fresh2.py": "089fbf80d03319c0c7e6e25b989a0db4a5f37e9ca47c5ddb7a09bc5e0f6f9d20",
+    "python/locked_mbrset.py": "7a3ef91b4916ae9ef55412875664940ca7429df81dfbfdfb0a6c6da73862f169",
+    "python/locked_evaluation.py": "4baceb814a5f2e52ccb8608e5e836c6e0d4289ad68e8255b82359f6bc601bf8b",
+    "python/locked_rfmid.py": "4de389ec2895e31e6c694e291f4166fb8783635273602de3894c37e95505931d",
+    "python/exposure.py": "1e969e6c4a7b444bbf1343e1d936b002c01030411134675f4084161e867cc3f2",
+    "python/calibrate_site.py": "9ea552934f5566584c105a58d15bc84332435c224f503c636dd1ada00c06bacb",
+    "python/adabn.py": "35f93abbe2e229f782cb1489cd9b0ae53ba87c178da6819e78ffcbbdb53b9ecc",
+    "python/blind_extract.py": "07b97f6c0c7b886043440cd35495a0c86aef446e055272372a666d42109440f9",
+    "python/utils/preprocessing.py": "5aeb4322512e619d1693fe61c0fd4ce5c02295a00b762dcc50e2e523f29be744",
+    "python/models/netrai_model.py": "e62b91db78247ac37038f815ae6b2e6870708e2809cfea44ea23f540d0a3a8d1",
+    "python/export_adapted_variant.py": "7b4a53fbea4f6ce886ed62cc8e898ffdb1e8d88de911c81029ac2b84c8d7faeb",
+    "python/netrai_eval/metrics.py": "f54fbe56b8f247f946b85cd00338d3eceabe477889492547e255da5f6e76041a",
+    "python/netrai_eval/bootstrap.py": "0db57e7fd53784980dc8fdbf3956b64564a635f260a1a80b731418252169b582",
+    "results/model_improvement/fresh2_lock_sustech_sysu/logits_A_legacy.npy": "9795f9740f010add423a86d1c1473c1cb8456c49dcadfb18f2744c1dd050d3f0",
+    "results/model_improvement/fresh2_lock_sustech_sysu/logits_R3_768_s2026.npy": "00617729bf43456df85c357bca9785fae86f4307f220fe7f60e9be31d1a3053b",
+    "results/model_improvement/fresh2_lock_sustech_sysu/logits_R3_768_s17.npy": "488cbcd4ac58c54546680dbfc5c1b620a6dc3734debda9e4abe70e5757b524ef",
+    "results/model_improvement/fresh2_lock_sustech_sysu/logits_E_768.npy": "9e37ab7342dbd47719baea5671f846509fb7fef042543baf7a0916f4894b360e",
+    "results/model_improvement/fresh2_lock_sustech_sysu/near_identical_pairs.csv": "8a46b1bc01beca552e275336f476e66816aa14d215a2868be4116e39e00e2fe7",
+    "results/model_improvement/fresh2_identity/sustech_sysu/internal_clusters_0.75/clusters.csv": "0c79fe2b39b2af27352ebd30c4d816e43a3f4744fef09dece173d0e93a392a27",
+    "results/model_improvement/fresh2_identity/sustech_sysu/exclusions_v1.txt": "89a534725a98ea5abf5ec3b07fd2ed0be36f9c5b63c4ca5c42d27824f78631cf",
+    "results/model_improvement/kaggle_output_768_s2026/run/best.pt": "06490c827ef69793e1f305a1d3bce9a8f04e32034410bedc6989032e8d669a21",
+    "results/model_improvement/kaggle_output_768_s17/run/best.pt": "09404bc778cd5ceb7623857e773427ed71c479c9445e5b9045abd8a389be5d30",
+    "results/model_improvement/round3_eval/policy_R3_768_s2026_balanced.json": "ed2911f44361f10a5fb4ca608c4ba8a57c437bfb3700bfaf3d558a9da89b3ab3",
+    "results/model_improvement/round3_eval/policy_R3_768_s17_balanced.json": "e7998913c72e14987980169d52c826fa1503b01c0b0906c939cbd3f69a5dda1e",
+    "results/model_improvement/round3_eval/policy_E_768_balanced.json": "90c6f2b363e69fc5fcc448920ae9df425fed95c7b057217b8daca7b892866e02"
+  }
+}

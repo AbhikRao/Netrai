@@ -46,7 +46,7 @@ class SitePolicyTests(unittest.TestCase):
         self.assertEqual(CONFIG['grade_thresholds'], [1.0, 1.2, 2.0, 2.8])  # input not mutated
 
     def test_refuses_other_model_missing_identity_and_malformed_policies(self):
-        bad = [policy(model_sha256='c' * 64), policy(config_sha256='d' * 64), policy(thresholds=[1, 2, 3]), policy(thresholds=[1, 3, 2, 4]),
+        bad = [policy(model_sha256='c' * 64), policy(config_sha256='d' * 64), policy(thresholds=[1, 2, 3]), policy(thresholds=[1, 3, 2, 4]), policy(thresholds=[1.0, 1.5, 1.5, 2.8]),
                policy(status='frozen'), policy(head_threshold=1.5)]
         for item in bad:
             with self.assertRaises(v.VariantError, msg=str(item)):
@@ -76,6 +76,37 @@ class ResolveVariantTests(unittest.TestCase):
             inference.resolve_variant('auto', 'p.json')
         with self.assertRaises(v.VariantError):
             inference.resolve_variant('E_768')
+
+
+class MemberManifestTests(unittest.TestCase):
+    def test_tampered_member_file_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp)
+            (d / 'torch').mkdir()
+            (d / 'torch' / 'm.pt').write_bytes(b'not the released weights')
+            (d / 'torch_members.json').write_text(json.dumps({'members': {'s17': {'file': 'm.pt', 'sha256': '0' * 64}}}))
+            self.assertTrue(v.members_present(d))
+            with self.assertRaises(v.VariantError):
+                v.load_members(d)
+            self.assertFalse(v.members_present(d / 'missing'))
+
+
+@unittest.skipUnless(v.weights_present() and v.members_present(), 'E_768 ONNX and PyTorch members are not installed')
+class MemberParityTests(unittest.TestCase):
+    def test_pytorch_members_reproduce_the_onnx_graph_and_give_a_map(self):
+        import numpy as np
+        import torch
+        from utils.preprocessing import preprocess_for_model
+        image = cv2.cvtColor(cv2.imread(str(ROOT / 'data/patient_sample.jpg')), cv2.COLOR_BGR2RGB)
+        runtime = v.E768Runtime()
+        onnx = runtime.predict([image])['logits'][0]
+        ensemble = v.load_members()
+        with torch.no_grad():
+            g, r = ensemble(torch.from_numpy(preprocess_for_model(image, size=768).transpose(2, 0, 1)[None]).float())
+        self.assertLess(float(np.abs(np.r_[g[0].numpy(), r.numpy()] - onnx).max()), 1e-4)
+        cam = runtime.gradcam(image)
+        self.assertEqual(cam.shape, (768, 768))
+        self.assertTrue(np.isfinite(cam).all())
 
 
 @unittest.skipUnless(v.weights_present(), 'E_768 weights are not installed')

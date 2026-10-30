@@ -3,7 +3,9 @@
 Mirrors the MATLAB path (``main_pipeline`` Variant/SitePolicy): the two-member E_768 ONNX graph (mean of two 768 px models, six outputs: five grade
 logits + one referral logit) is verified against the SHA-256 in ``matlab/variant_R3_E_768/netrai_bundle.json`` before use. The referral cut-off is
 the frozen round-3 policy until a per-site policy (``calibrate_site.py``) is loaded; a site policy is bound to the model and config it was fitted for.
-No Grad-CAM is available for the ONNX graph (no gradients): the report says so instead of substituting a map.
+The ONNX graph has no gradients. When the two PyTorch member files listed in ``torch_members.json`` are installed (hash-verified), Grad-CAM of the
+referral logit is computed on the mean of the members (the same ensemble map as the MATLAB pipeline and the X11 alignment study); otherwise the report
+says the map is unavailable instead of substituting one.
 """
 from __future__ import annotations
 
@@ -62,8 +64,8 @@ def apply_site_policy(config: dict, identity: dict, policy_path: str | Path | No
     policy = json.loads(path.read_text())
     thresholds = policy.get('thresholds')
     if (not isinstance(thresholds, list) or len(thresholds) != 4 or not np.isfinite(thresholds).all()
-            or any(b < a for a, b in zip(thresholds, thresholds[1:]))):
-        raise VariantError('A site policy needs four finite, non-decreasing ordinal thresholds.')
+            or any(b <= a for a, b in zip(thresholds, thresholds[1:]))):
+        raise VariantError('A site policy needs four finite, strictly increasing ordinal thresholds.')
     if policy.get('status') != 'site_calibrated':
         raise VariantError('The policy file is not a site-calibrated policy (status != site_calibrated).')
     if policy.get('model_sha256') is None or policy.get('config_sha256') is None:
@@ -82,6 +84,67 @@ def apply_site_policy(config: dict, identity: dict, policy_path: str | Path | No
     return config, status
 
 
+def members_present(variant_dir: Path = VARIANT_DIR) -> bool:
+    manifest = variant_dir / 'torch_members.json'
+    if not manifest.is_file():
+        return False
+    members = json.loads(manifest.read_text())['members']
+    return all((variant_dir / 'torch' / m['file']).is_file() for m in members.values())
+
+
+def load_members(variant_dir: Path = VARIANT_DIR):
+    """Mean ensemble of the two PyTorch members, after checking each file against ``torch_members.json``."""
+    import torch
+    from models.netrai_model import NetrAIModel
+    members = []
+    for spec in json.loads((variant_dir / 'torch_members.json').read_text())['members'].values():
+        path = variant_dir / 'torch' / spec['file']
+        if _sha256(path) != spec['sha256']:
+            raise VariantError(f'{path.name} does not match the SHA-256 in torch_members.json; refusing to use it.')
+        model = NetrAIModel('efficientnet_b4', 5, pretrained=False)
+        model.load_state_dict(torch.load(path, map_location='cpu', weights_only=True))
+        members.append(model.eval())
+    return MeanEnsemble(members).eval()
+
+
+def _mean_ensemble_class():
+    import torch
+
+    class _MeanEnsemble(torch.nn.Module):
+        def __init__(self, members):
+            super().__init__()
+            self.members = torch.nn.ModuleList(members)
+
+        def forward(self, inputs):
+            outputs = [member(inputs) for member in self.members]
+            return torch.stack([o[0] for o in outputs]).mean(0), torch.stack([o[1] for o in outputs]).mean(0)
+    return _MeanEnsemble
+
+
+def MeanEnsemble(members):
+    return _mean_ensemble_class()(members)
+
+
+def referral_gradcam(ensemble, image_rgb, size: int = 768) -> np.ndarray:
+    """Grad-CAM of the referral logit, averaged over the members' last convolutions; (size, size) in [0, 1]."""
+    import torch
+    from pytorch_grad_cam import GradCAM
+
+    class BothHeads(torch.nn.Module):
+        def __init__(self, network):
+            super().__init__()
+            self.network = network
+
+        def forward(self, inputs):
+            logits, referral = self.network(inputs)
+            return torch.cat([logits, referral[:, None]], dim=1)
+
+    x = torch.from_numpy(preprocess_for_model(image_rgb, size=size).transpose(2, 0, 1)[None]).float()
+    layers = [member.backbone.conv_head for member in ensemble.members]
+    with GradCAM(model=BothHeads(ensemble).eval(), target_layers=layers) as cam:
+        return cam(input_tensor=x, targets=[lambda output: output[5]])[0]
+
+
 class E768Runtime:
     def __init__(self, variant_dir: Path = VARIANT_DIR, site_policy: str | Path | None = None):
         import onnxruntime as ort
@@ -94,6 +157,20 @@ class E768Runtime:
         self.temperature = float(config['confidence_temperature'])
         self.session = ort.InferenceSession(str(variant_dir / 'netrai_fold0.onnx'), providers=['CPUExecutionProvider'])
         self.input_name = self.session.get_inputs()[0].name
+        self.variant_dir = variant_dir
+        self._ensemble = None
+
+    @property
+    def can_explain(self) -> bool:
+        return members_present(self.variant_dir)
+
+    def gradcam(self, image_rgb) -> np.ndarray | None:
+        """Referral-logit Grad-CAM of the E_768 ensemble, or None when the PyTorch members are not installed."""
+        if not self.can_explain:
+            return None
+        if self._ensemble is None:
+            self._ensemble = load_members(self.variant_dir)
+        return referral_gradcam(self._ensemble, image_rgb, self.size)
 
     def predict(self, images_rgb) -> dict:
         thresholds = np.asarray(self.config['grade_thresholds'], float)

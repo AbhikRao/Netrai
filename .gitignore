@@ -82,6 +82,7 @@ Thumbs.db
 
 # Candidate deployment variants: ONNX weights are distributed as release assets, not Git objects.
 /matlab/variant_*/*.onnx
+/matlab/variant_*/torch/*.pt
 
 # MATLAB importNetworkFromONNX generated packages (regenerated on import)
 matlab/+lesion_unet_b2_1024/
