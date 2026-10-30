@@ -4,17 +4,26 @@ function policy = calibrateSite(imagePaths, grades, outputPath, options)
 % Runs the selected model on a labelled sample of ONE camera/site (ungradable images removed; ICDR grades 0-4; enrich the sample
 % with referable cases: 40-80+ advised) and writes a site policy that main_pipeline(..., 'SitePolicy', outputPath) loads. The policy
 % is bound to the model and config it was fitted for. Rule: highest cut-off with sample sensitivity >= 95% (confirmed on a fresh test).
+% The policy records the SHA-256 of every calibration image and, with PatientIds, of every patient id (never the ids themselves),
+% in the format python/calibrate_site.py shares, so that verification on the same images or patients is refused in both runtimes.
 %
-%   policy = calibrateSite(paths, grades, "site_policy.json", SiteName="PHC Nanded", Variant="E_768");
+%   policy = calibrateSite(paths, grades, "site_policy.json", SiteName="PHC Nanded", Variant="E_768", PatientIds=ids);
 %   Then check it on a separate sample: verifySitePolicy(otherPaths, otherGrades, "site_policy.json").
     arguments
         imagePaths (:,1) string
-        grades (:,1) double
+        grades (:,1) double {mustBeInteger, mustBeInRange(grades, 0, 4)}
         outputPath (1,1) string
         options.Variant (1,1) string {mustBeMember(options.Variant, ["E_768" "legacy"])} = "E_768"
         options.TargetSensitivity (1,1) double = 0.95
         options.SiteName (1,1) string = "unnamed site"
         options.Verbose (1,1) logical = true
+        options.PatientIds (:,1) string = strings(0, 1)
+    end
+    if numel(imagePaths) ~= numel(grades)                           % before minutes of scoring, not after
+        error('NetrAI:SiteSampleMismatch', '%d images but %d grades.', numel(imagePaths), numel(grades));
+    end
+    if ~isempty(options.PatientIds) && (numel(options.PatientIds) ~= numel(imagePaths) || any(strlength(strtrim(options.PatientIds)) == 0))
+        error('NetrAI:SiteSampleMismatch', 'Give one non-empty patient id per image (%d images, %d ids).', numel(imagePaths), numel(options.PatientIds));
     end
     baseDir = fileparts(mfilename('fullpath'));
     addpath(genpath(fullfile(baseDir, 'src')));
@@ -42,7 +51,10 @@ function policy = calibrateSite(imagePaths, grades, outputPath, options)
         SiteName=options.SiteName, ModelVariant=options.Variant);
     digests = strings(numel(imagePaths), 1);
     for i = 1:numel(imagePaths), digests(i) = string(fileSHA256(imagePaths(i))); end
-    policy.calibration_image_sha256 = cellstr(sort(digests));   % lets verifySitePolicy refuse the calibration images
+    policy.calibration_image_sha256 = cellstr(unique(digests));   % sorted; lets both verifiers refuse the calibration images
+    if ~isempty(options.PatientIds)
+        policy.calibration_patient_sha256 = cellstr(unique(textSHA256(options.PatientIds)));
+    end
     fid = fopen(outputPath, 'w');
     if fid < 0
         error('NetrAI:SitePolicyWrite', 'Cannot write %s.', outputPath);

@@ -1,0 +1,106 @@
+{
+  "schema_version": 2,
+  "model_file": "netrai_fold0.onnx",
+  "architecture": "EfficientNet-B4 dual-head (grade + referable heads exported)",
+  "input_name": "input",
+  "output_name": "model_outputs",
+  "output_schema": [
+    "grade_logit_0",
+    "grade_logit_1",
+    "grade_logit_2",
+    "grade_logit_3",
+    "grade_logit_4",
+    "referable_logit"
+  ],
+  "input_layout": "NCHW",
+  "input_size": 768,
+  "black_crop_threshold": 7,
+  "ben_graham_sigma": 10,
+  "imagenet_mean": [
+    0.48500001430511475,
+    0.4560000002384186,
+    0.4059999883174896
+  ],
+  "imagenet_std": [
+    0.2290000021457672,
+    0.2240000069141388,
+    0.22499999403953552
+  ],
+  "fold": 0,
+  "checkpoint_epoch": 25,
+  "checkpoint_qwk": 0.9284568596708684,
+  "referable_grade_minimum": 2,
+  "referable_head_threshold": 0.18051698526561652,
+  "head_disagreement_action": "uncertain_human_review",
+  "confidence_temperature": 0.7986484705325845,
+  "confidence_calibration": {
+    "method": "scalar_temperature_scaling",
+    "artifact": "python/weights/calibration.json",
+    "applies_to": "grade_logits_for_confidence_only"
+  },
+  "preprocessing_version": "legacy-area-v1",
+  "matlab_preprocessing_implementation": "area-fixed-gaussian-v1",
+  "thresholds": [
+    1.0687575304548482,
+    1.600013516018023,
+    2.0295933043599783,
+    2.7970742201819796
+  ],
+  "status": "site_calibrated",
+  "model_variant": "E_768",
+  "model_sha256": "b8961361e79f1c03ff9fce030ca72389bd2b5c3c8f2d4ebe3a4698f3ee0f120d",
+  "config_sha256": "5d7f920d68607ca95f8e8c6485bebb602a4e43972207a3da02549a102eedb3f4",
+  "site": {
+    "name": "cross-language fixture",
+    "created_utc": "2026-10-30T18:17:46.516341+00:00",
+    "target_sample_sensitivity": 0.95,
+    "images": 12,
+    "patients": 12,
+    "referable": 6,
+    "non_referable": 6,
+    "fitted_boundary": 1.600013516018023,
+    "base_boundary": 1.092308373535268,
+    "sample_operating_point_fitted": {
+      "sensitivity": 1.0,
+      "specificity": 1.0
+    },
+    "sample_operating_point_base": {
+      "sensitivity": 1.0,
+      "specificity": 1.0
+    },
+    "logits_sha256": "358caa370e74dda0a5247243da51f7349b64365f308bfb2a99544331a2767998",
+    "warnings": [
+      "Only 6 referable cases: the fitted boundary is unstable (advised: at least 40).",
+      "Only 6 non-referable cases: specificity cannot be judged (advised: at least 150)."
+    ],
+    "validation": "NONE: sample numbers are optimistic (fitted on the same cases). Re-check on a separate labelled sample before screening."
+  },
+  "calibration_image_sha256": [
+    "14c5239042c98ace0e6d4d358c19d978e9bc5cd611bc790f61d6a427f3ccdffe",
+    "3eeccf0f48f416adca5c1cd501b803e08700cc965d2cacbf6b94dde485167914",
+    "707f72add1bb94c42aa0f7c993eb22aaa443b006ae87255ddf4376a4f1cbc023",
+    "7d3c0e4b2bd7348eeca18a5ae2389f098719dd5b2037f3291fbdb260f3f6df15",
+    "81c3cad731c0812e6bd9dcf0f9419604ed8cc1f502018253a3a0ada72920c541",
+    "896f272c1a224cecef6d7960c7dbae79afc2abbe77ca3145ab1da73351b87ca9",
+    "adc5d238ce1d27b81af6b61a511f2d5e2746735067655e8262c89e34b23e5cb0",
+    "c3e14ce76069280935e56871c3bd5571031c6889cb0311e27f23a0305c8f600c",
+    "ced4c0464fb0bd00a5da98720ac9cc20bbc9844d8733aa7f8540928a1f1aa242",
+    "d1a266c567d3d8fe80d6476f2417cd674e80a015aa96f96b3388bcfc485f5f48",
+    "eb6bbc3f236ae7e634c61ebfa6b8a467e4578bb05d5eed4eb5efbda03c37afac",
+    "ffc83cca91e1ae7139ed75eba87c6e831a883ac73d8fc52d50acdb059fd8c745"
+  ],
+  "calibration_patient_sha256": [
+    "0fbeb57bfb02c9dd03c3c2e585e301555f148ddc72c033e2a80a15b18591c22a",
+    "16acf74d124a9b4d85eb126f9659a6d186ada5b903bf62fb8afbf8280e59ceff",
+    "2758a1c329d45c03fce2dfe0e139f2346f2a942cb98fd8a8495e9908aa56f45d",
+    "33b1c1e2dc1ff0bc08aec6513d0e0bfae1f08c754e631bb3af4d0fd92070e82d",
+    "529f9d5e5ed6a6ca4f7f21ff169041e98e12eb8f53b9e936d86cde721ac695c9",
+    "570d18a23470cca7b18100e88730c15b9e11d90def8ec08baed84aac2a4c47b0",
+    "5c13dc65b52d224b474c5848d4bbd5effa7405b0b8ceb5b5a8092ca9e23907d7",
+    "628c84dd3a66a65c5506a1e3f712bdba1b48f6a283b6e576b16e23898353d73e",
+    "6d972cde2ab759ee66e956ab58f83c188eee1c2e7b1820c591e47b48e83c7251",
+    "c994ecef8f751a780b28bac70bd0b73948560afbdc833e24df9c06d8b22bcfaf",
+    "dc5c2523df8e2e36e3afbb621dfaad3230fbcc2aa3c5cdd96749a09547ef5677",
+    "f5d98b10bd2d59d9753d3195f629198f7185953f50e5c3c0b1de86637ffe3585"
+  ]
+}

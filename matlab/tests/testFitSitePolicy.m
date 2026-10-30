@@ -4,7 +4,9 @@ tests = functiontests(localfunctions);
 end
 
 function setupOnce(~)
-addpath(genpath(fullfile(fileparts(fileparts(mfilename('fullpath'))), 'src')));
+root = fileparts(fileparts(mfilename('fullpath')));
+addpath(root);
+addpath(genpath(fullfile(root, 'src')));
 end
 
 function config = baseConfig()
@@ -70,4 +72,12 @@ policy = fitSitePolicy(scores, grades, baseConfig());
 verifyEqual(testCase, numel(policy.site.warnings), 2);
 noId = rmfield(baseConfig(), 'deployment_identity');
 verifyError(testCase, @() fitSitePolicy(scores, grades, noId), 'NetrAI:SitePolicyModelMismatch');
+end
+
+function testCalibrateSiteChecksTheSampleBeforeScoring(testCase)
+out = string(tempname) + ".json";
+verifyError(testCase, @() calibrateSite(["a.jpg"; "b.jpg"], [0; 2; 2], out, Verbose=false), 'NetrAI:SiteSampleMismatch');
+verifyError(testCase, @() calibrateSite(["a.jpg"; "b.jpg"], [0; 2.5], out, Verbose=false), 'MATLAB:validators:mustBeInteger');
+verifyError(testCase, @() calibrateSite(["a.jpg"; "b.jpg"], [0; 7], out, Verbose=false), 'MATLAB:validators:mustBeInRange');
+verifyFalse(testCase, isfile(out));
 end

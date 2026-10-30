@@ -255,23 +255,34 @@ calibrated on a labelled sample of each camera/site before screening**; every re
 Site calibration in MATLAB (from a labelled sample of the site; ungradable images removed; 40+ referable cases advised, 150+ non-referable):
 
 ```matlab
-policy = calibrateSite(imagePaths, icdrGrades, "site_policy.json", SiteName="PHC Nanded");   % runs E_768 on the sample, 95% target
-check  = verifySitePolicy(otherPaths, otherGrades, "site_policy.json", "site_check.json");    % a SEPARATE labelled sample
+policy = calibrateSite(imagePaths, icdrGrades, "site_policy.json", SiteName="PHC Nanded", PatientIds=ids);   % E_768, 95% target
+check  = verifySitePolicy(otherPaths, otherGrades, "site_policy.json", "site_check.json", PatientIds=otherIds);  % a SEPARATE sample
 results = main_pipeline('/absolute/path/to/fundus.jpg', SitePolicy="site_policy.json");
 ```
 
 Site onboarding: (1) grade a calibration sample of one camera (40–80+ referable eyes plus about 200 others; ungradable images removed);
-(2) `calibrateSite` fits the cut-off and binds it to the model; (3) `verifySitePolicy` checks it on a second, separate sample and reports
-sensitivity and specificity with Wilson 95% intervals (it refuses images that were in the calibration sample); (4) screen with `SitePolicy`.
+(2) `calibrateSite` fits the cut-off, binds it to the model and records the calibration sample's identities; (3) `verifySitePolicy` checks it
+on a second, separate sample and reports sensitivity and specificity with Wilson 95% intervals; (4) screen with `SitePolicy`.
 Reports say `UNCALIBRATED` until step 2 has been done.
 
 `calibrateSite` gives the same cut-off as the Python tool (difference 1.4e-6 on 60 fresh images; E_768 scores agree to 1.5e-6 and every grade and
 referral decision matches — [parity](../results/benchmarks/matlab_grading/e768_matlab_python_parity_sustech.json)). The same in Python:
 
 ```bash
-python python/calibrate_site.py score --images sample.csv --root /path/to/images --out logits.npy     # E_768 research checkpoints (local)
+python python/calibrate_site.py score --images sample.csv --root /path/to/images --out logits.npy     # installed E_768 (scripts/fetch_e768.sh)
 python python/calibrate_site.py fit --logits logits.npy --labels labels.csv --site "clinic A" --output site_policy.json
+python python/calibrate_site.py score --images check.csv --root /path/to/images --out check.npy
+python python/calibrate_site.py verify --policy site_policy.json --logits check.npy --labels check_labels.csv --output site_check.json
 ```
+
+`score` runs the same ONNX graph, image reading and preprocessing as `inference.py --variant E_768` and writes the SHA-256 of every image next to
+the logits (`logits.images.json`; without it, `fit`/`verify` accept `--images-root` plus an `image` column). Both runtimes write and check the same
+identity fields: `calibration_image_sha256` (every calibration image; required) and, when patient ids are given (`patient` column /
+`PatientIds`), `calibration_patient_sha256` (SHA-256 of each id; ids are never stored). Verification compares identities, not row order: it
+refuses a sample that shares an image or a recorded patient with the calibration sample, a policy that records no calibration images, a
+sample without image identities (Python) or without patient ids when the policy recorded them, and (Python) logits made by another model.
+A policy fitted in Python is accepted and enforced by MATLAB and vice versa (both are bound to the same model SHA-256; cross-runtime test:
+`tests/testVerifySitePolicyProvenance.m` with a fixture written by `calibrate_site.py fit`).
 
 ```matlab
 results = main_pipeline('/absolute/path/to/fundus.jpg', SitePolicy='/path/to/site_policy.json');
