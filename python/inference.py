@@ -342,11 +342,13 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
         ref_color = '#D32F2F' if is_referable else '#388E3C'
         action_text = GRADE_ACTIONS[grade]
 
+    # The level comes from the referral-calibrated ordinal policy (refer if >= 2); it is not the most probable ICDR level.
+    most_probable = int(np.argmax(cal_probs))
     text_lines = [
-        (0.5, 0.85, f'DR Grade: Level {grade}', 20, grade_color, 'bold'),
-        (0.5, 0.72, GRADE_NAMES[grade], 16, grade_color, 'bold'),
+        (0.5, 0.85, f'Screening level {grade} (referral-calibrated)', 18, grade_color, 'bold'),
+        (0.5, 0.72, f'Most probable: {GRADE_NAMES[most_probable]} ({cal_probs[most_probable]*100:.0f}%)', 14, '#333', 'bold'),
         (0.5, 0.58, ref_text, 12, ref_color, 'bold'),
-        (0.5, 0.42, f'Post-hoc confidence: {cal_probs[grade]*100:.1f}%', 14, '#333', 'normal'),
+        (0.5, 0.42, f'Probability of levels 2-4: {cal_probs[2:].sum()*100:.0f}%', 14, '#333', 'normal'),
         (0.5, 0.28, f'Action: {action_text}', 11, '#555', 'normal'),
         (0.5, 0.14, 'EfficientNet-B4 | Internal post-hoc calibration only', 10, '#888', 'normal'),
     ]
@@ -518,7 +520,9 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
     grade = int(prediction['grades'])
     probs = prediction['grade_probabilities']
     calibrated_probs = calibrate_confidence(probs, calibration_temperature)
-    print(f"     Grade: Level {grade} ({GRADE_NAMES[grade]})")
+    most_probable = int(np.argmax(calibrated_probs))
+    print(f"     Screening level {grade} (referral-calibrated; refer if >= 2) | most probable: {GRADE_NAMES[most_probable]} "
+          f"({calibrated_probs[most_probable]*100:.0f}%)")
     print(f"     Probabilities: [{', '.join(f'{p:.3f}' for p in probs)}]")
     print(f"     Post-hoc confidence: {calibrated_probs[grade]*100:.1f}% "
           f"(temperature={calibration_temperature:.3f})")
@@ -543,19 +547,19 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
 
     # Module 4: Model attribution and candidate evidence
     print("[M4] Model attribution and candidate evidence...")
-    heatmap = None if runtime is not None else generate_real_gradcam(image_rgb)
+    heatmap = runtime.gradcam(image_rgb) if runtime is not None else generate_real_gradcam(image_rgb)
     gradcam_qc = None
     if heatmap is not None:
         gradcam_qc = assess_gradcam_quality(
             heatmap, model_space_fov_mask(image_rgb, size=heatmap.shape[0]))
         heatmap = cv2.resize(heatmap, (proc_img.shape[1], proc_img.shape[0]))
-        print("     Grad-CAM: Real (from trained model)")
+        print("     Grad-CAM: Real (from trained model" + (", E_768 ensemble of two members)" if runtime is not None else ")"))
         print(f"     Explanation QC: border enrichment {gradcam_qc['border_enrichment']:.3f}, "
               f"outside-FOV attention {gradcam_qc['outside_fov_attention_fraction']:.3f}, "
               f"flag={gradcam_qc['shortcut_flag']}")
     else:
-        print("     Grad-CAM: unavailable " + ("for the ONNX E_768 variant (no gradients)" if runtime is not None else "(no synthetic substitute generated)")
-              + "; no synthetic substitute generated")
+        print("     Grad-CAM: unavailable " + ("for the ONNX E_768 variant (install the PyTorch members: scripts/fetch_e768.sh --with-gradcam)"
+              if runtime is not None else "") + "; no synthetic substitute generated")
 
     overlay = generate_lesion_overlay(proc_img, seg_results)
 

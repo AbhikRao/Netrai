@@ -70,9 +70,12 @@ function reportPath = generateClinicalReport(img, segResults, grade, calProbs, c
     % Panel 4: Text panel
     nexttile;
     axis off;
-    str = sprintf('DR Grade: Level %d\n\n', grade);
-    str = [str sprintf('Referable (grade >= 2): %s\n\n', string(categorical(grade > 1, [false true], ["No" "Yes"])))];
-    str = [str sprintf('Post-hoc grade probability: %.2f%%\n\n', calProbs(grade+1)*100)];
+    % The level comes from the referral-calibrated ordinal policy (refer if >= 2); it is not the most probable ICDR level.
+    [topProb, topIdx] = max(calProbs);
+    str = sprintf('Screening level: %d (referral-calibrated)\n\n', grade);
+    str = [str sprintf('Refer (screening level >= 2): %s\n\n', string(categorical(grade > 1, [false true], ["No" "Yes"])))];
+    str = [str sprintf('Most probable ICDR level: %d (%.0f%%)\n', topIdx - 1, topProb*100)];
+    str = [str sprintf('Probability of levels 2-4: %.0f%%\n\n', sum(calProbs(3:5))*100)];
     if isfield(safety, 'referableHeadProbability')
         str = [str sprintf('Referral head (shared backbone): %.2f%%\n', ...
             safety.referableHeadProbability*100)];

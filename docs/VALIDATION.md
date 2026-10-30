@@ -4,6 +4,42 @@ NetrAI has implementations for acquisition quality, retinal analysis, grading,
 explanation reporting and capacity simulation. This describes component coverage,
 not a percentage of clinical readiness or completion of all challenge requirements.
 
+## Two more fresh tests and a confirmed calibration rule (October 30, 2026)
+
+Two public graded datasets were registered as reserved before download, extracted blind (neutral image names, labels sealed), identity-reviewed
+against 136,074 training, validation and exposed-test images (no exclusion), locked, and evaluated once (tier **TF**): Paraguay (Hospital de
+Clínicas, Asunción; Zeiss Visucam 500; 705 images, 519 referable; [report](../results/benchmarks/round6_fresh_paraguay_hc/report.json)) and
+SUSTech-SYSU (Guangdong, China; Topcon TRC-50DX; 1,145 images, 490 referable; [report](../results/benchmarks/round6_fresh_sustech_sysu/report.json)).
+Each model at its own frozen policy (95% cluster-bootstrap intervals):
+
+| Model | Paraguay sensitivity / specificity | AUC | SUSTech-SYSU sensitivity / specificity | AUC |
+| --- | --- | --- | --- | --- |
+| E_768 (presented default) | 96.7% (94.8–98.3) / 96.8% (94.1–99.0) | 0.989 | 99.4% (98.6–100) / 95.6% (93.9–97.0) | 0.998 |
+| Legacy model | 64.7% (60.2–69.3) / 100% | 0.995 | 85.9% (82.6–88.9) / 99.4% (98.8–99.9) | 0.996 |
+
+- **E_768's frozen cut-off met both screening targets (≥ 90% / ≥ 85%) on both sets** — the first pre-registered fresh tests on which it did. The
+  legacy cut-off missed 35% and 14% of referable eyes. All 68 laser-treated SUSTech-SYSU eyes were referred by both models.
+- **Both sets are easier than a screening population.** Paraguay excluded eyes with other retinal disease and is severity-enriched (74% referable;
+  461 severe NPDR or PDR); SUSTech-SYSU is case-control (its 631 grade-0 images come from non-diabetic volunteers). Both models rank them almost
+  perfectly (AUC ≥ 0.99). They show that the cut-off can carry over to Zeiss and Topcon cameras, not that it holds for every camera: on mBRSET, BRSET
+  and ODIR the frozen cut-off was borderline or over-referred.
+- **The site-calibration rule was changed and the change confirmed.** The pre-registered procedure (re-fit the cut-off to 92% sample sensitivity)
+  lowered sensitivity where the frozen cut-off already worked (both sets: mean 0.91; both targets met in 65–72% of 100–200-image samples). A 95% target
+  (rule R2), selected on exposed sites before the SUSTech-SYSU lock ([development](../results/benchmarks/site_calibration_rules/development_tx.json), TX),
+  was confirmed there as a pre-registered secondary endpoint: both targets met in 93% vs 67% of 200-image samples, mean sensitivity 0.94 vs 0.91
+  ([secondary report](../results/benchmarks/round6_fresh_sustech_sysu/secondary_report.json), TF). `calibrate_site.py` now uses 95% by default.
+- **Calibration cannot repair weak ranking** ([enriched samples](../results/benchmarks/site_calibration_rules/enriched_tx.json), TX): with 80 referable
+  plus 200 other patients and the 95% target, mean sensitivity is 0.94–0.95 on every site, but specificity is 1.00 (SUSTech-SYSU) and 0.92 (BRSET Nikon)
+  versus 0.83 (BRSET Canon), 0.74 (mBRSET), 0.69 (ODIR) and 0.42 (FDR26).
+- **What the whole pipeline does with ungradable images** ([routing](../results/benchmarks/operational_routing/routing_tx.json), TX): the deployed
+  heuristic quality gate is weak on these cameras — on mBRSET it sends 13% of usable smartphone images back for recapture yet passes 73% of the
+  ungradable ones, and the pipeline then auto-clears 39% (mBRSET) and 45% (BRSET) of all images graders marked ungradable. None of the 85 ungradable
+  images that graders still graded referable was auto-cleared. Grade/referral-head disagreements route 7% (mBRSET) and 19% (BRSET) of gradable images
+  to human review. A label-free candidate (send each site's worst 10% by the learned quality score to human review instead of auto-clear) would prevent
+  24–40% of ungradable auto-clears for about 3% extra reviews; it is not deployed (post hoc only, and the learned quality model failed its stress audit).
+- Citations: Paraguay dataset (Data in Brief 2021, PMC8257963; Zenodo doi:10.5281/zenodo.4647952, CC BY 4.0); Lin L et al., Sci Data 2020,
+  doi:10.1038/s41597-020-00755-0 (figshare doi:10.6084/m9.figshare.12570770, CC BY 4.0). Only aggregates are published.
+
 ## Desktop-camera confirmation: BRSET, and the default-model decision (October 25, 2026)
 
 BRSET 1.0.2 (PhysioNet, credentialed; three São Paulo centres 2010–2020; Canon CR and Nikon NF5050 desktop cameras) was locked before its labels
@@ -32,9 +68,26 @@ post hoc and leave-dataset-out evidence ([curves](../results/benchmarks/site_cal
 on a sample containing 80 referable plus 200 other patients, mean specificity rose to 0.89 on Canon and 0.96 on Nikon images at mean sensitivity 0.91–0.92, but
 meeting 90% sensitivity and 85% specificity together in one draw had probability only 0.5–0.7 on BRSET and about 0.2 on smartphone images (the smartphone ceiling for any
 single cut-off is 91.8% / 85.0%). At screening prevalence (6% referable) a sample of 100–200 *patients* holds only 6–12 referable cases and is too small; the number of
-referable cases matters (40–80 or more advised). A site policy is not a validation. Citations: Nakayama LF et al., BRSET (v1.0.2), PhysioNet 2026,
+referable cases matters (40–80 or more advised). A site policy is not a validation. (Superseded on October 30: the target is now 95%,
+confirmed on a fresh test; see above.) Citations: Nakayama LF et al., BRSET (v1.0.2), PhysioNet 2026,
 <https://doi.org/10.13026/mysn-8b26>; Nakayama LF et al., PLOS Digit Health 2024, <https://doi.org/10.1371/journal.pdig.0000454>; Pollard T et al., Nature Health 2026,
 <https://doi.org/10.1038/s44360-026-00096-z>. Only aggregates are published.
+
+## Explanations and camera behaviour of the presented default (October 30, 2026; post hoc, tier TX)
+
+- **Grad-CAM of E_768 aligns with lesions** better than the legacy model's: energy inside annotated lesions 6.8× chance on 202 DDR lesion-test images
+  (legacy 3.3×) and 3.5× on 27 IDRiD images (legacy 2.4×); the map's maximum lies on a lesion in 91% / 93% of images (legacy 64% / 93%; chance 17% / 35%);
+  masking pixels in Grad-CAM order lowers the referral score much faster than random masking. The ensemble map averages the two members' referral-logit
+  maps ([E_768](../results/benchmarks/development_studies/x11_gradcam_faithfulness_e768.json)). Python produces this map from the two PyTorch member files
+  (same weights; outputs agree with the ONNX graph to 6e-6), installed with `fetch_e768.sh --with-gradcam`. **Known limitation (found 2026-10-31):**
+  MATLAB computes Grad-CAM from the ONNX graph, where batch norm is folded into the last convolution, so its maps are taken after batch norm and
+  activation, whereas these numbers use the convolution before batch norm (`conv_head`). The two definitions give clearly different maps (correlation
+  0.0–0.3 on three test images, for E_768 and for the legacy model); the alignment of the MATLAB-layer maps is being measured.
+- **Why E_768 over-refers on BRSET Canon images** ([diagnosis](../results/benchmarks/development_studies/canon_shift_diagnosis.json)): healthy grade-0 eyes
+  without any other finding score a median 1.10 on Canon vs 0.66 on Nikon (50% vs 10% referred at the frozen cut-off), in every age band, while ranking
+  stays good (AUC 0.951). It is not the field-of-view format, sensor noise, fine detail, batch-normalisation statistics (label-free AdaBN: specificity 0.39–0.56
+  instead of 0.43) or the camera's static dust specks (147 found; inpainting them does not help). The shift sits in coarse image appearance and is not removed
+  by any label-free correction tried; per-site labelled calibration of the cut-off is the mitigation.
 
 ## Smartphone-camera fresh test: mBRSET (October 23, 2026; nothing here changes the deployed model)
 

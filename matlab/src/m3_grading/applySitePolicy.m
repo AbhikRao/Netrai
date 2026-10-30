@@ -1,14 +1,14 @@
 function [config, status] = applySitePolicy(config, policyPath)
 %APPLYSITEPOLICY Override the referral boundary of a deployment config with a per-site policy file.
 %
-% The policy comes from python/calibrate_site.py. Only the four ordinal grade boundaries (and, if present, the
+% The policy comes from python/calibrate_site.py or calibrateSite.m. Only the four ordinal grade boundaries (and, if present, the
 % referral-head threshold) are replaced; the bundle-bound config on disk is never modified. With no policy path the
 % frozen thresholds stay and the status says so. Sample numbers in a site policy are NOT a validation.
     arguments
         config (1,1) struct
         policyPath (1,1) string = ""
     end
-    status = struct('calibration_status', "UNCALIBRATED: frozen thresholds; run python/calibrate_site.py on a labelled sample of this site", ...
+    status = struct('calibration_status', "UNCALIBRATED: frozen thresholds; run calibrateSite (MATLAB) or python/calibrate_site.py on a labelled sample of this site", ...
         'site_policy_path', "", 'site_policy_sha256', "", 'site_name', "", 'site_referable_cases', NaN);
     if strlength(policyPath) == 0
         return
@@ -18,8 +18,8 @@ function [config, status] = applySitePolicy(config, policyPath)
     end
     policy = jsondecode(fileread(policyPath));
     if ~isfield(policy, 'thresholds') || ~isnumeric(policy.thresholds) || numel(policy.thresholds) ~= 4 || ...
-            any(~isfinite(policy.thresholds)) || any(diff(double(policy.thresholds(:))) < 0)
-        error('NetrAI:InvalidSitePolicy', 'A site policy needs four finite, non-decreasing ordinal thresholds.');
+            any(~isfinite(policy.thresholds)) || any(diff(double(policy.thresholds(:))) <= 0)
+        error('NetrAI:InvalidSitePolicy', 'A site policy needs four finite, strictly increasing ordinal thresholds.');
     end
     if ~isfield(policy, 'status') || string(policy.status) ~= "site_calibrated"
         error('NetrAI:InvalidSitePolicy', 'The policy file is not a site-calibrated policy (status ~= site_calibrated).');

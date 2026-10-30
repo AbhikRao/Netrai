@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-10-25",
+  "updated": "2026-10-30",
   "description": "Evidence-exposure registry. A cohort whose labels were read in a locked evaluation (or used for training/selection) can never again be presented as a fresh independent test. Code refuses to lock an exposed or training cohort as fresh and refuses to read a reserved cohort's labels without a valid lock. Update this file in the same commit as any lock or exposure.",
   "statuses": {
     "training": "used to fit models or select epochs/policies",
@@ -167,6 +167,37 @@
       "lock": "results/model_improvement/brset_lock/lock.json",
       "exposed_on": "2026-10-25",
       "report": "results/model_improvement/brset_lock/report.json"
+    },
+    "paraguay_hc": {
+      "kind": "grading",
+      "status": "exposed",
+      "images": 757,
+      "label_paths": [
+        "data/paraguay_dr/download",
+        "data/paraguay_dr/sealed"
+      ],
+      "notes": "Hospital de Clinicas, Asuncion, Paraguay (Data in Brief 2021; Zenodo 10.5281/zenodo.4647952, CC BY 4.0); ZEISS VISUCAM 500; 757 images, 7 categories (No DR / mild / moderate / severe / very severe NPDR / PDR / advanced PDR; published counts 187/4/80/176/108/88/114); images with other retinal disease excluded by the authors. Registered 2026-10-30 BEFORE download. Images are extracted under neutral names; the zip and the original-path mapping (which may encode categories) are sealed. Downloaded 2026-10-30, zip md5 f238ce2f0d7561c5e8c102cddf286944 (matches Zenodo). Blind extraction: 740 unique images (17 byte-identical copies in the archive). Pre-lock access: archive directory names (= the published category names), the sheet header ('Image','Format','Status'), row count 757. No patient ids in the release.",
+      "lock": "results/model_improvement/fresh2_lock_paraguay_hc/lock.json",
+      "exposed_on": "2026-10-30",
+      "report": "results/model_improvement/fresh2_lock_paraguay_hc/report.json"
+    },
+    "sustech_sysu": {
+      "kind": "grading",
+      "status": "exposed",
+      "images": 1219,
+      "label_paths": [
+        "data/sustech_sysu/download",
+        "data/sustech_sysu/sealed"
+      ],
+      "notes": "SUSTech-SYSU (Sci Data 2020; figshare 12570770, CC BY 4.0); Topcon TRC-50DX; Gaoyao People's Hospital + Zhongshan Ophthalmic Center, Guangdong, China; 1,219 images (published ICDR counts 631/24/365/73/58 + 68 laser-treated \"category 5\"; healthy images are from non-diabetic people: case-control design). Registered 2026-10-30 BEFORE download. Original images extracted under neutral names; label files, exudate annotations and the mapping are sealed. Downloaded 2026-10-30, zip md5 b99088954ec38df24eff14afb11f6f01 (matches figshare). Blind extraction: 1,219 images, no duplicates; label files and 564 exudate + 1,219 OD/fovea annotation files sealed. Pre-lock access: headers of drLabels.csv ('Fundus_images', left/right eye 0/1, DR grade by ICDR / AAO / Scottish, spellings 0-5) and c5_DR_reclassified.csv (68 rows, spellings 2-4); the count of exudate files (564). No patient ids in the release.",
+      "lock": "results/model_improvement/fresh2_lock_sustech_sysu/lock.json",
+      "exposed_on": "2026-10-30",
+      "report": "results/model_improvement/fresh2_lock_sustech_sysu/report.json"
+    },
+    "aikosh_icmr_dr": {
+      "kind": "grading",
+      "status": "planned",
+      "notes": "ICMR-NIRDHDS \"Diabetic-Retinopathy Screening\" on AIKosh (IndiaAI), uploader Dr. Mona Duggal; de-identified real-world images from Remidio imaging systems, India; 852.69 MB; restricted access (owner login/approval); labels/licence unknown until the owner downloads it."
     }
   }
 }

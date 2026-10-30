@@ -11,12 +11,13 @@ The simulation explores how connectivity, staffing and recapture demand affect
 screening completion.
 
 <!-- current-state:start -->
-> **Current state (2026-10-25):** the presented screening model is **E_768 with a required per-site calibration of its referral cut-off** (weights kept
-> because of their size not in Git; a hash-checked script downloads them from the project's `e768-v1` release (research use, terms in the model card); without the weights the checkout runs the legacy model; MATLAB and Python both support it). On two fresh Brazilian tests (smartphone mBRSET, desktop BRSET)
-> E_768 ranks referable DR better than the legacy model (AUC 0.948 vs 0.918 and 0.957 vs 0.887), but no frozen cut-off met the pre-registered 90% / 85% rule:
-> on Canon desktop images it refers 57% of healthy eyes, while legacy misses 47% (smartphone) and 23% (desktop) of referable eyes. The calibration step has only
-> post hoc evidence. On a fresh any-DR test (RFMiD 2.0) legacy ranks DR better (AUC 0.84 vs 0.72–0.76). Opt-in learned lesion candidates are research additions.
-> Details and limits: [validation](docs/VALIDATION.md).
+> **Current state (2026-10-30):** the presented screening model is **E_768 with a per-site calibration of its referral cut-off** (weights: a hash-checked
+> download from the project's `e768-v1` release; without them the checkout runs the legacy model; MATLAB and Python both support it). On the four newest
+> fresh external tests E_768 ranks referable DR better than or comparably to the legacy model (AUC 0.948–0.998); its frozen cut-off met the 90% / 85% targets on two
+> easier sets (Paraguay, Zeiss: 96.7% / 96.8%; SUSTech-SYSU, Topcon: 99.4% / 95.6%) but not on screening-population sets (mBRSET smartphone 89.2% / 89.3%;
+> BRSET Canon images over-referred). Site calibration with a 95% target, confirmed on a fresh test, keeps sensitivity near 0.94 but cannot fix
+> cameras on which the model ranks poorly. On a fresh any-DR test (RFMiD 2.0) legacy ranks DR better (AUC 0.84 vs 0.76). Details and limits:
+> [validation](docs/VALIDATION.md) · [evidence card](docs/EVIDENCE_CARD.md).
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Evidence card](docs/EVIDENCE_CARD.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)
