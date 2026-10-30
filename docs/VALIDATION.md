@@ -78,8 +78,11 @@ confirmed on a fresh test; see above.) Citations: Nakayama LF et al., BRSET (v1.
 - **Grad-CAM of E_768 aligns with lesions** better than the legacy model's: energy inside annotated lesions 6.8× chance on 202 DDR lesion-test images
   (legacy 3.3×) and 3.5× on 27 IDRiD images (legacy 2.4×); the map's maximum lies on a lesion in 91% / 93% of images (legacy 64% / 93%; chance 17% / 35%);
   masking pixels in Grad-CAM order lowers the referral score much faster than random masking. The ensemble map averages the two members' referral-logit
-  maps ([E_768](../results/benchmarks/development_studies/x11_gradcam_faithfulness_e768.json)). MATLAB `main_pipeline` produces it for E_768; Python
-  produces it from the two PyTorch member files (same weights; outputs agree with the ONNX graph to 6e-6), installed with `fetch_e768.sh --with-gradcam`.
+  maps ([E_768](../results/benchmarks/development_studies/x11_gradcam_faithfulness_e768.json)). Python produces this map from the two PyTorch member files
+  (same weights; outputs agree with the ONNX graph to 6e-6), installed with `fetch_e768.sh --with-gradcam`. **Known limitation (found 2026-10-31):**
+  MATLAB computes Grad-CAM from the ONNX graph, where batch norm is folded into the last convolution, so its maps are taken after batch norm and
+  activation, whereas these numbers use the convolution before batch norm (`conv_head`). The two definitions give clearly different maps (correlation
+  0.0–0.3 on three test images, for E_768 and for the legacy model); the alignment of the MATLAB-layer maps is being measured.
 - **Why E_768 over-refers on BRSET Canon images** ([diagnosis](../results/benchmarks/development_studies/canon_shift_diagnosis.json)): healthy grade-0 eyes
   without any other finding score a median 1.10 on Canon vs 0.66 on Nikon (50% vs 10% referred at the frozen cut-off), in every age band, while ranking
   stays good (AUC 0.951). It is not the field-of-view format, sensor noise, fine detail, batch-normalisation statistics (label-free AdaBN: specificity 0.39–0.56

@@ -4,7 +4,8 @@ Mirrors the MATLAB path (``main_pipeline`` Variant/SitePolicy): the two-member E
 logits + one referral logit) is verified against the SHA-256 in ``matlab/variant_R3_E_768/netrai_bundle.json`` before use. The referral cut-off is
 the frozen round-3 policy until a per-site policy (``calibrate_site.py``) is loaded; a site policy is bound to the model and config it was fitted for.
 The ONNX graph has no gradients. When the two PyTorch member files listed in ``torch_members.json`` are installed (hash-verified), Grad-CAM of the
-referral logit is computed on the mean of the members (the same ensemble map as the MATLAB pipeline and the X11 alignment study); otherwise the report
+referral logit is computed on the mean of the members (the map of the X11 alignment study; MATLAB takes its map at a later layer, after batch
+norm and activation, and it differs - see docs/VALIDATION.md); otherwise the report
 says the map is unavailable instead of substituting one.
 """
 from __future__ import annotations
