@@ -67,6 +67,7 @@ class HeadGradCAMTests(unittest.TestCase):
 
 
 class LegacyCrossRuntimeTests(unittest.TestCase):
+    @unittest.skipUnless((ROOT / 'data/patient_sample.jpg').is_file(), 'the local sample fundus photograph is not in this checkout')
     def test_legacy_map_equals_the_matlab_map(self):
         import inference
         model, _, _ = inference._get_model()

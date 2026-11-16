@@ -21,6 +21,8 @@ PORTRAIT = Path(__import__('matplotlib').get_data_path()) / 'sample_data/grace_h
 MATLAB = shutil.which('matlab')     # MATLAB's own sample image, when MATLAB is installed on this machine
 PEPPERS = Path(MATLAB).resolve().parents[1] / 'toolbox/matlab/matlab_images/png/peppers.png' if MATLAB else None
 FIXTURE = ROOT / 'matlab/tests/fixtures/fundus_guard_scores.json'
+SAMPLE = ROOT / 'data/patient_sample.jpg'       # a local fundus photograph; datasets and images are not part of the repository
+needs_sample = unittest.skipUnless(SAMPLE.is_file(), 'the local sample fundus photograph is not in this checkout')
 
 
 def rgb(path):
@@ -33,15 +35,21 @@ class FundusGuardTests(unittest.TestCase):
         cls.guard = fg.FundusGuard()
         cls.fixture = json.loads(FIXTURE.read_text())
 
-    def test_fundus_photograph_passes_and_a_portrait_does_not(self):
-        self.assertTrue(self.guard.check(rgb(ROOT / 'data/patient_sample.jpg'))['is_fundus'])
+    @needs_sample
+    def test_fundus_photograph_passes(self):
+        self.assertTrue(self.guard.check(rgb(SAMPLE))['is_fundus'])
+
+    def test_a_portrait_does_not_pass(self):
         portrait = self.guard.check(rgb(PORTRAIT))
         self.assertFalse(portrait['is_fundus'])
         self.assertEqual(portrait['threshold'], self.guard.threshold)
 
-    def test_scores_equal_the_cross_runtime_fixture(self):
+    @needs_sample
+    def test_fundus_score_equals_the_cross_runtime_fixture(self):
         # MATLAB and this machine agree to 3e-4 on the sample score; other CPUs and BLAS builds may differ a little more
-        self.assertAlmostEqual(self.guard.score(rgb(ROOT / 'data/patient_sample.jpg')), self.fixture['patient_sample'], delta=1e-3)
+        self.assertAlmostEqual(self.guard.score(rgb(SAMPLE)), self.fixture['patient_sample'], delta=1e-3)
+
+    def test_non_fundus_scores_equal_the_cross_runtime_fixture(self):
         self.assertAlmostEqual(self.guard.score(rgb(PORTRAIT)), self.fixture['grace_hopper'], delta=1e-4 * self.fixture['grace_hopper'])
         if PEPPERS is not None and PEPPERS.is_file():
             self.assertAlmostEqual(self.guard.score(rgb(PEPPERS)), self.fixture['peppers'], delta=1e-4 * self.fixture['peppers'])
@@ -75,10 +83,11 @@ class FundusGuardTests(unittest.TestCase):
             self.assertEqual(result['input_warning'], fg.FEEDBACK)
             self.assertEqual(saved['input_warning'], fg.FEEDBACK)
 
+    @needs_sample
     def test_fundus_photograph_carries_no_warning(self):
         import inference
         with tempfile.TemporaryDirectory() as folder:
-            result = inference.run_pipeline(str(ROOT / 'data/patient_sample.jpg'), output_dir=folder, variant='legacy')
+            result = inference.run_pipeline(str(SAMPLE), output_dir=folder, variant='legacy')
         self.assertTrue(result['fundus_guard']['is_fundus'])
         self.assertNotIn('input_warning', result)
 
