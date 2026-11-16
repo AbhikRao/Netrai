@@ -67,7 +67,9 @@ function [net, config] = loadNetrAIModel(modelPath, configPath)
     persistent cachedNet cachedModelPath cachedDigest
     if isempty(cachedNet) || cachedModelPath ~= modelPath || ~strcmp(cachedDigest,modelDigest)
         try
-            importedNet = importNetworkFromONNX(modelPath, ...
+            % One custom-layer namespace per model content: the legacy and E_768 files share the name
+            % netrai_fold0.onnx, and a shared namespace made the second import in a session uninitialized.
+            importedNet = importOnnxNetwork(modelPath, "netrai_" + extractBefore(string(modelDigest), 13), ...
                 'InputDataFormats','BCSS', 'OutputDataFormats','BC');
         catch ME
             error('NetrAI:ONNXImportFailed', ...
@@ -84,6 +86,7 @@ function [net, config] = loadNetrAIModel(modelPath, configPath)
         cachedModelPath = modelPath;
         cachedDigest = modelDigest;
     end
+    onnxLayerFolder();      % the cached network's custom layers must be on the path (it may have changed since the import)
     net = cachedNet;
     config.deployment_identity = struct('bundle_schema_version',bundle.schema_version, ...
         'model_sha256',modelDigest, ...

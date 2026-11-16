@@ -27,6 +27,9 @@ function result = demo_netrai(imagePath)
     if result.status == "rejected"
         fprintf('Recapture requested: %s\n', result.qualityFeedback);
     else
+        if strlength(result.inputWarning) > 0
+            fprintf('WARNING: %s\n', result.inputWarning);
+        end
         fprintf('Grade %d | routing %s\n', result.grade, result.triageAction);
         fprintf('Report: %s\n', result.reportPath);
     end

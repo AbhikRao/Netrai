@@ -3,8 +3,13 @@
 set -euo pipefail
 
 if [[ ${1:-} == -h || ${1:-} == --help ]]; then
-    printf 'Usage: %s [fundus-image]\nOpens MATLAB, runs the quality-gated demo and displays the SimEvents model.\n' "$0"
+    printf 'Usage: %s [--app] [fundus-image]\nOpens MATLAB, runs the quality-gated demo and displays the SimEvents model.\n--app opens the screening console (netraiApp) instead, with the image already chosen if one is given.\n' "$0"
     exit 0
+fi
+NETRAI_DEMO_APP=0
+if [[ ${1:-} == --app ]]; then
+    NETRAI_DEMO_APP=1
+    shift
 fi
 if (( $# > 1 )); then
     printf 'Expected at most one image path. Use --help for usage.\n' >&2
@@ -27,4 +32,7 @@ fi
 export NETRAI_PROJECT_DIR NETRAI_DEMO_IMAGE
 
 # Environment variables keep user paths out of executable MATLAB command text.
+if (( NETRAI_DEMO_APP == 1 )); then
+    exec matlab -desktop -r "cd(fullfile(getenv('NETRAI_PROJECT_DIR'),'matlab')); try; netraiApp(Image=string(getenv('NETRAI_DEMO_IMAGE'))); catch exception; disp(getReport(exception,'extended','hyperlinks','off')); end"
+fi
 exec matlab -desktop -r "cd(fullfile(getenv('NETRAI_PROJECT_DIR'),'matlab')); try; result = demo_netrai(string(getenv('NETRAI_DEMO_IMAGE'))); open_system('models/NetrAI_Telemedicine_Model.slx'); catch exception; disp(getReport(exception,'extended','hyperlinks','off')); end"

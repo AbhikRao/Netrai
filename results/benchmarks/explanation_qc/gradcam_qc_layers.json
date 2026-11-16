@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "tier": "TX (APTOS training images; heuristic QC)",
+  "sample": "APTOS grade-stratified, 5 per grade, seed 42",
+  "target": "referral logit",
+  "qc": "modules.explainability.assess_gradcam_quality (current rules)",
+  "maps": {
+    "legacy_conv_head": {
+      "images": 25,
+      "flagged": 20,
+      "flag_rate": 0.8,
+      "flag_rate_by_grade": {
+        "0": 1.0,
+        "1": 1.0,
+        "2": 0.4,
+        "3": 0.6,
+        "4": 1.0
+      },
+      "median_outside_fov_attention_fraction": 0.10254360563695021,
+      "median_border_enrichment": 0.8033570748422174
+    },
+    "legacy_bn2": {
+      "images": 25,
+      "flagged": 7,
+      "flag_rate": 0.28,
+      "flag_rate_by_grade": {
+        "0": 0.6,
+        "1": 0.8,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0
+      },
+      "median_outside_fov_attention_fraction": 0.07368666912079741,
+      "median_border_enrichment": 0.6166079730437235
+    },
+    "E_768_bn2": {
+      "images": 25,
+      "flagged": 8,
+      "flag_rate": 0.32,
+      "flag_rate_by_grade": {
+        "0": 1.0,
+        "1": 0.4,
+        "2": 0.0,
+        "3": 0.2,
+        "4": 0.0
+      },
+      "median_outside_fov_attention_fraction": 0.08251871695015885,
+      "median_border_enrichment": 0.8143768859917431
+    },
+    "legacy_paired": {
+      "flagged_conv_head_only": 13,
+      "flagged_bn2_only": 0,
+      "flagged_both": 7
+    }
+  },
+  "interpretation": "Heuristic shortcut-attention QC; a flag asks for visual review. Not lesion localisation and not an error rate."
+}

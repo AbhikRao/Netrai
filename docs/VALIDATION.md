@@ -4,6 +4,42 @@ NetrAI has implementations for acquisition quality, retinal analysis, grading,
 explanation reporting and capacity simulation. This describes component coverage,
 not a percentage of clinical readiness or completion of all challenge requirements.
 
+## Two more fresh tests and a confirmed calibration rule (October 30, 2026)
+
+Two public graded datasets were registered as reserved before download, extracted blind (neutral image names, labels sealed), identity-reviewed
+against 136,074 training, validation and exposed-test images (no exclusion), locked, and evaluated once (tier **TF**): Paraguay (Hospital de
+Clínicas, Asunción; Zeiss Visucam 500; 705 images, 519 referable; [report](../results/benchmarks/round6_fresh_paraguay_hc/report.json)) and
+SUSTech-SYSU (Guangdong, China; Topcon TRC-50DX; 1,145 images, 490 referable; [report](../results/benchmarks/round6_fresh_sustech_sysu/report.json)).
+Each model at its own frozen policy (95% cluster-bootstrap intervals):
+
+| Model | Paraguay sensitivity / specificity | AUC | SUSTech-SYSU sensitivity / specificity | AUC |
+| --- | --- | --- | --- | --- |
+| E_768 (presented default) | 96.7% (94.8–98.3) / 96.8% (94.1–99.0) | 0.989 | 99.4% (98.6–100) / 95.6% (93.9–97.0) | 0.998 |
+| Legacy model | 64.7% (60.2–69.3) / 100% | 0.995 | 85.9% (82.6–88.9) / 99.4% (98.8–99.9) | 0.996 |
+
+- **E_768's frozen cut-off met both screening targets (≥ 90% / ≥ 85%) on both sets** — the first pre-registered fresh tests on which it did. The
+  legacy cut-off missed 35% and 14% of referable eyes. All 68 laser-treated SUSTech-SYSU eyes were referred by both models.
+- **Both sets are easier than a screening population.** Paraguay excluded eyes with other retinal disease and is severity-enriched (74% referable;
+  461 severe NPDR or PDR); SUSTech-SYSU is case-control (its 631 grade-0 images come from non-diabetic volunteers). Both models rank them almost
+  perfectly (AUC ≥ 0.99). They show that the cut-off can carry over to Zeiss and Topcon cameras, not that it holds for every camera: on mBRSET, BRSET
+  and ODIR the frozen cut-off was borderline or over-referred.
+- **The site-calibration rule was changed and the change confirmed.** The pre-registered procedure (re-fit the cut-off to 92% sample sensitivity)
+  lowered sensitivity where the frozen cut-off already worked (both sets: mean 0.91; both targets met in 65–72% of 100–200-image samples). A 95% target
+  (rule R2), selected on exposed sites before the SUSTech-SYSU lock ([development](../results/benchmarks/site_calibration_rules/development_tx.json), TX),
+  was confirmed there as a pre-registered secondary endpoint: both targets met in 93% vs 67% of 200-image samples, mean sensitivity 0.94 vs 0.91
+  ([secondary report](../results/benchmarks/round6_fresh_sustech_sysu/secondary_report.json), TF). `calibrate_site.py` now uses 95% by default.
+- **Calibration cannot repair weak ranking** ([enriched samples](../results/benchmarks/site_calibration_rules/enriched_tx.json), TX): with 80 referable
+  plus 200 other patients and the 95% target, mean sensitivity is 0.94–0.95 on every site, but specificity is 1.00 (SUSTech-SYSU) and 0.92 (BRSET Nikon)
+  versus 0.83 (BRSET Canon), 0.74 (mBRSET), 0.69 (ODIR) and 0.42 (FDR26).
+- **What the whole pipeline does with ungradable images** ([routing](../results/benchmarks/operational_routing/routing_tx.json), TX): the deployed
+  heuristic quality gate is weak on these cameras — on mBRSET it sends 13% of usable smartphone images back for recapture yet passes 73% of the
+  ungradable ones, and the pipeline then auto-clears 39% (mBRSET) and 45% (BRSET) of all images graders marked ungradable. None of the 85 ungradable
+  images that graders still graded referable was auto-cleared. Grade/referral-head disagreements route 7% (mBRSET) and 19% (BRSET) of gradable images
+  to human review. A label-free candidate (send each site's worst 10% by the learned quality score to human review instead of auto-clear) would prevent
+  24–40% of ungradable auto-clears for about 3% extra reviews; it is not deployed (post hoc only, and the learned quality model failed its stress audit).
+- Citations: Paraguay dataset (Data in Brief 2021, PMC8257963; Zenodo doi:10.5281/zenodo.4647952, CC BY 4.0); Lin L et al., Sci Data 2020,
+  doi:10.1038/s41597-020-00755-0 (figshare doi:10.6084/m9.figshare.12570770, CC BY 4.0). Only aggregates are published.
+
 ## Desktop-camera confirmation: BRSET, and the default-model decision (October 25, 2026)
 
 BRSET 1.0.2 (PhysioNet, credentialed; three São Paulo centres 2010–2020; Canon CR and Nikon NF5050 desktop cameras) was locked before its labels
@@ -32,9 +68,110 @@ post hoc and leave-dataset-out evidence ([curves](../results/benchmarks/site_cal
 on a sample containing 80 referable plus 200 other patients, mean specificity rose to 0.89 on Canon and 0.96 on Nikon images at mean sensitivity 0.91–0.92, but
 meeting 90% sensitivity and 85% specificity together in one draw had probability only 0.5–0.7 on BRSET and about 0.2 on smartphone images (the smartphone ceiling for any
 single cut-off is 91.8% / 85.0%). At screening prevalence (6% referable) a sample of 100–200 *patients* holds only 6–12 referable cases and is too small; the number of
-referable cases matters (40–80 or more advised). A site policy is not a validation. Citations: Nakayama LF et al., BRSET (v1.0.2), PhysioNet 2026,
+referable cases matters (40–80 or more advised). A site policy is not a validation. (Superseded on October 30: the target is now 95%,
+confirmed on a fresh test; see above.) Citations: Nakayama LF et al., BRSET (v1.0.2), PhysioNet 2026,
 <https://doi.org/10.13026/mysn-8b26>; Nakayama LF et al., PLOS Digit Health 2024, <https://doi.org/10.1371/journal.pdig.0000454>; Pollard T et al., Nature Health 2026,
 <https://doi.org/10.1038/s44360-026-00096-z>. Only aggregates are published.
+
+## Non-fundus input guard (October 31, 2026; tier TX)
+
+Before this guard, a portrait photograph passed the heuristic quality check (IQS 0.77) and was graded "referable" by both runtimes.
+Both pipelines now score every image that passes the quality check: the Mahalanobis distance of its 576-D embedding (the frozen
+ImageNet MobileNetV3-Small encoder inside the quality candidate, full-frame 224-pixel input) to fundus images of the six datasets that
+trained or validated the published weights (APTOS, DDR, DeepDRiD, EyeQ, IDRiD, Messidor-2; 50,391 images). The threshold is 1.25 × the
+99.9th percentile of those images' scores; the margin was chosen by leaving each of the six datasets out in turn, on fundus images only
+(largest false rejection 0.013%). The rule for rejecting rather than flagging was written before any score was computed.
+
+- **Unseen fundus cameras** (gradable images over the threshold): ODIR 7 / 6,367 (0.11%), FDR26 1 / 2,833, RFMiD 2.0 1 / 853,
+  Paraguay 0 / 740, SUSTech-SYSU 0 / 1,219, BRSET 9 / 14,280 (all Canon), but **mBRSET (smartphone) 55 / 4,872 (1.13%)**, including
+  7 of 211 grade-4 eyes; these are brighter smartphone captures (mean grey level 102 vs 73). Grade-4 images pooled over all sets:
+  11 / 3,147 (0.35%).
+- **Non-fundus images:** 2,562 of 2,579 local MATLAB and matplotlib sample images are over the threshold (99.3%), and all 10,000
+  digit images. The lowest-scoring ones show a bright object on black, like a fundus photograph (the moon 1.07×, a galaxy 1.36×,
+  one car photograph 0.96×). Near-miss medical images (external eye, OCT, slit lamp) were not available; the MATLAB "medical"
+  folder holds app icons and screenshots, not scans.
+- **Decision (pre-registered):** the smartphone result misses the 0.5% bar, so the guard ships as a **visible warning**, not a
+  rejection: the image is still graded, and the result and the report carry "This image does not look like a fundus (retina)
+  photograph". Rejecting at this threshold would send about 1 in 90 smartphone retinas, and 1 in 30 grade-4 smartphone eyes, back to
+  recapture.
+- **Post hoc** (exposed sets): no fundus image of 84,250 scores above 1.79× the threshold (the maximum is a severely atrophic ODIR
+  retina; mBRSET maximum 1.36×); the portrait scores 3.05×. A hard rejection above 2.5× is pre-registered as a secondary for the next
+  fresh test (Indian Remidio images) and is not deployed.
+- Python and MATLAB use byte-identical parameter files (SHA-256 checked) and agree on the score (fixture checked by both test suites).
+  [Input guard](../results/benchmarks/input_guard/fundus_guard_tx.json)
+
+## Python and MATLAB: same decisions end to end (October 31, 2026)
+
+Both full pipelines (default settings: quality gate, input guard, E_768) ran on 68 images: five seeded random images from each of 13 fundus
+datasets plus a portrait, MATLAB's peppers image and a black frame. No errors in either runtime; the same status for all 68 (3 rejected by
+the quality gate, including one smartphone image at IQS 0.291 next to the 0.3 cut-off), the same grade for all 65 graded images, the same
+routing for all 68 and the same input warning (2 non-fundus images). Largest differences: quality score 0.0007, guard score 1.1e-5
+(relative), continuous model score 5.3e-6. Earlier parity evidence covered the model step only; this includes the separately implemented
+quality gate and the guard. It is runtime agreement, not an accuracy result.
+[End-to-end parity](../results/benchmarks/runtime_comparison/e2e_parity.json) (`python/compare_runtimes_e2e.py`)
+
+## Upload compression and referral decisions (November 1, 2026; tier TX)
+
+The capacity model below assumes two 3.5 MB images per patient, and a 0.25 Mbps link then falls behind. Can a site send smaller files
+without changing E_768's referral decision? 300 gradable images (25 referable and 25 non-referable from each of ODIR, FDR26, Paraguay,
+SUSTech-SYSU, BRSET and mBRSET: exposed sets that never trained or selected E_768) were re-encoded in memory: JPEG quality 90, 75, 50
+and 30 at native size, and the long side downscaled to 1024 or 768 pixels, then JPEG 90, 75 and 50. The stored files are all JPEG
+already (median 423 KB, 177 KB to 1.04 MB per set), so every condition is a recompression; nothing here describes raw camera output.
+**Rule (written before scoring):** recommend the smallest setting that changes at most 1% of E_768 decisions (3 of 300) and adds no
+quality-gate rejection or guard flag.
+
+| Upload | Median size | E_768 decisions changed (upper 95%) | Legacy decisions changed | E_768 AUC (descriptive) |
+| --- | ---: | ---: | ---: | ---: |
+| Stored file (reference) | 423 KB | — | — | 0.957 |
+| JPEG 90 | 294 KB | 6 (≤ 4.3%) | 3 | 0.955 |
+| JPEG 75 | 187 KB | 4 (≤ 3.4%) | 7 | 0.954 |
+| JPEG 50 | 131 KB | 16 (≤ 8.5%) | 10 | 0.949 |
+| JPEG 30 | 95 KB | 18 (≤ 9.3%) | 20 | 0.940 |
+| 1024 px, JPEG 90 / 75 / 50 | 79 / 42 / 28 KB | 11 / 17 / 26 | 10 / 13 / 22 | 0.950 / 0.936 / 0.928 |
+| 768 px, JPEG 90 / 75 / 50 | 49 / 27 / 18 KB | 10 / 27 / 28 | 11 / 15 / 21 | 0.950 / 0.937 / 0.934 |
+
+- **No setting meets the rule**, so no smaller upload is recommended: send images as the camera saved them. No setting added a
+  quality-gate rejection or a guard flag.
+- 14 of the 300 stored-file scores lie within 0.1 of the cut-off, so the sample can show flips at the cut-off.
+- **Post hoc (descriptive):** at JPEG 90 and 75 the changed decisions belong to images whose stored-file score lay next to the
+  referral cut-off (JPEG 75: all 4 within 0.04 on the 0–4 score; JPEG 90: 5 of 6 within 0.1), in both directions, and sensitivity /
+  specificity on this balanced sample hardly moved (stored 92.7% / 86.0%, JPEG 75 92.0% / 86.7%, JPEG 90 92.7% / 87.3%). Downscaling
+  then JPEG 90 changed 10–11 decisions, up to 0.44 from the cut-off, with sensitivity / specificity close to the stored file
+  (91.3–92.0% / 87.3–88.7%). At JPEG 50 and 30, and downscaling then JPEG 75 or 50, the changes reach images far from the cut-off
+  (0.7–1.6) and sensitivity falls to 89–90% (JPEG 50 and 30, downscaled JPEG 50) or specificity to 79–83% (downscaled JPEG 75 and 50).
+- The capacity scenario for a smaller upload was planned only for a setting that met the rule, so it was not run; the SimEvents
+  results keep 3.5 MB per image. The sampled stored files are much smaller than that, but a screening camera's file size was not
+  measured. This concerns the AI's decisions only, not human grading of compressed images.
+  [Upload compression](../results/benchmarks/upload_compression/compression_budget_tx.json) (`python/compression_budget_study.py`)
+
+## Explanations and camera behaviour of the presented default (October 30, 2026; post hoc, tier TX)
+
+- **Grad-CAM of E_768 aligns with lesions** (the map both runtimes compute: each member's last activation, after batch norm and SiLU, averaged over
+  the two members): energy inside annotated lesions 6.1× chance on 202 DDR lesion-test images and 3.0× on 27 IDRiD images; the map's maximum lies on a
+  lesion in 86% / 89% of images (chance 17% / 35%); masking pixels in Grad-CAM order lowers the referral score much faster than random masking
+  ([shipped layer](../results/benchmarks/development_studies/x11_gradcam_faithfulness_bn2.json)). Python computes it from the two PyTorch member files
+  (same weights; outputs agree with the ONNX graph to 6e-6; `fetch_e768.sh --with-gradcam`), MATLAB in closed form from the ONNX graph; the two maps
+  agree to 0.01 on a test image (a fixture both test suites check). **Correction (2026-10-31):** earlier versions said both runtimes produced the same
+  map. They did not: Python used each member's convolution before batch norm (6.8× / 3.5×, 91% / 93%;
+  [history](../results/benchmarks/development_studies/x11_gradcam_faithfulness_e768.json)), which an ONNX export cannot reproduce because it folds batch
+  norm into that convolution, and MATLAB's built-in `gradCAM` explained only one of the two members. The shipped layer was chosen by a rule written before
+  its numbers were read; per image it aligns slightly less than the earlier layer for E_768 (DDR energy −0.7, pointing −4.5 points) and clearly better for
+  the legacy model (DDR energy +3.9, pointing +8.9 points). Since 2026-10-31 (owner decision, made after these numbers were read) the legacy model
+  also uses this layer in both runtimes: 7.2× / 3.7×, maximum on a lesion in 73% / 89% (its earlier Python map: 3.3× / 2.4×, 64% / 93%); the Python
+  and MATLAB legacy maps agree to 1e-4 per pixel on a test image (a second fixture both suites check). Both runtimes now differentiate only the network head
+  (Python: bit-identical to `pytorch_grad_cam` at that layer; MATLAB: closed form), which makes Grad-CAM 3–4× faster in Python (legacy 1.8 → 0.5 s,
+  E_768 6.9 → 2.2 s per image); in the MATLAB legacy pipeline the Grad-CAM step fell from 11–36 s to 2–5 s and the full report from
+  23–32 s to 16–26 s per image (3 images, laptop CPU). On 2026-11-01 reading the network's layer list once (it was rebuilt for every head
+  layer) cut the MATLAB Grad-CAM step again, with identical maps: E_768 9.1 → 5.3 s, legacy 2.8 → 1.5 s per image (6 images, paired).
+  On 2026-11-17 grading and Grad-CAM began sharing one network pass in MATLAB (the grading call keeps each member's last activation):
+  outputs and maps are bit-identical on the real models, and the full report took 14–21 s per image for E_768 and 8–16 s for legacy
+  (three images, two repeats; 19–34 s and 9–17 s with the two-pass code, measured first in the same session;
+  [timing](../results/benchmarks/matlab_runtime_2026-11-17/shared_forward_pass_timing.json)).
+- **Why E_768 over-refers on BRSET Canon images** ([diagnosis](../results/benchmarks/development_studies/canon_shift_diagnosis.json)): healthy grade-0 eyes
+  without any other finding score a median 1.10 on Canon vs 0.66 on Nikon (50% vs 10% referred at the frozen cut-off), in every age band, while ranking
+  stays good (AUC 0.951). It is not the field-of-view format, sensor noise, fine detail, batch-normalisation statistics (label-free AdaBN: specificity 0.39–0.56
+  instead of 0.43) or the camera's static dust specks (147 found; inpainting them does not help). The shift sits in coarse image appearance and is not removed
+  by any label-free correction tried; per-site labelled calibration of the cut-off is the mitigation.
 
 ## Smartphone-camera fresh test: mBRSET (October 23, 2026; nothing here changes the deployed model)
 
@@ -444,7 +581,8 @@ Attempt and return counters have separate denominators.
 
 The annual horizon is 250 × 8 working-hour-equivalent hours, with a 72-second
 arrival interval: 100,000 target patients and 100,001 observed arrivals including
-the start and cutoff. Each patient uploads two 3.5 MB images (56 Mb total).
+the start and cutoff. Each patient uploads two 3.5 MB images (56 Mb total); recompressing uploads to shrink them changes some
+AI referral decisions (see [Upload compression](#upload-compression-and-referral-decisions-november-1-2026-tier-tx)).
 Acquisition takes 45 seconds per attempt, the return delay is 120 seconds,
 inference takes 3.5 seconds and review takes 30 seconds. Initial and retry
 rejection probabilities are equal; dropout is explicitly zero. Referral and
@@ -461,7 +599,9 @@ configured assumptions, not fitted field measurements.
 
 At 0.25 Mbps, the 224-second upload service exceeds the 72-second arrival interval;
 the upload backlog dominates, and adding a second reviewer does not increase
-completed throughput. Under the assumed 30-second review and 9.23% review demand,
+completed throughput. Under these assumptions keeping pace needs each patient's upload to take less than the arrival interval, that
+is under about 1.1 MB per image (arithmetic, not simulated). `matlab/runPayloadWhatIf.m` reruns the three headline scenarios at a
+site's own file size; its 3.5 MB reference run reproduces the published rows exactly. Under the assumed 30-second review and 9.23% review demand,
 reviewer utilization is low. It cannot establish real staffing requirements.
 Each annual scenario uses different seeds, so small differences at adequate
 bandwidth are not paired causal effects or estimates of uncertainty across seeds.
@@ -501,14 +641,18 @@ were inspected during development.
 [Overlap audit](../results/benchmarks/image_quality/overlap_impact.json)
 
 On a 250-image paired synthetic stress audit, that candidate rejected only 0.4%
-of defocused images, 7.6% of low-light images and 0% of JPEG-Q25 images. It remains
-disabled in the default MATLAB pipeline; global quality-label performance does
+of defocused images, 7.6% of low-light images and 0% of JPEG-Q25 images. Its quality
+decision remains disabled in the default pipelines (only its frozen encoder runs, as the
+feature of the non-fundus input guard); global quality-label performance does
 not establish reliable acquisition-defect detection or portable-camera robustness.
 [Stress results](../results/benchmarks/image_quality/learned_quality_robustness.json)
 
 The reference attribution audit flagged 13 of 25 grade-stratified Grad-CAM maps
 for possible border/FOV/corner attention. This is a heuristic review signal,
-not an established error rate. MATLAB reports also display their per-image QC
+not an established error rate. With the current QC rules on the same 25 images
+(October 31), the earlier legacy Python map is flagged 20/25, the map both
+runtimes now produce 7/25 (none in grades 2–4) and E_768's map 8/25
+([layer comparison](../results/benchmarks/explanation_qc/gradcam_qc_layers.json)). MATLAB reports also display their per-image QC
 warnings; clinician explanation usefulness remains unmeasured.
 [Attribution QC](../results/benchmarks/explanation_qc/gradcam_qc_summary.json)
 

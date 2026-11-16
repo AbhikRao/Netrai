@@ -29,3 +29,8 @@ class NetrAIModel(nn.Module):
         grade_logits = self.grade_head(features)
         ref_logits = self.ref_head(features).squeeze(1)
         return grade_logits, ref_logits
+
+    def forward_from_features(self, feature_map):
+        """Same outputs as ``forward`` from the backbone's last activation (``backbone.forward_features``: conv_head, bn2 + SiLU)."""
+        features = self.head(self.backbone.forward_head(feature_map))
+        return self.grade_head(features), self.ref_head(features).squeeze(1)

@@ -9,10 +9,12 @@ function report = verifyLesionLearned(fixtureDir, onnxPath, outFile)
     end
     here = fileparts(mfilename('fullpath'));
     addpath(fullfile(here, 'src', 'm2_lesion'));
+    addpath(fullfile(here, 'src', 'utils'));
     cfg = jsondecode(fileread(fullfile(fixtureDir, 'fixtures.json')));
     names = {'EX', 'HE', 'MA', 'SE'};
     thr = [cfg.dice_thresholds.EX cfg.dice_thresholds.HE cfg.dice_thresholds.MA cfg.dice_thresholds.SE];
-    net = importNetworkFromONNX(onnxPath, 'InputDataFormats', 'BCSS', 'OutputDataFormats', 'BCSS');
+    net = importOnnxNetwork(onnxPath, "netrai_lesion_" + extractBefore(string(fileSHA256(onnxPath)), 13), ...
+        'InputDataFormats', 'BCSS', 'OutputDataFormats', 'BCSS');
     ids = cfg.ids; if ischar(ids), ids = {ids}; end
     report = struct('image', {}, 'enhancedMaxAbsDiff', {}, 'enhancedFracDiff', {}, 'networkMaxAbsProb', {}, ...
         'endToEndMaxAbsProb', {}, 'endToEndMeanAbsProb', {}, 'maskDisagreeFraction', {});

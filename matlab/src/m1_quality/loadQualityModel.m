@@ -24,6 +24,10 @@ function [net, config] = loadQualityModel(modelPath, configPath)
         error('NetrAI:InvalidQualityTemperature', ...
             'Quality confidence temperature must be finite and positive.');
     end
-    net = importNetworkFromONNX(modelPath, ...
+    digest = string(fileSHA256(modelPath));
+    if isfield(config, 'onnx_sha256') && digest ~= string(config.onnx_sha256)
+        error('NetrAI:QualityArtifactMismatch', 'The quality ONNX file does not match the SHA-256 in its config.');
+    end
+    net = importOnnxNetwork(modelPath, "netrai_quality_" + extractBefore(digest, 13), ...
         'InputDataFormats','BCSS', 'OutputDataFormats','BC');
 end

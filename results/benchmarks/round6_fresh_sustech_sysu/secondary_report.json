@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "tier": "TF (pre-registered secondary; rule selected on exposed sites before this lock)",
+  "cohort": "sustech_sysu",
+  "lock_sha256": "2b84d042de299dad3201eb85ea0638064aa7b1d09f8691746d3cc56ec0d9b8fe",
+  "script_sha256": "e21a5d581b0931236f04d1f5bbf746960b88afa9874bdef4640ecd209a471d2f",
+  "evaluated_utc": "2026-10-30T15:00:18.891544+00:00",
+  "selected_rule": "R2",
+  "baseline_rule": "R1",
+  "results": {
+    "100": {
+      "R1": {
+        "calibration_images": 100,
+        "draws": 500,
+        "p_both_targets": 0.66,
+        "sensitivity_mean": 0.9119278755918138,
+        "sensitivity_p10": 0.8482846954370133,
+        "specificity_mean": 0.9969714001784065,
+        "specificity_p10": 0.9916666666666667,
+        "share_cut_changed": 1.0,
+        "frozen_sensitivity": 0.9938775510204082,
+        "frozen_specificity": 0.9557251908396946
+      },
+      "R2": {
+        "calibration_images": 100,
+        "draws": 500,
+        "p_both_targets": 0.85,
+        "sensitivity_mean": 0.9389650500625735,
+        "sensitivity_p10": 0.8853749038866979,
+        "specificity_mean": 0.994199646670771,
+        "specificity_p10": 0.985017445839988,
+        "share_cut_changed": 1.0,
+        "frozen_sensitivity": 0.9938775510204082,
+        "frozen_specificity": 0.9557251908396946
+      }
+    },
+    "200": {
+      "R1": {
+        "calibration_images": 200,
+        "draws": 500,
+        "p_both_targets": 0.674,
+        "sensitivity_mean": 0.9130938082353705,
+        "sensitivity_p10": 0.8659867449822534,
+        "specificity_mean": 0.9980330384390877,
+        "specificity_p10": 0.9981128508756286,
+        "share_cut_changed": 1.0,
+        "frozen_sensitivity": 0.9938775510204082,
+        "frozen_specificity": 0.9557251908396946
+      },
+      "R2": {
+        "calibration_images": 200,
+        "draws": 500,
+        "p_both_targets": 0.926,
+        "sensitivity_mean": 0.9431143746951223,
+        "sensitivity_p10": 0.9056933771531913,
+        "specificity_mean": 0.9955548723684703,
+        "specificity_p10": 0.9906349474039252,
+        "share_cut_changed": 1.0,
+        "frozen_sensitivity": 0.9938775510204082,
+        "frozen_specificity": 0.9557251908396946
+      }
+    }
+  },
+  "verdict": {
+    "rule": "P(both) R2 >= P(both) R1 and mean sensitivity R2 >= 0.90 (200 images)",
+    "confirmed": true
+  }
+}

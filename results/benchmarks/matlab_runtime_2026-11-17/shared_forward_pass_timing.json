@@ -1,0 +1,411 @@
+{
+ "schema_version": 1,
+ "date": "2026-11-17",
+ "evidence_tier": "engineering timing (no accuracy claim)",
+ "question": "Does sharing one network pass between grading and Grad-CAM shorten the full MATLAB report without changing any output?",
+ "change": "main_pipeline hands predictDRGrade a ForwardRecorder in place of the network; the grading call runs the network once and the recorder keeps each member's last activation, which referralGradCAM then uses instead of a second pass. predictDRGrade.m and the other content-bound deployment sources are unchanged.",
+ "method": "One MATLAB R2026a session on an Intel i5-10210U laptop CPU. Full report (quality check, input guard, retinal analysis, grading, Grad-CAM, PDF and PNG) on three local images (0.3, 6.9 and 12.2 megapixels), two repeats each, E_768 then legacy; the model import is excluded. \"before\" = the committed tree c9b757c exported to a separate folder, \"after\" = the working tree with the change.",
+ "limits": [
+  "Three images and two repeats: a development timing, not a benchmark.",
+  "The \"before\" runs came first in the session and the two codes were not interleaved, so warm-up and CPU temperature favour \"after\"; the first \"before\" repeat of the first image includes one-time figure start-up.",
+  "An earlier profile of the same step (1 November) estimated the saving of the second pass at about 5 s per E_768 image."
+ ],
+ "seconds_per_image": {
+  "E_768": {
+   "before": {
+    "min": 19.09,
+    "max": 34.01,
+    "mean": 26.55,
+    "runs": 6
+   },
+   "after": {
+    "min": 14.41,
+    "max": 21.03,
+    "mean": 17.89,
+    "runs": 6
+   }
+  },
+  "legacy": {
+   "before": {
+    "min": 8.67,
+    "max": 16.98,
+    "mean": 12.67,
+    "runs": 6
+   },
+   "after": {
+    "min": 8.12,
+    "max": 15.61,
+    "mean": 11.85,
+    "runs": 6
+   }
+  }
+ },
+ "same_grade_triage_and_gradcam_status_before_and_after": true,
+ "largest_continuous_score_difference_between_any_two_runs_of_one_image": 2.7372000000358554e-05,
+ "note_on_score_difference": "The E_768 score of the 12.2-megapixel image differs by up to 3e-5 between runs, including between the two \"before\" repeats, so it is not caused by this change; its source was not investigated. Grades and routing are the same in every run.",
+ "identity_checks_on_the_real_models": [
+  {
+   "variant": "E_768",
+   "image": 1,
+   "outputs_identical": true,
+   "maps_identical": true,
+   "max_map_difference": 0.0,
+   "max_difference_to_pipeline_map": 0.0
+  },
+  {
+   "variant": "E_768",
+   "image": 2,
+   "outputs_identical": true,
+   "maps_identical": true,
+   "max_map_difference": 0.0,
+   "max_difference_to_pipeline_map": 0.0
+  },
+  {
+   "variant": "E_768",
+   "image": 3,
+   "outputs_identical": true,
+   "maps_identical": true,
+   "max_map_difference": 0.0,
+   "max_difference_to_pipeline_map": 0.0
+  },
+  {
+   "variant": "legacy",
+   "image": 1,
+   "outputs_identical": true,
+   "maps_identical": true,
+   "max_map_difference": 0.0,
+   "max_difference_to_pipeline_map": 0.0
+  },
+  {
+   "variant": "legacy",
+   "image": 2,
+   "outputs_identical": true,
+   "maps_identical": true,
+   "max_map_difference": 0.0,
+   "max_difference_to_pipeline_map": 0.0
+  },
+  {
+   "variant": "legacy",
+   "image": 3,
+   "outputs_identical": true,
+   "maps_identical": true,
+   "max_map_difference": 0.0,
+   "max_difference_to_pipeline_map": 0.0
+  }
+ ],
+ "identity_check_meaning": "For each image and model: the six outputs obtained through the recorder equal those of a plain predict bit for bit; the map built from the recorded activations equals the map from its own forward pass; and equals the map main_pipeline returned.",
+ "runs": [
+  {
+   "code": "before",
+   "variant": "E_768",
+   "image": 1,
+   "megapixels": 0.3,
+   "repeat": 1,
+   "seconds": 27.48,
+   "grade": 2,
+   "continuous_score": 1.099672331,
+   "referral_logit": -1.639478326,
+   "triage": "uncertain_human_review",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "E_768",
+   "image": 1,
+   "megapixels": 0.3,
+   "repeat": 2,
+   "seconds": 19.09,
+   "grade": 2,
+   "continuous_score": 1.099672331,
+   "referral_logit": -1.639478326,
+   "triage": "uncertain_human_review",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "E_768",
+   "image": 2,
+   "megapixels": 6.9,
+   "repeat": 1,
+   "seconds": 34.01,
+   "grade": 2,
+   "continuous_score": 2.017111901,
+   "referral_logit": 3.927801609,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "E_768",
+   "image": 2,
+   "megapixels": 6.9,
+   "repeat": 2,
+   "seconds": 23.78,
+   "grade": 2,
+   "continuous_score": 2.017111901,
+   "referral_logit": 3.927801609,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "E_768",
+   "image": 3,
+   "megapixels": 12.2,
+   "repeat": 1,
+   "seconds": 26.47,
+   "grade": 4,
+   "continuous_score": 3.418417929,
+   "referral_logit": 3.38634491,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "E_768",
+   "image": 3,
+   "megapixels": 12.2,
+   "repeat": 2,
+   "seconds": 28.46,
+   "grade": 4,
+   "continuous_score": 3.418445301,
+   "referral_logit": 3.386490822,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "legacy",
+   "image": 1,
+   "megapixels": 0.3,
+   "repeat": 1,
+   "seconds": 9.61,
+   "grade": 0,
+   "continuous_score": 0.01719338,
+   "referral_logit": -8.382555008,
+   "triage": "auto_clear",
+   "gradcam_status": "available - QC FLAG: review corner/FOV attention"
+  },
+  {
+   "code": "before",
+   "variant": "legacy",
+   "image": 1,
+   "megapixels": 0.3,
+   "repeat": 2,
+   "seconds": 8.67,
+   "grade": 0,
+   "continuous_score": 0.01719338,
+   "referral_logit": -8.382555008,
+   "triage": "auto_clear",
+   "gradcam_status": "available - QC FLAG: review corner/FOV attention"
+  },
+  {
+   "code": "before",
+   "variant": "legacy",
+   "image": 2,
+   "megapixels": 6.9,
+   "repeat": 1,
+   "seconds": 12.33,
+   "grade": 2,
+   "continuous_score": 2.105669819,
+   "referral_logit": 4.74030304,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "legacy",
+   "image": 2,
+   "megapixels": 6.9,
+   "repeat": 2,
+   "seconds": 12.45,
+   "grade": 2,
+   "continuous_score": 2.105669819,
+   "referral_logit": 4.74030304,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "legacy",
+   "image": 3,
+   "megapixels": 12.2,
+   "repeat": 1,
+   "seconds": 15.97,
+   "grade": 4,
+   "continuous_score": 3.333518147,
+   "referral_logit": 4.116912842,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "before",
+   "variant": "legacy",
+   "image": 3,
+   "megapixels": 12.2,
+   "repeat": 2,
+   "seconds": 16.98,
+   "grade": 4,
+   "continuous_score": 3.333518147,
+   "referral_logit": 4.116912842,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "E_768",
+   "image": 1,
+   "megapixels": 0.3,
+   "repeat": 1,
+   "seconds": 17.12,
+   "grade": 2,
+   "continuous_score": 1.099672331,
+   "referral_logit": -1.639478326,
+   "triage": "uncertain_human_review",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "E_768",
+   "image": 1,
+   "megapixels": 0.3,
+   "repeat": 2,
+   "seconds": 14.41,
+   "grade": 2,
+   "continuous_score": 1.099672331,
+   "referral_logit": -1.639478326,
+   "triage": "uncertain_human_review",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "E_768",
+   "image": 2,
+   "megapixels": 6.9,
+   "repeat": 1,
+   "seconds": 17.09,
+   "grade": 2,
+   "continuous_score": 2.017111901,
+   "referral_logit": 3.927801609,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "E_768",
+   "image": 2,
+   "megapixels": 6.9,
+   "repeat": 2,
+   "seconds": 17.25,
+   "grade": 2,
+   "continuous_score": 2.017111901,
+   "referral_logit": 3.927801609,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "E_768",
+   "image": 3,
+   "megapixels": 12.2,
+   "repeat": 1,
+   "seconds": 21.03,
+   "grade": 4,
+   "continuous_score": 3.418424037,
+   "referral_logit": 3.386445999,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "E_768",
+   "image": 3,
+   "megapixels": 12.2,
+   "repeat": 2,
+   "seconds": 20.41,
+   "grade": 4,
+   "continuous_score": 3.418424037,
+   "referral_logit": 3.386445999,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "legacy",
+   "image": 1,
+   "megapixels": 0.3,
+   "repeat": 1,
+   "seconds": 8.31,
+   "grade": 0,
+   "continuous_score": 0.01719338,
+   "referral_logit": -8.382555008,
+   "triage": "auto_clear",
+   "gradcam_status": "available - QC FLAG: review corner/FOV attention"
+  },
+  {
+   "code": "after",
+   "variant": "legacy",
+   "image": 1,
+   "megapixels": 0.3,
+   "repeat": 2,
+   "seconds": 8.12,
+   "grade": 0,
+   "continuous_score": 0.01719338,
+   "referral_logit": -8.382555008,
+   "triage": "auto_clear",
+   "gradcam_status": "available - QC FLAG: review corner/FOV attention"
+  },
+  {
+   "code": "after",
+   "variant": "legacy",
+   "image": 2,
+   "megapixels": 6.9,
+   "repeat": 1,
+   "seconds": 11.87,
+   "grade": 2,
+   "continuous_score": 2.105669819,
+   "referral_logit": 4.74030304,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "legacy",
+   "image": 2,
+   "megapixels": 6.9,
+   "repeat": 2,
+   "seconds": 11.71,
+   "grade": 2,
+   "continuous_score": 2.105669819,
+   "referral_logit": 4.74030304,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "legacy",
+   "image": 3,
+   "megapixels": 12.2,
+   "repeat": 1,
+   "seconds": 15.5,
+   "grade": 4,
+   "continuous_score": 3.333518147,
+   "referral_logit": 4.116912842,
+   "triage": "refer",
+   "gradcam_status": "available"
+  },
+  {
+   "code": "after",
+   "variant": "legacy",
+   "image": 3,
+   "megapixels": 12.2,
+   "repeat": 2,
+   "seconds": 15.61,
+   "grade": 4,
+   "continuous_score": 3.333518147,
+   "referral_logit": 4.116912842,
+   "triage": "refer",
+   "gradcam_status": "available"
+  }
+ ]
+}

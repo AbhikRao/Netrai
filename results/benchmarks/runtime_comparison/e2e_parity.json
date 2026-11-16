@@ -1,0 +1,35 @@
+{
+ "images": 68,
+ "sources": 14,
+ "per_source": 5,
+ "seed": 20261031,
+ "errors": {
+  "python": 0,
+  "matlab": 0
+ },
+ "variant": {
+  "python": [
+   "E_768"
+  ],
+  "matlab": [
+   "E_768"
+  ]
+ },
+ "status_equal": 68,
+ "rejected": {
+  "python": 3,
+  "matlab": 3
+ },
+ "graded_both": 65,
+ "grade_equal": 65,
+ "routing_equal": 68,
+ "input_warning_equal": 68,
+ "input_warnings": {
+  "python": 2,
+  "matlab": 2
+ },
+ "max_abs_quality_score_difference": 0.0006569089007921747,
+ "max_relative_guard_score_difference": 1.1043392898558595e-05,
+ "max_abs_continuous_score_difference": 5.280397027185302e-06,
+ "tier": "runtime agreement on exposed/training images and local non-fundus images; not an accuracy result"
+}

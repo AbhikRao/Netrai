@@ -31,3 +31,16 @@ verifyEqual(testCase, r.model_variant, "legacy");
 [~, expected] = applySitePolicy(struct(), "");
 verifyEqual(testCase, sort(fieldnames(r.calibration)), sort(fieldnames(expected)));
 end
+
+function testSwitchingVariantsInOneSession(testCase)
+% Both model files are named netrai_fold0.onnx; a shared ONNX custom-layer namespace used to leave the second import uninitialized.
+root = fileparts(fileparts(mfilename('fullpath')));
+assumeTrue(testCase, isfile(fullfile(root, 'variant_R3_E_768', 'netrai_fold0.onnx')), 'E_768 weights are not installed.');
+image = fullfile(root, '..', 'data', 'patient_sample.jpg');
+run = @(v) main_pipeline(image, 'Variant', v, 'Verbose', false, 'GenerateReport', false, 'RunGradCAM', false, 'EnforceQuality', false);
+first = run("legacy"); e768 = run("E_768"); again = run("legacy");
+verifyEqual(testCase, [first.model_variant e768.model_variant], ["legacy" "E_768"]);
+verifyTrue(testCase, isfinite(e768.continuousScore));
+verifyEqual(testCase, again.continuousScore, first.continuousScore, 'AbsTol', 1e-12);
+verifyNotEqual(testCase, e768.continuousScore, first.continuousScore);
+end

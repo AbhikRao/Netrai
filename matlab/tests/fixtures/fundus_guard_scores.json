@@ -1,0 +1,6 @@
+{
+ "note": "Fundus guard scores from python/modules/fundus_guard.py (threshold 71.5490); matlab/tests/testCheckFundusPhoto.m checks MATLAB against them. grace_hopper = matplotlib sample photo, peppers = MATLAB sample image (toolbox/matlab/matlab_images/png).",
+ "patient_sample": 21.974488377257412,
+ "grace_hopper": 218.4263141645314,
+ "peppers": 173.3797429384713
+}

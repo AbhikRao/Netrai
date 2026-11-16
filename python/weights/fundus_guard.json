@@ -1,0 +1,31 @@
+{
+ "schema_version": 1,
+ "purpose": "reject inputs that are not fundus photographs (X15)",
+ "encoder": "quality candidate MobileNetV3-Small (frozen ImageNet), 576-D global-average-pooled features",
+ "encoder_checkpoint_sha256": "0cddeade514f9eb50e3e7419b6b4216304c23c41dce47919db5e555dd7d0da75",
+ "input_contract": "rgb_half_pixel_bilinear_float32_224_v1",
+ "dimension": 576,
+ "score": "Mahalanobis distance sqrt((x - mean)^T P (x - mean)), Ledoit-Wolf precision P, float32 parameters",
+ "threshold": 71.54900161607337,
+ "action": "flag",
+ "margin": 1.25,
+ "reference_quantile": 0.999,
+ "fit_sources": [
+  "aptos",
+  "ddr",
+  "deepdrid",
+  "eyeq",
+  "idrid",
+  "messidor2"
+ ],
+ "fit_images": {
+  "aptos": 3662,
+  "ddr": 13673,
+  "deepdrid": 2000,
+  "eyeq": 28792,
+  "idrid": 516,
+  "messidor2": 1748
+ },
+ "parameters_file": "fundus_guard.f32",
+ "parameters_sha256": "36f65f57388c40c2aa4b49591457c00e8568425fa4d367587f58509bc6e90e91"
+}

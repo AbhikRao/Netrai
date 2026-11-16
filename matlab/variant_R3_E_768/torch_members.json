@@ -1,0 +1,18 @@
+{
+  "description": "PyTorch state dicts of the two E_768 members (same weights as netrai_fold0.onnx, which averages their outputs); used only for Grad-CAM in the Python pipeline.",
+  "architecture": "python/models/netrai_model.py NetrAIModel(efficientnet_b4, 5)",
+  "members": {
+    "s2026": {
+      "file": "netrai_E_768_member_s2026.pt",
+      "sha256": "05bb2e1957bf7136b0dfaab13780de595ced1f1b4eb554bab895ded5b2faf641",
+      "bytes": 75179915,
+      "source_checkpoint_sha256": "06490c827ef69793e1f305a1d3bce9a8f04e32034410bedc6989032e8d669a21"
+    },
+    "s17": {
+      "file": "netrai_E_768_member_s17.pt",
+      "sha256": "598ce2a4c806b0a241be81b3d43d7b0add5d2a2c67a026afdc2497b62db6fea9",
+      "bytes": 75178459,
+      "source_checkpoint_sha256": "09404bc778cd5ceb7623857e773427ed71c479c9445e5b9045abd8a389be5d30"
+    }
+  }
+}

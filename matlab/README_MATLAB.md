@@ -77,6 +77,16 @@ If quality is rejected, it returns acquisition feedback and `triageAction="recap
 No grade or grading PDF is produced for that image. For an accepted image, it
 shows the analysis and generates a report. Open the report at `result.reportPath`.
 
+For a live demonstration in one window, open the screening console:
+
+```matlab
+netraiApp                                  % or: netraiApp(Image="/absolute/path/to/fundus.png")
+```
+
+It calls `main_pipeline` with quality enforcement and Grad-CAM, shows the routing decision, the attention map, the candidate
+lesion marks, the warnings (uncalibrated cut-off, non-fundus input, attention-map QC) and the recorded capacity scenarios, and
+opens the PDF report. `./scripts/launch_demo.sh --app [image]` starts it from a Linux terminal. See [the demo guide](../docs/DEMO.md).
+
 For direct control:
 
 ```matlab
@@ -178,6 +188,16 @@ fixtures = verifyTelemedicineWorkflow(tempname);
 scenarioResults = runSimulinkScenarioSweep(tempname, 100000);
 ```
 
+To plan with a site's own file size, `runPayloadWhatIf` reruns the three headline scenarios (one reviewer, 10% assumed rejection;
+0.25 / 1 / 5 Mbps; the sweep's seeds) at other per-image sizes. It always adds a 3.5 MB reference run and reports whether it reproduces
+the published rows (it did exactly on 2026-11-01); the published sweep and the content-bound sources are not changed. Use the size of
+the files the camera saves: recompressing images to shrink them changes some AI decisions
+([upload compression](../docs/VALIDATION.md#upload-compression-and-referral-decisions-november-1-2026-tier-tx)).
+
+```matlab
+report = runPayloadWhatIf(1.2, "payload_whatif.json");   % measured median MB per image at the site
+```
+
 The saved SLX and its adjacent `.manifest.json` bind the builder and workflow
 source. Existing models/results are preserved; a missing or changed identity
 fails instead of rebuilding a legacy artifact automatically. For an intentional
@@ -250,14 +270,63 @@ calibrated on a labelled sample of each camera/site before screening**; every re
 - `Variant='E_768'` fails with a clear error when the weights are missing; `Variant='legacy'` always uses `models/netrai_fold0.onnx`;
 - explicit `ModelPath`/`ConfigPath` (both, or neither) bypass the choice (variant reported as `custom`);
 - a site policy is bound to the model it was fitted for (SHA-256 of model and config); loading it with another model is an error;
-- **switching variants inside one MATLAB session needs `clear functions` first** (MATLAB's ONNX import cache).
+- switching variants inside one MATLAB session works (each model gets its own ONNX custom-layer namespace, `+netrai_<sha256 prefix>`; before 2026-10-30 this needed `clear functions`).
+- After the quality check, `checkFundusPhoto` scores whether the image looks like a fundus photograph (the quality candidate's
+  576-D embedding, Mahalanobis distance to the training fundus images; same score as the Python pipeline from the byte-identical
+  `models/fundus_guard.json` + `.f32`). An image over the threshold is still graded but carries `inputWarning` and a red line in the
+  report (the guard's `action` is `flag`; see [validation](../docs/VALIDATION.md) for why it does not reject). Results carry
+  `fundusGuard` (score, threshold, action) and rejected results `rejectionReason` (`image_quality` or `not_fundus`).
+- ONNX imports write their generated custom-layer classes into `onnx_layers/` (git-ignored), which is kept on the path whenever a
+  cached network is used; before 2026-10-31 they went into the current folder, and a cached network failed after a `cd` or after a
+  test run restored the path.
+- Grad-CAM of the referral logit is computed in closed form from one forward pass (`referralGradCAM`) at each member's last activation
+  (after batch norm and SiLU; the ONNX export folds batch norm into the preceding convolution) and, for E_768, averaged over the two members.
+  It equals the Python pipeline's map for both models (same layer, same scaling) to within 5e-4 per pixel on test images (fixtures that
+  both test suites check). Before 2026-10-31 MATLAB used the built-in `gradCAM`, whose default layer explained only one E_768 member, and
+  the legacy Python map used an earlier layer (before batch norm). Lesion alignment of these maps is in [validation](../docs/VALIDATION.md).
+- Grading and Grad-CAM share one network pass. With `RunGradCAM=true`, `main_pipeline` hands `predictDRGrade` a `ForwardRecorder` in place of
+  the network: the grading call runs the network once, returns the same six outputs, and keeps each member's last activation, from which
+  `referralGradCAM` builds the map without a second pass. The content-bound `predictDRGrade.m` is unchanged. On the real models the outputs and
+  the maps are identical to the two-pass versions bit for bit (`tests/testReferralGradCAM.m`;
+  [timing and identity checks](../results/benchmarks/matlab_runtime_2026-11-17/shared_forward_pass_timing.json)).
+- Timing on a laptop CPU (Intel i5-10210U): model mode 4.8 s per image (legacy 1.3 s, same method, 18 images); the full report with retinal analysis
+  and Grad-CAM 14–21 s per image for E_768 and 8–16 s for legacy (3 images of 0.3–12 megapixels, two repeats, 2026-11-17; 19–34 s and 9–17 s
+  with the committed two-pass code in the same session, measured first; the 12-megapixel image is the slowest; about 7 s of it is writing
+  the PDF and PNG; the input guard adds 0.1–0.2 s); importing the E_768 network takes about 2 min once per MATLAB session.
+- A successful result also carries `results.visuals` (analysis image, candidate overlay, the classifier's input and the Grad-CAM map) for
+  interactive display; `netraiApp` uses it.
 
-Site calibration (Python, from a labelled sample of the site; 40+ referable cases advised, 150+ non-referable):
+Site calibration in MATLAB (from a labelled sample of the site; ungradable images removed; 40+ referable cases advised, 150+ non-referable):
+
+```matlab
+policy = calibrateSite(imagePaths, icdrGrades, "site_policy.json", SiteName="PHC Nanded", PatientIds=ids);   % E_768, 95% target
+check  = verifySitePolicy(otherPaths, otherGrades, "site_policy.json", "site_check.json", PatientIds=otherIds);  % a SEPARATE sample
+results = main_pipeline('/absolute/path/to/fundus.jpg', SitePolicy="site_policy.json");
+```
+
+Site onboarding: (1) grade a calibration sample of one camera (40–80+ referable eyes plus about 200 others; ungradable images removed);
+(2) `calibrateSite` fits the cut-off, binds it to the model and records the calibration sample's identities; (3) `verifySitePolicy` checks it
+on a second, separate sample and reports sensitivity and specificity with Wilson 95% intervals; (4) screen with `SitePolicy`.
+Reports say `UNCALIBRATED` until step 2 has been done.
+
+`calibrateSite` gives the same cut-off as the Python tool (difference 1.4e-6 on 60 fresh images; E_768 scores agree to 1.5e-6 and every grade and
+referral decision matches — [parity](../results/benchmarks/matlab_grading/e768_matlab_python_parity_sustech.json)). The same in Python:
 
 ```bash
-python python/calibrate_site.py score --images sample.csv --root /path/to/images --out logits.npy     # E_768 research checkpoints (local)
+python python/calibrate_site.py score --images sample.csv --root /path/to/images --out logits.npy     # installed E_768 (scripts/fetch_e768.sh)
 python python/calibrate_site.py fit --logits logits.npy --labels labels.csv --site "clinic A" --output site_policy.json
+python python/calibrate_site.py score --images check.csv --root /path/to/images --out check.npy
+python python/calibrate_site.py verify --policy site_policy.json --logits check.npy --labels check_labels.csv --output site_check.json
 ```
+
+`score` runs the same ONNX graph, image reading and preprocessing as `inference.py --variant E_768` and writes the SHA-256 of every image next to
+the logits (`logits.images.json`; without it, `fit`/`verify` accept `--images-root` plus an `image` column). Both runtimes write and check the same
+identity fields: `calibration_image_sha256` (every calibration image; required) and, when patient ids are given (`patient` column /
+`PatientIds`), `calibration_patient_sha256` (SHA-256 of each id; ids are never stored). Verification compares identities, not row order: it
+refuses a sample that shares an image or a recorded patient with the calibration sample, a policy that records no calibration images, a
+sample without image identities (Python) or without patient ids when the policy recorded them, and (Python) logits made by another model.
+A policy fitted in Python is accepted and enforced by MATLAB and vice versa (both are bound to the same model SHA-256; cross-runtime test:
+`tests/testVerifySitePolicyProvenance.m` with a fixture written by `calibrate_site.py fit`).
 
 ```matlab
 results = main_pipeline('/absolute/path/to/fundus.jpg', SitePolicy='/path/to/site_policy.json');
@@ -266,10 +335,10 @@ disp(results.calibration.calibration_status)   % "site-calibrated (not independe
 
 The policy replaces only the four ordinal boundaries (and the referral-head threshold if present); the bundle-bound configuration is never
 edited, and the policy file's SHA-256 is recorded in `results.calibration`. A site policy is not a validation: re-check it on a separate
-labelled sample. Post hoc evidence on 14,280 BRSET and 4,859 mBRSET images ([curves](../results/benchmarks/site_calibration_brazil)): with
-about 80 referable plus 200 other patients the mean specificity rose from 0.43 to 0.89 (Canon) while mean sensitivity stayed near 0.91; at
-the prevalence of a screening population (6% referable) 100–200 *patients* contain too few referable cases — the number of referable cases
-matters, not the total.
+labelled sample. The default target is 95% sample sensitivity (confirmed on the fresh SUSTech-SYSU test; see [validation](../docs/VALIDATION.md)).
+With about 80 referable plus 200 other patients it keeps mean sensitivity near 0.94; specificity then depends on how well the model ranks that camera
+(BRSET Nikon 0.92, BRSET Canon 0.83, mBRSET 0.74; [post hoc analysis](../results/benchmarks/site_calibration_rules/enriched_tx.json)). At screening
+prevalence (6% referable) 100–200 *patients* contain too few referable cases — collect a sample enriched with referable cases.
 
 Run the legacy model explicitly with `Variant='legacy'`; opt-in alternatives such as `variant_C_site/` still work through
 `ModelPath`/`ConfigPath`.
@@ -285,7 +354,7 @@ open. See [model documentation](../docs/MODEL_CARD.md) and
 ## Learned lesion candidates (opt-in research module)
 
 `matlab/src/m2_lesion/segmentLesionsLearned.m` runs an exported lesion segmenter (ONNX, fixed 1024-pixel window) and
-`matlab/demo_lesions.m` writes an EX/HE/MA/SE overlay for one image, and `main_pipeline(img, 'LearnedLesions', true, 'LesionOnnxPath', p, 'LesionThresholdsPath', t)` adds `results.learnedLesions` (counts, field fractions, overlay PNG); the option is off by default and does not change the grade or triage; `matlab/verifyLesionLearned.m` measures parity with the
+`matlab/demo_lesions.m` writes an EX/HE/MA/SE overlay for one image, and `main_pipeline(img, 'LearnedLesions', true, 'LesionOnnxPath', p, 'LesionThresholdsPath', t)` adds `results.learnedLesions` (counts, field fractions, overlay PNG); the option is off by default and does not change the grade or triage (the overlay PNG is written to `OutputDir` with or without the PDF report; `netraiApp` offers it as a fourth picture when the two lesion-model files are present locally, about 40 s more per image); `matlab/verifyLesionLearned.m` measures parity with the
 Python reference. It does not change `main_pipeline.m`. Parity on three validation images: network difference ≤ 7.4e-6
 in probability, frozen-threshold mask disagreement ≤ 2.5e-6 of pixels, isolated pixel differences up to 0.19 caused by
 1–4 grey-level differences in the Ben Graham blur rounding versus OpenCV. The ONNX file and checkpoint are not distributed
