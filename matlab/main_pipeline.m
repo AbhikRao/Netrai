@@ -71,22 +71,29 @@ function results = main_pipeline(imagePath, varargin)
 
     [iqs, qualityMetrics] = assessImageQuality(rawImg);
     qualityFeedback = generateRecaptureFeedback(qualityMetrics);
+    fundusGuard = struct('is_fundus', true, 'score', NaN, 'threshold', NaN, 'action', "not run");
     if enforceQuality && iqs < 0.3
-        [~, rejectedCalibration] = applySitePolicy(struct(), "");
-        results = struct( ...
-            'model_variant', variant, 'calibration', rejectedCalibration, ...
-            'status', "rejected", 'imagePath', imagePath, 'input_sha256', imageDigest, 'iqs', iqs, ...
-            'qualityMetrics', qualityMetrics, 'qualityFeedback', qualityFeedback, ...
-            'grade', NaN, 'probabilities', nan(1, 5), 'rawProbabilities', nan(1, 5), ...
-            'confidence', NaN, 'isReferable', false, 'continuousScore', NaN, ...
-            'referableHeadProbability', NaN, 'referableHeadPositive', false, ...
-            'headDisagreement', false, 'triageAction', "recapture", ...
-            'segResults', struct(), 'gradcamStatus', "not run", 'gradcamQC', struct(), ...
-            'reportPath', "", 'researchOnly',true);
+        results = rejectedResult(variant, imagePath, imageDigest, iqs, qualityMetrics, qualityFeedback, "image_quality", fundusGuard);
         if verbose
             fprintf('Rejected: IQS %.3f. %s\n', iqs, qualityFeedback);
         end
         return;
+    end
+    % Is the input a fundus photograph at all? (X15 guard, after quality and before grading; same score as the Python pipeline.)
+    inputWarning = "";
+    if enforceQuality
+        fundusGuard = checkFundusPhoto(rawImg);
+        if ~fundusGuard.is_fundus
+            notFundus = "This image does not look like a fundus (retina) photograph; capture a fundus image of the eye.";
+            if fundusGuard.action == "reject"
+                results = rejectedResult(variant, imagePath, imageDigest, iqs, qualityMetrics, notFundus, "not_fundus", fundusGuard);
+                if verbose
+                    fprintf('Rejected: %s (guard score %.1f > %.1f)\n', notFundus, fundusGuard.score, fundusGuard.threshold);
+                end
+                return;
+            end
+            inputWarning = notFundus;
+        end
     end
 
     % Enhancement is only for lesion analysis. The classifier always sees the
@@ -126,9 +133,21 @@ function results = main_pipeline(imagePath, varargin)
     [modelInput, modelFov] = preprocessModelInput(rawImg, config);
     modelDisplay = min(max(double(modelInput) .* reshape([0.229 0.224 0.225],1,1,3) ...
         + reshape([0.485 0.456 0.406],1,1,3),0),1);
+    % With Grad-CAM on, grading runs the network through a recorder that also keeps each member's last activation,
+    % so the map needs no second forward pass (same outputs; about 4 s less per image for E_768 on a laptop CPU).
+    gradingNet = net;
+    recorder = [];
+    if runGradCAM
+        try
+            recorder = ForwardRecorder(net);
+            gradingNet = recorder;
+        catch
+            recorder = [];      % not a NetrAI head: grade as usual; generateGradCAM reports why there is no map
+        end
+    end
     [grade, rawProbs, isReferable, continuousScore, logits, ...
         referableHeadProbability, referableHeadPositive, headDisagreement, ...
-        referableLogit] = predictDRGrade(net, modelInput, ...
+        referableLogit] = predictDRGrade(gradingNet, modelInput, ...
         config.grade_thresholds, config.referable_head_threshold);
     [calProbs, temperature] = calibrateConfidence( ...
         rawProbs, config.confidence_temperature);
@@ -137,7 +156,7 @@ function results = main_pipeline(imagePath, varargin)
         false, isReferable, referableHeadPositive);
 
     if runGradCAM
-        [heatmap, gradcamStatus] = generateGradCAM(net, modelInput, 6);
+        [heatmap, gradcamStatus] = generateGradCAM(net, modelInput, 6, recorder);
     else
         heatmap = [];
         gradcamStatus = "disabled";
@@ -157,10 +176,8 @@ function results = main_pipeline(imagePath, varargin)
     end
     learnedLesions = struct('status', "disabled");
     if learnedLesionsOn
-        overlayPng = "";
-        if generateReport
-            overlayPng = string(fullfile(outDir, 'learned_lesions_overlay.png'));
-        end
+        if ~isfolder(outDir), mkdir(outDir); end       % the overlay is written with or without the PDF report
+        overlayPng = string(fullfile(outDir, 'learned_lesions_overlay.png'));
         learnedLesions = runLearnedLesions(rawImg, string(p.Results.LesionOnnxPath), ...
             string(p.Results.LesionThresholdsPath), overlayPng);
     end
@@ -173,7 +190,7 @@ function results = main_pipeline(imagePath, varargin)
             'referableHeadPositive', referableHeadPositive, ...
             'headDisagreement', headDisagreement, 'triageAction', triageAction, ...
             'deploymentIdentity',config.deployment_identity,'inputSha256',imageDigest, ...
-            'modelVariant',variant,'calibrationStatus',calibration.calibration_status);
+            'modelVariant',variant,'calibrationStatus',calibration.calibration_status, 'inputWarning', inputWarning);
         reportPath = string(generateClinicalReport(procImg, segResults, grade, ...
             calProbs, checklist, heatmap, overlayImg, outDir, gradcamStatus, ...
             gradcamQC, safety, modelDisplay));
@@ -182,6 +199,9 @@ function results = main_pipeline(imagePath, varargin)
     if verbose
         showResults(procImg, overlayImg, heatmap, gradcamStatus, calProbs, grade, modelDisplay);
         fprintf('\n--- NetrAI result ---\n');
+        if strlength(inputWarning) > 0
+            fprintf('WARNING: %s (guard score %.1f > %.1f)\n', inputWarning, fundusGuard.score, fundusGuard.threshold);
+        end
         fprintf('Grade: %d | continuous score: %.4f | confidence: %.2f%%\n', ...
             grade, continuousScore, confidence * 100);
         fprintf('Referable DR: %s | IQS: %.3f\n', string(isReferable), iqs);
@@ -208,7 +228,25 @@ function results = main_pipeline(imagePath, varargin)
         'researchOnly',true, ...
         'model_variant', variant, 'calibration', calibration, ...
         'learnedLesions', learnedLesions, ...
+        'fundusGuard', fundusGuard, 'inputWarning', inputWarning, ...
         'reportPath', reportPath);
+    % Images for interactive display (netraiApp): the analysis image, the candidate overlay, the classifier's input and its map.
+    results.visuals = struct('analysisImage', procImg, 'overlayImage', overlayImg, 'modelDisplay', modelDisplay, 'heatmap', heatmap);
+end
+
+function results = rejectedResult(variant, imagePath, imageDigest, iqs, qualityMetrics, feedback, reason, fundusGuard)
+% Result of an image that is not graded (poor quality or not a fundus photograph); one schema for both reasons.
+    [~, rejectedCalibration] = applySitePolicy(struct(), "");
+    results = struct( ...
+        'model_variant', variant, 'calibration', rejectedCalibration, ...
+        'status', "rejected", 'rejectionReason', reason, 'imagePath', imagePath, 'input_sha256', imageDigest, 'iqs', iqs, ...
+        'qualityMetrics', qualityMetrics, 'qualityFeedback', feedback, 'fundusGuard', fundusGuard, ...
+        'grade', NaN, 'probabilities', nan(1, 5), 'rawProbabilities', nan(1, 5), ...
+        'confidence', NaN, 'isReferable', false, 'continuousScore', NaN, ...
+        'referableHeadProbability', NaN, 'referableHeadPositive', false, ...
+        'headDisagreement', false, 'triageAction', "recapture", ...
+        'segResults', struct(), 'gradcamStatus', "not run", 'gradcamQC', struct(), ...
+        'reportPath', "", 'researchOnly',true);
 end
 
 

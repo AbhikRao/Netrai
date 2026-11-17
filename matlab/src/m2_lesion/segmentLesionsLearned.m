@@ -20,7 +20,8 @@ function result = segmentLesionsLearned(workRgb, options)
     net = options.Net;
     if isempty(net)
         assert(strlength(options.OnnxPath) > 0 && isfile(options.OnnxPath), 'segmentLesionsLearned:onnx', 'ONNX file not found');
-        net = importNetworkFromONNX(options.OnnxPath, 'InputDataFormats', 'BCSS', 'OutputDataFormats', 'BCSS');
+        net = importOnnxNetwork(options.OnnxPath, "netrai_lesion_" + extractBefore(string(fileSHA256(options.OnnxPath)), 13), ...
+            'InputDataFormats', 'BCSS', 'OutputDataFormats', 'BCSS');
     end
     tile = options.Tile; overlap = options.Overlap;
     [h, w, ~] = size(workRgb);

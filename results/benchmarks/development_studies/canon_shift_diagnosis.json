@@ -1,0 +1,67 @@
+{
+ "tier": "TX (post hoc; BRSET labels exposed by the 2026-10-25 lock). Design site = BRSET Canon; aggregates only (PhysioNet DUA).",
+ "question": "Why does E_768 refer healthy BRSET Canon CR eyes (frozen cut-off 1.092 on the expected-grade score)?",
+ "finding": {
+  "healthy_grade0_no_other_finding_median_score": {
+   "Canon CR": {
+    "n": 4614,
+    "median": 1.1,
+    "share_referred_at_frozen_cut": 0.505
+   },
+   "NIKON NF5050": {
+    "n": 2675,
+    "median": 0.66,
+    "share_referred_at_frozen_cut": 0.098
+   }
+  },
+  "gap_present_in_every_age_band": true,
+  "ranking_still_good_on_canon": {
+   "auc_referable": 0.951,
+   "specificity_at_sensitivity_0.90": 0.914
+  }
+ },
+ "ruled_out": {
+  "field_of_view_format": "both cameras crop to the same aspect (1.22-1.25); within Canon the score correlates only weakly with aspect (r=0.28)",
+  "sensor_noise": "fine-scale noise MAD 0.64 (Canon) vs 0.66 (Nikon); Ben-Graham signal SD 25 vs 27",
+  "batch_norm_statistics_AdaBN": {
+   "design_eval": "1,000 Canon images (64 referable), adaptation on 512 patient-disjoint unlabelled Canon images",
+   "frozen": {
+    "auc": 0.964,
+    "sens": 1.0,
+    "spec": 0.429
+   },
+   "backbone_all_96_bn": {
+    "auc": 0.971,
+    "sens": 1.0,
+    "spec": 0.388
+   },
+   "shallow_stem_blocks0_2": {
+    "auc": 0.973,
+    "sens": 1.0,
+    "spec": 0.558
+   },
+   "verdict": "fails plan v6 rule 4a (spec >= 0.80 at sens >= 0.88): AdaBN closed"
+  },
+  "static_sensor_dust": {
+   "persistent_dark_specks": {
+    "Canon CR": 147,
+    "NIKON NF5050": 6
+   },
+   "inpainting_the_specks": {
+    "auc": 0.948,
+    "sens": 0.984,
+    "spec": 0.388
+   },
+   "verdict": "Canon optics carry static dust specks, but removing them does not lower the scores"
+  },
+  "fine_detail": {
+   "lowpass_to_512_then_768": {
+    "auc": 0.959,
+    "sens": 1.0,
+    "spec": 0.357
+   },
+   "verdict": "not driven by detail finer than 512 px"
+  }
+ },
+ "conclusion": "A camera/centre appearance shift in coarse image features that none of the label-free corrections removes; per-site labelled calibration of the cut-off is the mitigation (TX evidence in site_calibration_brazil)."
+}

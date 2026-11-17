@@ -1,0 +1,313 @@
+{
+ "tier": "TX (labels exposed by earlier locked evaluations)",
+ "model": "E_768",
+ "frozen_cut": 1.092308373535268,
+ "design": "k referable clusters + 200 non-referable clusters per calibration sample; scored on the remaining images",
+ "sites": {
+  "BRSET Canon CR": {
+   "20": {
+    "R1": {
+     "p_both_targets": 0.294,
+     "sensitivity_mean": 0.903663779790586,
+     "sensitivity_p10": 0.8298427171187599,
+     "specificity_mean": 0.8769323003838322,
+     "specificity_p10": 0.7848161653189215
+    },
+    "R2": {
+     "p_both_targets": 0.21,
+     "sensitivity_mean": 0.9353479821348478,
+     "sensitivity_p10": 0.8717233286951465,
+     "specificity_mean": 0.801376543793886,
+     "specificity_p10": 0.6315682004348985
+    }
+   },
+   "40": {
+    "R1": {
+     "p_both_targets": 0.384,
+     "sensitivity_mean": 0.9053903501544533,
+     "sensitivity_p10": 0.8445905002743517,
+     "specificity_mean": 0.890066032857581,
+     "specificity_p10": 0.8141298502460773
+    },
+    "R2": {
+     "p_both_targets": 0.278,
+     "sensitivity_mean": 0.9370855614422055,
+     "sensitivity_p10": 0.8928358420903153,
+     "specificity_mean": 0.833455704853794,
+     "specificity_p10": 0.7583077165332948
+    }
+   },
+   "80": {
+    "R1": {
+     "p_both_targets": 0.506,
+     "sensitivity_mean": 0.914668901412308,
+     "sensitivity_p10": 0.8745405664199168,
+     "specificity_mean": 0.8880297295084256,
+     "specificity_p10": 0.8409448266204052
+    },
+    "R2": {
+     "p_both_targets": 0.244,
+     "sensitivity_mean": 0.945253369314025,
+     "sensitivity_p10": 0.9134198728950188,
+     "specificity_mean": 0.8269240254528477,
+     "specificity_p10": 0.7825578375125217
+    }
+   }
+  },
+  "BRSET Nikon NF5050": {
+   "20": {
+    "R1": {
+     "p_both_targets": 0.508,
+     "sensitivity_mean": 0.9015477010937891,
+     "sensitivity_p10": 0.8138946280991736,
+     "specificity_mean": 0.9322628977843803,
+     "specificity_p10": 0.8614349775784753
+    },
+    "R2": {
+     "p_both_targets": 0.578,
+     "sensitivity_mean": 0.9336430822879036,
+     "sensitivity_p10": 0.86716459197787,
+     "specificity_mean": 0.8781956519099482,
+     "specificity_p10": 0.6706397386662892
+    }
+   },
+   "40": {
+    "R1": {
+     "p_both_targets": 0.646,
+     "sensitivity_mean": 0.9138175453067622,
+     "sensitivity_p10": 0.8501230516817063,
+     "specificity_mean": 0.944095659253924,
+     "specificity_p10": 0.920293711524078
+    },
+    "R2": {
+     "p_both_targets": 0.694,
+     "sensitivity_mean": 0.9395024561569206,
+     "sensitivity_p10": 0.8894230769230769,
+     "specificity_mean": 0.8989369284774325,
+     "specificity_p10": 0.7075568384547286
+    }
+   },
+   "80": {
+    "R1": {
+     "p_both_targets": 0.692,
+     "sensitivity_mean": 0.9178093870792754,
+     "sensitivity_p10": 0.8657718120805369,
+     "specificity_mean": 0.954816825956371,
+     "specificity_p10": 0.9459499414927702
+    },
+    "R2": {
+     "p_both_targets": 0.866,
+     "sensitivity_mean": 0.9452402849976036,
+     "sensitivity_p10": 0.9052758237689744,
+     "specificity_mean": 0.9201135590690459,
+     "specificity_p10": 0.8611948729068092
+    }
+   }
+  },
+  "mBRSET": {
+   "20": {
+    "R1": {
+     "p_both_targets": 0.11,
+     "sensitivity_mean": 0.909067810975469,
+     "sensitivity_p10": 0.8468678237318071,
+     "specificity_mean": 0.81340146579035,
+     "specificity_p10": 0.6386120303113132
+    },
+    "R2": {
+     "p_both_targets": 0.092,
+     "sensitivity_mean": 0.9375034833862654,
+     "sensitivity_p10": 0.8797398310387985,
+     "specificity_mean": 0.7044328723242916,
+     "specificity_p10": 0.482617692289112
+    }
+   },
+   "40": {
+    "R1": {
+     "p_both_targets": 0.168,
+     "sensitivity_mean": 0.9155088248512833,
+     "sensitivity_p10": 0.8736517782995905,
+     "specificity_mean": 0.8305250050390713,
+     "specificity_p10": 0.767516167940147
+    },
+    "R2": {
+     "p_both_targets": 0.052,
+     "sensitivity_mean": 0.9449426554588976,
+     "sensitivity_p10": 0.9106569105691057,
+     "specificity_mean": 0.7215369822228628,
+     "specificity_p10": 0.5316162950117086
+    }
+   },
+   "80": {
+    "R1": {
+     "p_both_targets": 0.23,
+     "sensitivity_mean": 0.9173419535952412,
+     "sensitivity_p10": 0.883069233870661,
+     "specificity_mean": 0.8383615081514383,
+     "specificity_p10": 0.7891801467156588
+    },
+    "R2": {
+     "p_both_targets": 0.018,
+     "sensitivity_mean": 0.9470523078433711,
+     "sensitivity_p10": 0.9194057427839658,
+     "specificity_mean": 0.7354735558666076,
+     "specificity_p10": 0.6235466397401526
+    }
+   }
+  },
+  "Paraguay": {
+   "20": null,
+   "40": null,
+   "80": null
+  },
+  "ODIR": {
+   "20": {
+    "R1": {
+     "p_both_targets": 0.01,
+     "sensitivity_mean": 0.9094428710827301,
+     "sensitivity_p10": 0.8309710767970989,
+     "specificity_mean": 0.7763925256627217,
+     "specificity_p10": 0.5821908499029583
+    },
+    "R2": {
+     "p_both_targets": 0.006,
+     "sensitivity_mean": 0.9402847341020161,
+     "sensitivity_p10": 0.8784659349613951,
+     "specificity_mean": 0.6687986277634839,
+     "specificity_p10": 0.4290541795806714
+    }
+   },
+   "40": {
+    "R1": {
+     "p_both_targets": 0.012,
+     "sensitivity_mean": 0.9130143472644809,
+     "sensitivity_p10": 0.8614182588398029,
+     "specificity_mean": 0.7975627286866961,
+     "specificity_p10": 0.6577084188911705
+    },
+    "R2": {
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9378897439370648,
+     "sensitivity_p10": 0.8948103906199392,
+     "specificity_mean": 0.7097923419646666,
+     "specificity_p10": 0.5822688025579567
+    }
+   },
+   "80": {
+    "R1": {
+     "p_both_targets": 0.002,
+     "sensitivity_mean": 0.9161946662485386,
+     "sensitivity_p10": 0.8790441432652777,
+     "specificity_mean": 0.8030264470068946,
+     "specificity_p10": 0.719181372251138
+    },
+    "R2": {
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9458026148926163,
+     "sensitivity_p10": 0.9144289679007174,
+     "specificity_mean": 0.6893214149409213,
+     "specificity_p10": 0.5866214273634366
+    }
+   }
+  },
+  "FDR26": {
+   "20": {
+    "R1": {
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9005394458416035,
+     "sensitivity_p10": 0.815395655959964,
+     "specificity_mean": 0.5921232045823369,
+     "specificity_p10": 0.26986979644232534
+    },
+    "R2": {
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9310630053420764,
+     "sensitivity_p10": 0.860232539561501,
+     "specificity_mean": 0.4606439440634061,
+     "specificity_p10": 0.15366476162563503
+    }
+   },
+   "40": {
+    "R1": {
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9111676388497322,
+     "sensitivity_p10": 0.8527465595964291,
+     "specificity_mean": 0.5786828134756923,
+     "specificity_p10": 0.36154516995263364
+    },
+    "R2": {
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9427763819691871,
+     "sensitivity_p10": 0.8922738992252993,
+     "specificity_mean": 0.41896786054110907,
+     "specificity_p10": 0.19639852106353348
+    }
+   },
+   "80": {
+    "R1": {
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.915082359469192,
+     "sensitivity_p10": 0.8771706953698627,
+     "specificity_mean": 0.5761675219466356,
+     "specificity_p10": 0.4106019629099968
+    },
+    "R2": {
+     "p_both_targets": 0.0,
+     "sensitivity_mean": 0.9448484885555821,
+     "sensitivity_p10": 0.9131012062004381,
+     "specificity_mean": 0.4208371366425761,
+     "specificity_p10": 0.2553931079480092
+    }
+   }
+  },
+  "SUSTech-SYSU": {
+   "20": {
+    "R1": {
+     "p_both_targets": 0.612,
+     "sensitivity_mean": 0.9033739415428753,
+     "sensitivity_p10": 0.814468085106383,
+     "specificity_mean": 0.9963250981754184,
+     "specificity_p10": 0.9911288494703129
+    },
+    "R2": {
+     "p_both_targets": 0.612,
+     "sensitivity_mean": 0.9033739415428753,
+     "sensitivity_p10": 0.814468085106383,
+     "specificity_mean": 0.9963250981754184,
+     "specificity_p10": 0.9911288494703129
+    }
+   },
+   "40": {
+    "R1": {
+     "p_both_targets": 0.61,
+     "sensitivity_mean": 0.9062748747487576,
+     "sensitivity_p10": 0.8451721313931307,
+     "specificity_mean": 0.9975758937819753,
+     "specificity_p10": 0.9933906117804941
+    },
+    "R2": {
+     "p_both_targets": 0.786,
+     "sensitivity_mean": 0.9297757485835492,
+     "sensitivity_p10": 0.873305122494432,
+     "specificity_mean": 0.9957226492637399,
+     "specificity_p10": 0.9889600304752975
+    }
+   },
+   "80": {
+    "R1": {
+     "p_both_targets": 0.702,
+     "sensitivity_mean": 0.9158647617118573,
+     "sensitivity_p10": 0.8728563676383613,
+     "specificity_mean": 0.998018874059564,
+     "specificity_p10": 0.9977772828507795
+    },
+    "R2": {
+     "p_both_targets": 0.914,
+     "sensitivity_mean": 0.9403855372960909,
+     "sensitivity_p10": 0.9035772357723577,
+     "specificity_mean": 0.9960025230321802,
+     "specificity_p10": 0.9911111111111112
+    }
+   }
+  }
+ }
+}

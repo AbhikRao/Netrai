@@ -1,0 +1,77 @@
+{
+  "tier": "TX (post hoc; lesion masks of exposed test sets)",
+  "E_768/idrid": {
+    "images": 27,
+    "images_with_lesions": 27,
+    "energy_ratio": {
+      "mean": 3.4991567670761534,
+      "median": 2.7167785997069265,
+      "ci95_mean": [
+        2.5436496225606016,
+        4.9585135415219135
+      ],
+      "fraction_above_1": 1.0
+    },
+    "pointing_game": {
+      "hit_rate": 0.9259259259259259,
+      "ci95": [
+        0.8148148148148148,
+        1.0
+      ],
+      "chance": 0.3476988345641596,
+      "hit_minus_chance": 0.5782270913617663,
+      "ci95_diff": [
+        0.4544294318375991,
+        0.6768227835665801
+      ]
+    },
+    "deletion": {
+      "images_called_referable": 26,
+      "auc_cam": 0.47549698686298847,
+      "auc_random": 0.9861245964582152,
+      "cam_minus_random": -0.5106276095952266,
+      "ci95": [
+        -0.5995145304682843,
+        -0.41789021869575116
+      ],
+      "note": "negative = Grad-CAM order lowers the referral score faster than random"
+    }
+  },
+  "E_768/ddr": {
+    "images": 202,
+    "images_with_lesions": 202,
+    "energy_ratio": {
+      "mean": 6.81158740024771,
+      "median": 4.69615737870906,
+      "ci95_mean": [
+        6.042107160659963,
+        7.669152894866628
+      ],
+      "fraction_above_1": 1.0
+    },
+    "pointing_game": {
+      "hit_rate": 0.905940594059406,
+      "ci95": [
+        0.8663366336633663,
+        0.9455445544554455
+      ],
+      "chance": 0.16991665449343624,
+      "hit_minus_chance": 0.7360239395659698,
+      "ci95_diff": [
+        0.6885276479335048,
+        0.7791452644896918
+      ]
+    },
+    "deletion": {
+      "images_called_referable": 183,
+      "auc_cam": 0.3753927600956166,
+      "auc_random": 0.9563158059380745,
+      "cam_minus_random": -0.5809230458424579,
+      "ci95": [
+        -0.6179496826678231,
+        -0.5394523246103597
+      ],
+      "note": "negative = Grad-CAM order lowers the referral score faster than random"
+    }
+  }
+}

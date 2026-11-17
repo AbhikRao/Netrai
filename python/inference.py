@@ -291,6 +291,9 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
     fig.text(0.5, 0.935, f'Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")} | '
              f'Not a diagnosis | Unverified lesion candidates | Requires expert review',
              ha='center', fontsize=10, color='gray')
+    if safety is not None and safety.get('input_warning'):
+        fig.text(0.5, 0.912, 'WARNING: ' + safety['input_warning'] + ' The results below are not meaningful for such an image.',
+                 ha='center', fontsize=12, fontweight='bold', color='white', backgroundcolor='#b00020')
 
     # Panel 1: Enhanced Fundus
     ax1 = fig.add_subplot(gs[0, 0])
@@ -342,11 +345,13 @@ def generate_clinical_report(image_rgb, seg_results, grade, probs, heatmap,
         ref_color = '#D32F2F' if is_referable else '#388E3C'
         action_text = GRADE_ACTIONS[grade]
 
+    # The level comes from the referral-calibrated ordinal policy (refer if >= 2); it is not the most probable ICDR level.
+    most_probable = int(np.argmax(cal_probs))
     text_lines = [
-        (0.5, 0.85, f'DR Grade: Level {grade}', 20, grade_color, 'bold'),
-        (0.5, 0.72, GRADE_NAMES[grade], 16, grade_color, 'bold'),
+        (0.5, 0.85, f'Screening level {grade} (referral-calibrated)', 18, grade_color, 'bold'),
+        (0.5, 0.72, f'Most probable: {GRADE_NAMES[most_probable]} ({cal_probs[most_probable]*100:.0f}%)', 14, '#333', 'bold'),
         (0.5, 0.58, ref_text, 12, ref_color, 'bold'),
-        (0.5, 0.42, f'Post-hoc confidence: {cal_probs[grade]*100:.1f}%', 14, '#333', 'normal'),
+        (0.5, 0.42, f'Probability of levels 2-4: {cal_probs[2:].sum()*100:.0f}%', 14, '#333', 'normal'),
         (0.5, 0.28, f'Action: {action_text}', 11, '#555', 'normal'),
         (0.5, 0.14, 'EfficientNet-B4 | Internal post-hoc calibration only', 10, '#888', 'normal'),
     ]
@@ -412,6 +417,20 @@ def resolve_variant(variant='auto', site_policy=None):
     return 'E_768', variant_e768.E768Runtime(site_policy=site_policy)
 
 
+def _rejected(output_dir, iqs, feedback, reason, fundus_guard, metrics, variant_name, runtime):
+    """Result of an image that is not graded (poor quality or not a fundus photograph); same schema for both reasons."""
+    result = {
+        'status': 'rejected', 'iqs': iqs, 'feedback': feedback, 'rejection_reason': reason, 'fundus_guard': fundus_guard,
+        'triage_action': assign_triage(
+            quality_rejected=True, grade_referable=False,
+            referable_head_positive=False),
+    }
+    result.update(schema_version=2, research_only=True, quality_metrics=metrics, model_variant=variant_name,
+                  calibration_status=(runtime.status['calibration_status'] if runtime else 'UNCALIBRATED: frozen thresholds'))
+    atomic_json(Path(output_dir) / 'result.json', json_value(result))
+    return result
+
+
 def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
                  referral_probe='none', lesions='none', lesion_weights=None, lesion_thresholds=None,
                  variant='auto', site_policy=None):
@@ -439,16 +458,17 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
     if iqs < 0.3:
         feedback = generate_recapture_feedback(metrics)
         print(f"     [✗] Image REJECTED — {feedback}")
-        result = {
-            'status': 'rejected', 'iqs': iqs, 'feedback': feedback,
-            'triage_action': assign_triage(
-                quality_rejected=True, grade_referable=False,
-                referable_head_positive=False),
-        }
-        result.update(schema_version=2, research_only=True, quality_metrics=metrics, model_variant=variant_name,
-                      calibration_status=(runtime.status['calibration_status'] if runtime else 'UNCALIBRATED: frozen thresholds'))
-        atomic_json(Path(output_dir) / 'result.json', result)
-        return result
+        return _rejected(output_dir, iqs, feedback, 'image_quality', None, metrics, variant_name, runtime)
+
+    # Module 1b: is the input a fundus photograph at all? (X15 guard, after quality and before grading)
+    from modules.fundus_guard import FEEDBACK as NOT_FUNDUS, check_fundus
+    fundus_guard = check_fundus(image_rgb)
+    print(f"     Fundus check: score {fundus_guard['score']:.1f} (threshold {fundus_guard['threshold']:.1f})")
+    if not fundus_guard['is_fundus']:
+        if fundus_guard['action'] == 'reject':
+            print(f"     [✗] Image REJECTED — {NOT_FUNDUS}")
+            return _rejected(output_dir, iqs, [NOT_FUNDUS], 'not_fundus', fundus_guard, metrics, variant_name, runtime)
+        print(f"     [!] WARNING — {NOT_FUNDUS}")
 
     if iqs < 0.7:
         print("     [~] Borderline quality — applying adaptive enhancement...")
@@ -518,7 +538,9 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
     grade = int(prediction['grades'])
     probs = prediction['grade_probabilities']
     calibrated_probs = calibrate_confidence(probs, calibration_temperature)
-    print(f"     Grade: Level {grade} ({GRADE_NAMES[grade]})")
+    most_probable = int(np.argmax(calibrated_probs))
+    print(f"     Screening level {grade} (referral-calibrated; refer if >= 2) | most probable: {GRADE_NAMES[most_probable]} "
+          f"({calibrated_probs[most_probable]*100:.0f}%)")
     print(f"     Probabilities: [{', '.join(f'{p:.3f}' for p in probs)}]")
     print(f"     Post-hoc confidence: {calibrated_probs[grade]*100:.1f}% "
           f"(temperature={calibration_temperature:.3f})")
@@ -543,19 +565,19 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
 
     # Module 4: Model attribution and candidate evidence
     print("[M4] Model attribution and candidate evidence...")
-    heatmap = None if runtime is not None else generate_real_gradcam(image_rgb)
+    heatmap = runtime.gradcam(image_rgb) if runtime is not None else generate_real_gradcam(image_rgb)
     gradcam_qc = None
     if heatmap is not None:
         gradcam_qc = assess_gradcam_quality(
             heatmap, model_space_fov_mask(image_rgb, size=heatmap.shape[0]))
         heatmap = cv2.resize(heatmap, (proc_img.shape[1], proc_img.shape[0]))
-        print("     Grad-CAM: Real (from trained model)")
+        print("     Grad-CAM: Real (from trained model" + (", E_768 ensemble of two members)" if runtime is not None else ")"))
         print(f"     Explanation QC: border enrichment {gradcam_qc['border_enrichment']:.3f}, "
               f"outside-FOV attention {gradcam_qc['outside_fov_attention_fraction']:.3f}, "
               f"flag={gradcam_qc['shortcut_flag']}")
     else:
-        print("     Grad-CAM: unavailable " + ("for the ONNX E_768 variant (no gradients)" if runtime is not None else "(no synthetic substitute generated)")
-              + "; no synthetic substitute generated")
+        print("     Grad-CAM: unavailable " + ("for the ONNX E_768 variant (install the PyTorch members: scripts/fetch_e768.sh --with-gradcam)"
+              if runtime is not None else "") + "; no synthetic substitute generated")
 
     overlay = generate_lesion_overlay(proc_img, seg_results)
 
@@ -588,6 +610,7 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
             'research_referral': research_referral,
             'calibration_status': runtime.status['calibration_status'] if runtime else None,
             'model_variant': variant_name,
+            'input_warning': None if fundus_guard['is_fundus'] else NOT_FUNDUS,
         })
 
     # Also save individual panels for PPT
@@ -623,6 +646,9 @@ def run_pipeline(image_path, output_dir='../results', ma_detector='classic',
     }
     if learned_lesions is not None:
         result['learned_lesions'] = learned_lesions
+    result['fundus_guard'] = fundus_guard
+    if not fundus_guard['is_fundus']:
+        result['input_warning'] = NOT_FUNDUS
     result['model_variant'] = variant_name
     result['calibration_status'] = runtime.status['calibration_status'] if runtime else 'UNCALIBRATED: frozen thresholds'
     if runtime is not None:

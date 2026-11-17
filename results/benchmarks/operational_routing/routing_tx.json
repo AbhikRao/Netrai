@@ -1,0 +1,19 @@
+{
+ "tier": "TX (mBRSET and BRSET labels exposed by their locked evaluations; aggregates only)",
+ "pipeline": "deployed heuristic quality gate (IQS < 0.3 -> recapture) + E_768 at its frozen policy + four-way triage (grade >= 2 and referral head agree -> refer / auto-clear; disagree -> human review)",
+ "mBRSET_smartphone": {
+  "ungradable_images": 292, "ungradable_routing": {"recapture": 0.274, "refer": 0.243, "review": 0.089, "auto_clear": 0.394},
+  "gradable_images": 4872, "gradable_routing": {"recapture": 0.131, "refer": 0.205, "review": 0.06, "auto_clear": 0.604},
+  "ungradable_but_graded_referable": 1, "of_which_auto_cleared": 0,
+  "head_disagreement_rate_gradable_graded": 0.07},
+ "BRSET_desktop": {
+  "ungradable_images": 1986, "ungradable_routing": {"recapture": 0.01, "refer": 0.331, "review": 0.206, "auto_clear": 0.453},
+  "gradable_images": 14280, "gradable_routing": {"recapture": 0.003, "refer": 0.44, "review": 0.193, "auto_clear": 0.363},
+  "ungradable_but_graded_referable": 84, "of_which_auto_cleared": 0,
+  "head_disagreement_rate_gradable": 0.194},
+ "candidate_rule_not_deployed": {
+  "rule": "label-free per site: among would-be auto-clears, send the site's worst k% by the EyeQ-candidate reject score to human review",
+  "mBRSET": {"k5": {"ungradable_auto_clears_prevented": 0.19, "extra_review_share": 0.014}, "k10": {"ungradable_auto_clears_prevented": 0.40, "extra_review_share": 0.035}, "k15": {"ungradable_auto_clears_prevented": 0.50, "extra_review_share": 0.059}},
+  "BRSET": {"k5": {"ungradable_auto_clears_prevented": 0.13, "extra_review_share": 0.014}, "k10": {"ungradable_auto_clears_prevented": 0.24, "extra_review_share": 0.031}, "k15": {"ungradable_auto_clears_prevented": 0.33, "extra_review_share": 0.051}},
+  "status": "post hoc only; needs a pre-registered test on a fresh quality-labelled set before any default change"}
+}

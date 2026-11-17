@@ -1,0 +1,351 @@
+{
+ "images": 300,
+ "sets": [
+  "odir",
+  "fdr26",
+  "paraguay_hc",
+  "sustech_sysu",
+  "brset",
+  "mbrset"
+ ],
+ "per_set": {
+  "odir": {
+   "formats": [
+    ".jpg"
+   ],
+   "median_stored_kb": 176.9
+  },
+  "fdr26": {
+   "formats": [
+    ".jpg"
+   ],
+   "median_stored_kb": 247.0
+  },
+  "paraguay_hc": {
+   "formats": [
+    ".jpg"
+   ],
+   "median_stored_kb": 356.8
+  },
+  "sustech_sysu": {
+   "formats": [
+    ".jpg"
+   ],
+   "median_stored_kb": 287.7
+  },
+  "brset": {
+   "formats": [
+    ".jpg"
+   ],
+   "median_stored_kb": 1068.4
+  },
+  "mbrset": {
+   "formats": [
+    ".jpg"
+   ],
+   "median_stored_kb": 524.5
+  }
+ },
+ "conditions": {
+  "stored": {
+   "median_kb": 422.9,
+   "e768_flips": 0,
+   "e768_flip_upper95": 0.0122,
+   "e768_score_change_median": 0.0,
+   "e768_score_change_p95": 0.0,
+   "legacy_flips": 0,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9572444444444443,
+   "legacy_auc": 0.9012444444444444
+  },
+  "q90": {
+   "median_kb": 294.1,
+   "e768_flips": 6,
+   "e768_flip_upper95": 0.043,
+   "e768_score_change_median": 0.024338279972582894,
+   "e768_score_change_p95": 0.15290860990896724,
+   "legacy_flips": 3,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9548888888888888,
+   "legacy_auc": 0.898888888888889
+  },
+  "q75": {
+   "median_kb": 186.6,
+   "e768_flips": 4,
+   "e768_flip_upper95": 0.0338,
+   "e768_score_change_median": 0.028488366228273693,
+   "e768_score_change_p95": 0.27526602129991706,
+   "legacy_flips": 7,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9544444444444444,
+   "legacy_auc": 0.8995111111111112
+  },
+  "q50": {
+   "median_kb": 130.5,
+   "e768_flips": 16,
+   "e768_flip_upper95": 0.0852,
+   "e768_score_change_median": 0.08245197247637076,
+   "e768_score_change_p95": 0.5600599094182042,
+   "legacy_flips": 10,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9493333333333334,
+   "legacy_auc": 0.8877777777777779
+  },
+  "q30": {
+   "median_kb": 94.9,
+   "e768_flips": 18,
+   "e768_flip_upper95": 0.0932,
+   "e768_score_change_median": 0.1236032699770026,
+   "e768_score_change_p95": 0.7004283942516832,
+   "legacy_flips": 20,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9404000000000001,
+   "legacy_auc": 0.8848000000000001
+  },
+  "1024px_q90": {
+   "median_kb": 79.4,
+   "e768_flips": 11,
+   "e768_flip_upper95": 0.0647,
+   "e768_score_change_median": 0.05688884925061721,
+   "e768_score_change_p95": 0.3844410947246841,
+   "legacy_flips": 10,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9504000000000001,
+   "legacy_auc": 0.8998222222222222
+  },
+  "1024px_q75": {
+   "median_kb": 41.7,
+   "e768_flips": 17,
+   "e768_flip_upper95": 0.0892,
+   "e768_score_change_median": 0.08848094278164781,
+   "e768_score_change_p95": 0.5611396269466299,
+   "legacy_flips": 13,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9360444444444443,
+   "legacy_auc": 0.8938666666666667
+  },
+  "1024px_q50": {
+   "median_kb": 27.6,
+   "e768_flips": 26,
+   "e768_flip_upper95": 0.1244,
+   "e768_score_change_median": 0.1422365687654879,
+   "e768_score_change_p95": 0.7021776133508527,
+   "legacy_flips": 22,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9278666666666668,
+   "legacy_auc": 0.8942666666666667
+  },
+  "768px_q90": {
+   "median_kb": 49.4,
+   "e768_flips": 10,
+   "e768_flip_upper95": 0.0604,
+   "e768_score_change_median": 0.07730978830945967,
+   "e768_score_change_p95": 0.40389536719338603,
+   "legacy_flips": 11,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9503111111111111,
+   "legacy_auc": 0.8950222222222222
+  },
+  "768px_q75": {
+   "median_kb": 26.6,
+   "e768_flips": 27,
+   "e768_flip_upper95": 0.1282,
+   "e768_score_change_median": 0.1294869692793528,
+   "e768_score_change_p95": 0.6804308394318476,
+   "legacy_flips": 15,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.9366222222222222,
+   "legacy_auc": 0.8945777777777778
+  },
+  "768px_q50": {
+   "median_kb": 17.7,
+   "e768_flips": 28,
+   "e768_flip_upper95": 0.1321,
+   "e768_score_change_median": 0.1836429060240221,
+   "e768_score_change_p95": 0.7839791981944297,
+   "legacy_flips": 21,
+   "extra_quality_rejections": 0,
+   "extra_guard_flags": 0,
+   "e768_auc": 0.934311111111111,
+   "legacy_auc": 0.8935555555555554
+  }
+ },
+ "cv2_version": "5.0.0",
+ "e768_referral_cut": 1.092308373535268,
+ "near_cut_images": 14,
+ "near_cut_band": 0.1,
+ "recommended": null,
+ "rule": "smallest median size with E_768 flips <= 1% of images and no extra quality rejection or guard flag versus the stored file (written before scoring)",
+ "capacity_what_if": "not run: the plan adds a capacity scenario only for a recommended size",
+ "post_hoc": {
+  "note": "descriptive, added after the rule result was seen; sensitivity/specificity on the balanced 150/150 sample",
+  "stored": {
+   "referrals_lost": 0,
+   "referrals_gained": 0,
+   "flips_within_near_band": 0,
+   "max_stored_distance_from_cut": null,
+   "flips_per_set": {},
+   "sensitivity": 0.927,
+   "specificity": 0.86
+  },
+  "q90": {
+   "referrals_lost": 4,
+   "referrals_gained": 2,
+   "flips_within_near_band": 5,
+   "max_stored_distance_from_cut": 0.214,
+   "flips_per_set": {
+    "mbrset": 3,
+    "odir": 2,
+    "paraguay_hc": 1
+   },
+   "sensitivity": 0.927,
+   "specificity": 0.873
+  },
+  "q75": {
+   "referrals_lost": 3,
+   "referrals_gained": 1,
+   "flips_within_near_band": 4,
+   "max_stored_distance_from_cut": 0.04,
+   "flips_per_set": {
+    "odir": 2,
+    "mbrset": 2
+   },
+   "sensitivity": 0.92,
+   "specificity": 0.867
+  },
+  "q50": {
+   "referrals_lost": 10,
+   "referrals_gained": 6,
+   "flips_within_near_band": 6,
+   "max_stored_distance_from_cut": 0.73,
+   "flips_per_set": {
+    "odir": 6,
+    "brset": 5,
+    "mbrset": 3,
+    "paraguay_hc": 1,
+    "sustech_sysu": 1
+   },
+   "sensitivity": 0.9,
+   "specificity": 0.86
+  },
+  "q30": {
+   "referrals_lost": 12,
+   "referrals_gained": 6,
+   "flips_within_near_band": 5,
+   "max_stored_distance_from_cut": 0.71,
+   "flips_per_set": {
+    "odir": 10,
+    "mbrset": 4,
+    "brset": 2,
+    "paraguay_hc": 1,
+    "sustech_sysu": 1
+   },
+   "sensitivity": 0.893,
+   "specificity": 0.867
+  },
+  "1024px_q90": {
+   "referrals_lost": 7,
+   "referrals_gained": 4,
+   "flips_within_near_band": 5,
+   "max_stored_distance_from_cut": 0.374,
+   "flips_per_set": {
+    "odir": 4,
+    "brset": 3,
+    "mbrset": 2,
+    "fdr26": 1,
+    "paraguay_hc": 1
+   },
+   "sensitivity": 0.92,
+   "specificity": 0.873
+  },
+  "1024px_q75": {
+   "referrals_lost": 7,
+   "referrals_gained": 10,
+   "flips_within_near_band": 4,
+   "max_stored_distance_from_cut": 0.706,
+   "flips_per_set": {
+    "odir": 6,
+    "brset": 4,
+    "sustech_sysu": 3,
+    "mbrset": 2,
+    "fdr26": 1,
+    "paraguay_hc": 1
+   },
+   "sensitivity": 0.92,
+   "specificity": 0.833
+  },
+  "1024px_q50": {
+   "referrals_lost": 11,
+   "referrals_gained": 15,
+   "flips_within_near_band": 7,
+   "max_stored_distance_from_cut": 0.929,
+   "flips_per_set": {
+    "mbrset": 8,
+    "brset": 7,
+    "odir": 6,
+    "paraguay_hc": 2,
+    "sustech_sysu": 2,
+    "fdr26": 1
+   },
+   "sensitivity": 0.893,
+   "specificity": 0.8
+  },
+  "768px_q90": {
+   "referrals_lost": 8,
+   "referrals_gained": 2,
+   "flips_within_near_band": 5,
+   "max_stored_distance_from_cut": 0.441,
+   "flips_per_set": {
+    "odir": 3,
+    "brset": 3,
+    "mbrset": 3,
+    "paraguay_hc": 1
+   },
+   "sensitivity": 0.913,
+   "specificity": 0.887
+  },
+  "768px_q75": {
+   "referrals_lost": 9,
+   "referrals_gained": 18,
+   "flips_within_near_band": 5,
+   "max_stored_distance_from_cut": 0.744,
+   "flips_per_set": {
+    "odir": 9,
+    "brset": 8,
+    "mbrset": 5,
+    "sustech_sysu": 3,
+    "fdr26": 1,
+    "paraguay_hc": 1
+   },
+   "sensitivity": 0.913,
+   "specificity": 0.787
+  },
+  "768px_q50": {
+   "referrals_lost": 12,
+   "referrals_gained": 16,
+   "flips_within_near_band": 7,
+   "max_stored_distance_from_cut": 1.629,
+   "flips_per_set": {
+    "odir": 8,
+    "brset": 8,
+    "mbrset": 7,
+    "fdr26": 3,
+    "paraguay_hc": 1,
+    "sustech_sysu": 1
+   },
+   "sensitivity": 0.9,
+   "specificity": 0.807
+  }
+ },
+ "scope": "AI decision stability under recompression only; nothing about human grading of compressed images"
+}

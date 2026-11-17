@@ -2,7 +2,8 @@
 """X11: is the referral Grad-CAM faithful to lesions? (post hoc, tier TX: the lesion masks of two exposed test sets)
 
 Images: the DDR lesion-segmentation test (the 202 primary images of the locked evaluation) and the IDRiD segmentation
-test (27). Models: the deployed legacy model (512 px) and R5_768_s17 (768 px). For each image the referral Grad-CAM
+test (27). Models: the legacy model (512 px), R5_768_s17 (768 px) and E_768 (the presented default: mean of two 768 px members;
+its Grad-CAM averages the members' referral-logit maps). For each image the referral Grad-CAM
 (``model.backbone.conv_head``, target = referral logit) is compared with the union of the expert lesion masks
 (EX, HE, MA, SE), mapped into the classifier's crop/resize space:
 
@@ -113,10 +114,34 @@ def load_model_spec(name: str):
         return load_model({'kind': 'legacy'}), 512
     if name == 'R5_768_s17':
         return load_model({'kind': 'full', 'checkpoint': 'results/model_improvement/kaggle_output_r5_s17/run/best.pt'}), 768
+    if name == 'E_768':  # the presented default: mean of the two round-3 768 px members (same outputs as the E_768 ONNX graph)
+        members = [load_model({'kind': 'full', 'checkpoint': f'results/model_improvement/kaggle_output_768_{seed}/run/best.pt'})
+                   for seed in ('s2026', 's17')]
+        return MeanEnsemble(members).eval(), 768
     raise ValueError(name)
 
 
-def cam_for(model, tensor: torch.Tensor) -> np.ndarray:
+class MeanEnsemble(torch.nn.Module):
+    """Mean of member outputs (grade logits, referral logit), as in the locked E_768 evaluations and the E_768 ONNX graph."""
+
+    def __init__(self, members):
+        super().__init__()
+        self.members = torch.nn.ModuleList(members)
+
+    def forward(self, inputs):
+        outputs = [member(inputs) for member in self.members]
+        return torch.stack([o[0] for o in outputs]).mean(0), torch.stack([o[1] for o in outputs]).mean(0)
+
+
+def target_layers(model, layer: str = 'conv_head') -> list:
+    """Grad-CAM layers of each member (pytorch-grad-cam averages the per-layer maps): ``conv_head`` = the last convolution before its
+    batch norm (the historical definition), ``bn2`` = after batch norm and SiLU (the only one an ONNX export with folded batch norm keeps,
+    hence the MATLAB map)."""
+    members = model.members if isinstance(model, MeanEnsemble) else [model]
+    return [getattr(member.backbone, layer) for member in members]
+
+
+def cam_for(model, tensor: torch.Tensor, layer: str = 'conv_head') -> np.ndarray:
     from pytorch_grad_cam import GradCAM
 
     class BothHeads(torch.nn.Module):
@@ -128,7 +153,7 @@ def cam_for(model, tensor: torch.Tensor) -> np.ndarray:
             logits, referral = self.network(inputs)
             return torch.cat([logits, referral[:, None]], dim=1)
 
-    with GradCAM(model=BothHeads(model).eval(), target_layers=[model.backbone.conv_head]) as cam:
+    with GradCAM(model=BothHeads(model).eval(), target_layers=target_layers(model, layer)) as cam:
         return cam(input_tensor=tensor, targets=[lambda output: output[5]])[0]
 
 
@@ -141,7 +166,7 @@ def records(dataset: str, exclusions: Path):
     raise ValueError(dataset)
 
 
-def run(model_name: str, dataset: str, exclusions: Path, limit: int, seed: int) -> pd.DataFrame:
+def run(model_name: str, dataset: str, exclusions: Path, limit: int, seed: int, layer: str = 'conv_head') -> pd.DataFrame:
     model, size = load_model_spec(model_name)
     rng = np.random.default_rng(seed)
     rows = []
@@ -155,7 +180,7 @@ def run(model_name: str, dataset: str, exclusions: Path, limit: int, seed: int) 
             rows.append({'image': record.image_id, 'has_lesion': False})
             continue
         tensor = torch.from_numpy(preprocess_for_model(rgb, size=size).transpose(2, 0, 1)[None]).float()
-        cam = cam_for(model, tensor)
+        cam = cam_for(model, tensor, layer)
         hit, chance = pointing_hit(cam, lesion, fov, size)
         curves = deletion_curves(model, tensor, cam, fov, rng)
         rows.append({'image': record.image_id, 'has_lesion': True, 'energy_ratio': energy_ratio(cam, lesion, fov),
@@ -193,13 +218,14 @@ def main(argv=None):
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--limit', type=int, default=0)
     parser.add_argument('--seed', type=int, default=20261105)
+    parser.add_argument('--layer', choices=('conv_head', 'bn2'), default='conv_head', help='Grad-CAM feature layer of each member')
     args = parser.parse_args(argv)
     args.output.mkdir(parents=True, exist_ok=True)
-    result = {'tier': 'TX (post hoc; lesion masks of exposed test sets)'}
+    result = {'tier': 'TX (post hoc; lesion masks of exposed test sets)', 'layer': args.layer}
     for model in args.models:
         for dataset in args.datasets:
             path = args.output / f'{model}_{dataset}.csv'
-            frame = pd.read_csv(path) if path.exists() else run(model, dataset, args.exclusions, args.limit, args.seed)
+            frame = pd.read_csv(path) if path.exists() else run(model, dataset, args.exclusions, args.limit, args.seed, args.layer)
             frame.to_csv(path, index=False)
             result[f'{model}/{dataset}'] = summarise(frame, args.seed)
             print(model, dataset, json.dumps(result[f'{model}/{dataset}'])[:400], flush=True)

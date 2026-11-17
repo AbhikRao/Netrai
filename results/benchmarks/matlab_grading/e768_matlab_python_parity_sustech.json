@@ -1,0 +1,15 @@
+{
+ "date": "2026-10-30",
+ "model": "E_768 (matlab/variant_R3_E_768/netrai_fold0.onnx, SHA-256 b8961361e79f1c03ff9fce030ca72389bd2b5c3c8f2d4ebe3a4698f3ee0f120d)",
+ "images": "60 randomly chosen primary images of the SUSTech-SYSU fresh set (Topcon TRC-50DX; labels exposed after its locked evaluation), 27 referable",
+ "matlab_path": "readScreeningImage -> preprocessModelInput -> predictDRGrade (MATLAB R2026a, ONNX import)",
+ "python_path": "locked CPU logits (PyTorch members, legacy-area-v1 at 768 px) -> expected grade",
+ "expected_grade_score_max_abs_difference": 1.45e-06,
+ "expected_grade_score_mean_abs_difference": 4.27e-07,
+ "referral_head_probability_max_abs_difference": 1.12e-06,
+ "five_grade_agreement": 1.0,
+ "referral_decision_agreement": 1.0,
+ "site_calibration": {"rule": "highest cut with sample sensitivity >= 0.95 (calibrateSite.m vs python/calibrate_site.py)",
+                      "matlab_cut": 1.251056, "python_cut": 1.251055, "abs_difference": 1.36e-06, "site_sample_decisions_identical": true,
+                      "matlab_thresholds_strictly_increasing": true}
+}

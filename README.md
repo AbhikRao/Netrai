@@ -11,15 +11,33 @@ The simulation explores how connectivity, staffing and recapture demand affect
 screening completion.
 
 <!-- current-state:start -->
-> **Current state (2026-10-25):** the presented screening model is **E_768 with a required per-site calibration of its referral cut-off** (weights kept
-> because of their size not in Git; a hash-checked script downloads them from the project's `e768-v1` release (research use, terms in the model card); without the weights the checkout runs the legacy model; MATLAB and Python both support it). On two fresh Brazilian tests (smartphone mBRSET, desktop BRSET)
-> E_768 ranks referable DR better than the legacy model (AUC 0.948 vs 0.918 and 0.957 vs 0.887), but no frozen cut-off met the pre-registered 90% / 85% rule:
-> on Canon desktop images it refers 57% of healthy eyes, while legacy misses 47% (smartphone) and 23% (desktop) of referable eyes. The calibration step has only
-> post hoc evidence. On a fresh any-DR test (RFMiD 2.0) legacy ranks DR better (AUC 0.84 vs 0.72–0.76). Opt-in learned lesion candidates are research additions.
-> Details and limits: [validation](docs/VALIDATION.md).
+> **Current state (2026-11-17):** the presented screening model is **E_768 with a per-site calibration of its referral cut-off** (weights: a hash-checked
+> download from the project's `e768-v1` release; without them the checkout runs the legacy model; MATLAB and Python both support it). On the four newest
+> fresh external tests E_768 ranks referable DR better than or comparably to the legacy model (AUC 0.948–0.998); its frozen cut-off met the 90% / 85% targets on two
+> easier sets (Paraguay, Zeiss: 96.7% / 96.8%; SUSTech-SYSU, Topcon: 99.4% / 95.6%) but not on screening-population sets (mBRSET smartphone 89.2% / 89.3%;
+> BRSET Canon images over-referred). Site calibration with a 95% target, confirmed on a fresh test, keeps sensitivity near 0.94 but cannot fix
+> cameras on which the model ranks poorly; fitting it and checking it on a separate sample runs in MATLAB or Python from the released weights. On a fresh any-DR test (RFMiD 2.0) legacy ranks DR better (AUC 0.84 vs 0.76).
+> Images that do not look like fundus photographs carry a visible warning (99.3% of non-fundus test images flagged; a warning rather than a rejection
+> because about 1% of smartphone retinas would be turned back). Python and MATLAB reach the same decisions on 68 test images from 13 datasets, and their Grad-CAM maps match on the
+> fixture images both test suites check. Re-encoding images to shrink uploads changes some referral decisions (no tested setting met the
+> 1% bar), so images should be sent as the camera saved them. New on November 17: a screening console for live demonstrations (`netraiApp`), and the full
+> MATLAB report now takes 14–21 s per image with E_768 (19–34 s before) because grading and the attention map share one network pass, with identical outputs. Details and limits:
+> [validation](docs/VALIDATION.md) · [evidence card](docs/EVIDENCE_CARD.md).
 <!-- current-state:end -->
 
 [Run the prototype](matlab/README_MATLAB.md) · [Evidence card](docs/EVIDENCE_CARD.md) · [Validation evidence](docs/VALIDATION.md) · [Demo guide](docs/DEMO.md) · [Model card](docs/MODEL_CARD.md)
+
+## Against the problem-statement targets
+
+| Target | Where NetrAI stands | Evidence |
+| --- | --- | --- |
+| Referable-DR sensitivity above 90% and specificity above 85% | Met at the model's fixed cut-off on two fresh external tests: 96.7% / 96.8% (Paraguay, Zeiss camera) and 99.4% / 95.6% (SUSTech-SYSU, Topcon camera); both sets are easier than a screening population. Close on two harder fresh tests: 89.2% / 89.3% on smartphone images (mBRSET) and 90.5% / 84.5% on ODIR-5K. Not met on desktop-camera images from Brazil (BRSET) at the fixed cut-off: 98.5% / 56.0%, because it over-refers on Canon images; calibrating the cut-off for the site brings Canon specificity to about 83% at about 94% sensitivity (post hoc analysis). | Each test was locked and scored once: [evidence card](docs/EVIDENCE_CARD.md), claims 2 and 9–12 |
+| Five-grade agreement (QWK above 0.85) | 0.933 on the internal development set, which overlaps training. On unseen cameras mild DR is rarely recognised, so no five-grade claim is made; the referral decision is the supported output. | [Validation](docs/VALIDATION.md) |
+| A result in under 30 seconds | Yes on the laptop CPU tested: the full MATLAB report (quality check, grading, attention map, retinal analysis, PDF) took 14–21 s per image with E_768 and 8–16 s with the legacy model on three images of 0.3–12 megapixels (November 17, after grading and the attention map began sharing one network pass; 19–34 s before on the same images). The one-time model load of up to two minutes is not included. | [Timing runs](results/benchmarks/matlab_runtime_2026-11-17/shared_forward_pass_timing.json) |
+| An explanation a clinician can check | The attention map (Grad-CAM of the referral output) puts 3.0 to 6.1 times the chance level of its energy on annotated lesions (two annotated sets) and its strongest point on a lesion in 86–89% of images. It shows model evidence, not lesion outlines. | [Evidence card](docs/EVIDENCE_CARD.md), claim 6 |
+| Fit for a rural workflow | Image-quality check with recapture advice, a warning for inputs that are not fundus photographs, per-site calibration tools, and a SimEvents model of a district's yearly screening load under different links and staffing. | [Demo guide](docs/DEMO.md) |
+
+These are research results on public datasets. NetrAI has not been clinically validated.
 
 ## Screening workflow
 
@@ -34,11 +52,12 @@ flowchart TD
 
 | Component | Implemented capability |
 | --- | --- |
-| Image quality | Focus, illumination and field-of-view checks with recapture feedback |
+| Image quality | Focus, illumination and field-of-view checks with recapture feedback; inputs that do not look like a fundus photograph get a visible warning |
 | Retinal analysis | Optic-disc/fovea localization, vessels and lesion candidate overlays |
 | DR grading | Trained EfficientNet-B4 ONNX inference with five-grade and referral output heads |
 | Explanation report | Referral-targeted Grad-CAM, evidence checklist and PDF report |
 | District simulation | SimEvents acquisition, bounded recapture returns, upload, processing and review queues |
+| Screening console | `netraiApp`: one window for a live run, showing the routing decision, attention map, candidate marks, warnings and capacity scenarios |
 
 The grade and referral heads share a backbone. Disagreeing outputs route to
 human review. The capacity simulation is a separate planning model.
@@ -53,7 +72,9 @@ a research prototype and has not been clinically validated.
 | MATLAB model execution | 733/733 images processed; zero processing errors | September 28 internal development run |
 | Internal referable-DR grading | Sensitivity 94.63%, specificity 94.02%, QWK 0.9330 | Training overlap affects this cohort; not independent accuracy evidence |
 | Model runtime comparison | 733/733 grades and screening routes match; maximum probability difference 2.82 × 10⁻⁶ | Passes the fixed model-mode gates; not full-image or clinical validation |
-| Model-mode execution time | Mean 2.33 s/image on CPU | Includes byte verification/decoding, quality assessment and grading; excludes retinal analysis, Grad-CAM, report generation and review |
+| Execution time on a laptop CPU | Legacy model mode: mean 2.33 s/image (733 images). On 18 images (Oct 30), both measured identically: legacy 1.3 s, E_768 4.8 s; full report with retinal analysis and Grad-CAM 14–21 s/image for E_768, 8–16 s for legacy (3 images of 0.3–12 megapixels, Nov 17; [timing](results/benchmarks/matlab_runtime_2026-11-17/shared_forward_pass_timing.json)) | Model mode: decoding, quality assessment and grading; the one-time model import (about 2 min for E_768) is excluded; Intel i5-10210U |
+| Non-fundus input guard | 99.3% of 2,579 non-fundus sample images flagged; real retinas flagged in ≤ 0.12% of gradable images on six unseen sets, 1.13% on a smartphone set | Exposed data (TX); ships as a warning, not a rejection |
+| Upload recompression | No tested setting kept E_768 referral changes within the 1% bar set before scoring (JPEG 75: 4 of 300 changed, all next to the cut-off; downscaling changed up to 28) | Exposed data (TX); send images as the camera saved them |
 | SimEvents workflow verification | 18 annual conservation checks; 7 independent deterministic fixture comparisons; 3 native seeded runs | Engineering verification under declared assumptions; no field calibration |
 
 The internal cohort includes **35 images with exact-content counterparts in
@@ -87,6 +108,8 @@ Clone the repository, open its `matlab` folder, and enter these commands in the
 fixtureReport = verifyMatlabPackage();
 result = demo_netrai("/absolute/path/to/fundus.png");
 ```
+
+For a live demonstration in one window, run `netraiApp` instead (see the [demo guide](docs/DEMO.md)).
 
 Supply a local image whose terms permit your intended use. Images and datasets
 are not bundled. Accepted images produce a report; rejected images produce

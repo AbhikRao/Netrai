@@ -9,37 +9,64 @@ import numpy as np
 from utils.calibration import temperature_scale_probabilities
 
 
+def head_gradcam(model, input_tensor, target):
+    """Grad-CAM at the last activation of a NetrAI model (``backbone.bn2``: batch norm + SiLU), averaged over the members of a mean
+    ensemble (a model with ``members``); (H, W) float32 in [0, 1] for a (1, 3, H, W) input. ``target`` maps the 6-vector
+    (five grade logits, referral logit) to a scalar.
+
+    Same numbers as pytorch_grad_cam's GradCAM on those layers (spatial-mean gradient weights, ReLU, per-layer min-max, bilinear
+    resize, mean, min-max), but only the head is differentiated: the activation is computed once without gradients and fed through
+    global pooling and the head, so nothing is backpropagated through the backbone. This is also the layer the MATLAB pipeline
+    explains (the ONNX export folds batch norm into conv_head), so both runtimes give the same map."""
+    import torch
+    members = list(getattr(model, 'members', [model]))
+    with torch.no_grad():
+        activations = [member.backbone.forward_features(input_tensor) for member in members]
+    activations = [a.requires_grad_(True) for a in activations]
+    with torch.enable_grad():
+        outputs = [member.forward_from_features(a) for member, a in zip(members, activations)]
+        logits = torch.stack([o[0] for o in outputs]).mean(0)
+        referral = torch.stack([o[1] for o in outputs]).mean(0)
+        gradients = torch.autograd.grad(target(torch.cat([logits, referral[:, None]], dim=1)[0]), activations)
+    height, width = input_tensor.shape[-2:]
+    maps = []
+    for a, g in zip(activations, gradients):
+        a, g = a.detach().cpu().numpy(), g.cpu().numpy()
+        cam = np.maximum((g.mean(axis=(2, 3))[:, :, None, None] * a).sum(axis=1)[0], 0)
+        maps.append(cv2.resize(np.float32(_min_max(cam)), (width, height)))
+    return np.float32(_min_max(np.maximum(np.stack(maps), 0).mean(axis=0)))
+
+
+def _min_max(image):
+    image = image - np.min(image)
+    return image / (1e-7 + np.max(image))
+
+
+def gradcam_target(target_class='referral'):
+    """Scalar Grad-CAM target on the 6-vector (five grade logits, referral logit)."""
+    import torch
+
+    def target(output):
+        if target_class == 'referral':
+            return output[5]
+        if target_class == 'ordinal':
+            return (output[:5].softmax(0) * torch.arange(5, device=output.device)).sum()
+        if isinstance(target_class, int) and 0 <= target_class <= 4:
+            return output[target_class]
+        raise ValueError('Target must be referral, ordinal, or a class index 0–4')
+    return target
+
+
 def generate_gradcam(model, image, target_class='referral', preprocessing_version='legacy-area-v1'):
     """Model-space attribution for an explicitly named target, not lesion proof."""
     try:
-        from pytorch_grad_cam import GradCAM
         import torch
         from utils.preprocessing import preprocess_for_model
-
-        target_layers = [model.backbone.conv_head]
-        class BothHeads(torch.nn.Module):
-            def __init__(self, network):
-                super().__init__()
-                self.network = network
-
-            def forward(self, inputs):
-                logits, referral = self.network(inputs)
-                return torch.cat([logits, referral[:, None]], dim=1)
-
-        def target(output):
-            if target_class == 'referral':
-                return output[5]
-            if target_class == 'ordinal':
-                return (output[:5].softmax(0) * torch.arange(5, device=output.device)).sum()
-            if isinstance(target_class, int) and 0 <= target_class <= 4:
-                return output[target_class]
-            raise ValueError('Target must be referral, ordinal, or a class index 0–4')
 
         array = preprocess_for_model(image, version=preprocessing_version)
         input_tensor = torch.from_numpy(array.transpose(2, 0, 1)[None]).float().to(
             next(model.parameters()).device)
-        with GradCAM(model=BothHeads(model).eval(), target_layers=target_layers) as cam:
-            return cam(input_tensor=input_tensor, targets=[target])[0]
+        return head_gradcam(model.eval(), input_tensor, gradcam_target(target_class))
     except Exception as e:
         import warnings
         warnings.warn(f'Grad-CAM failed: {e}')

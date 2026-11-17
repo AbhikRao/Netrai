@@ -50,6 +50,8 @@ kaggle.json
 # MATLAB/Simulink generated caches.
 /matlab/+netrai_fold0/
 /+netrai_fold0/
++netrai_*/
+/matlab/onnx_layers/
 /matlab/+quality_model_candidate/
 slprj/
 *.slxc
@@ -82,6 +84,7 @@ Thumbs.db
 
 # Candidate deployment variants: ONNX weights are distributed as release assets, not Git objects.
 /matlab/variant_*/*.onnx
+/matlab/variant_*/torch/*.pt
 
 # MATLAB importNetworkFromONNX generated packages (regenerated on import)
 matlab/+lesion_unet_b2_1024/

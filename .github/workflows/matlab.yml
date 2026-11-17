@@ -25,7 +25,7 @@ jobs:
         uses: matlab-actions/setup-matlab@f9e43010f1ae678f7cfa0542fe2a4f60f7d1ad8d # v3
         with:
           release: R2026a
-          products: Image_Processing_Toolbox Statistics_and_Machine_Learning_Toolbox
+          products: Image_Processing_Toolbox Statistics_and_Machine_Learning_Toolbox Deep_Learning_Toolbox
       - name: Run synthetic and validation-contract tests
         uses: matlab-actions/run-tests@214a16e600ef2c705a4b2dd6c0794dc6957682a9 # v3
         with:

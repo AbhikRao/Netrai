@@ -32,4 +32,4 @@ include = ["netrai*", "models*", "modules*", "utils*", "weights*"]
 exclude = ["tests*"]
 
 [tool.setuptools.package-data]
-weights = ["*.json", "*.npy", "*.pth"]
+weights = ["*.json", "*.npy", "*.pth", "*.f32"]

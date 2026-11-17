@@ -3,7 +3,36 @@
 A 60–90 second screen recording can show MATLAB image processing, the generated
 report and the SimEvents capacity model. A recording has not yet been published.
 
-## Prepare the session
+## The screening console (recommended for a live demonstration)
+
+`netraiApp` puts the whole demonstration in one window. It runs the same `main_pipeline` as the command line and shows only what
+that call returned.
+
+```matlab
+netraiApp                                  % or: netraiApp(Image="/absolute/path/to/fundus.png")
+```
+
+From a Linux terminal: `./scripts/launch_demo.sh --app /absolute/path/to/fundus.png`.
+
+1. **Choose image…**, then **Run screening**. The first run in a MATLAB session loads the model (up to two minutes for E_768);
+   run one image before the audience arrives. Later images take seconds.
+2. The right-hand panel gives the routing decision in one word (REFER, NO REFERRAL, HUMAN REVIEW or RECAPTURE), the screening
+   level, the most probable grade, the referral output, the image-quality score, and the warnings: an uncalibrated cut-off, an
+   input that does not look like a fundus photograph, or an attention map flagged by its quality check.
+3. **Photograph / Model attention / Lesion candidates** switch the picture. The attention map is Grad-CAM of the referral output;
+   the lesion marks are unverified candidates.
+4. **Site calibration file…** loads a policy written by `calibrateSite`; the cut-off line then reads "Calibrated for this site".
+5. The **District capacity (SimEvents)** tab shows the recorded annual scenarios for one or two reviewers and three recapture
+   rates, and opens the SimEvents model. These are recorded runs under stated assumptions, not field data.
+6. **Open the PDF report** opens the report of the current image.
+7. Timing on the tested laptop: about 19 s per image with E_768 and the PDF report, about 11 s without the PDF. Untick
+   **Also write the PDF report** when speed matters. The learned lesion picture (offered only when the research lesion model
+   is installed locally; it is not distributed) adds about 40 s.
+
+A failed step shows its error message; the console never substitutes a result. Say what the screen says: "no referral" is not a
+clearance, and the prototype is not a diagnosis.
+
+## Prepare the session (command-line demonstration)
 
 From a **Linux terminal**, run the launcher at the repository root:
 
@@ -28,7 +57,9 @@ result = demo_netrai("/absolute/path/to/fundus.png");
 
 Quality enforcement is enabled. A rejected image returns recapture feedback and
 no grading report. An accepted image produces a new report directory; open
-`result.reportPath`. Grad-CAM and candidate overlays retain their warnings.
+`result.reportPath`. Grad-CAM and candidate overlays retain their warnings. An
+image that does not look like a fundus photograph is still graded but carries a
+red warning in the console and the report (`result.inputWarning`).
 Do not present a candidate detection as a confirmed diagnosis.
 
 Prepare the capacity model in another MATLAB tab:

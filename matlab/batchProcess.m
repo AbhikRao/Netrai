@@ -35,6 +35,7 @@ function summaryTable = batchProcess(folderPath, outputCsvPath, varargin)
     probabilities = nan(n,5);
     referableHeadProbability = nan(n,1); headDisagreement = false(n,1);
     triageAction = repmat("",n,1);
+    fundusScore = nan(n,1); inputWarning = strings(n,1);   % non-fundus input guard (full pipeline only)
     if ~p.Results.FullPipeline
         addpath(genpath(fullfile(baseDir,'src')));
         [net, config] = loadNetrAIModel(string(p.Results.ModelPath), string(p.Results.ConfigPath));
@@ -48,7 +49,7 @@ function summaryTable = batchProcess(folderPath, outputCsvPath, varargin)
                 result = main_pipeline(imagePath, 'ModelPath',p.Results.ModelPath, ...
                     'ConfigPath',p.Results.ConfigPath, 'Verbose',false, 'GenerateReport',false, ...
                     'RunGradCAM',false, 'EnforceQuality',true);
-                status(i) = result.status; iqs(i) = result.iqs;
+                status(i) = result.status; iqs(i) = result.iqs; fundusScore(i) = result.fundusGuard.score;
                 if result.status == "success"
                     grade(i) = result.grade; probabilities(i,:) = result.probabilities;
                     confidence(i) = result.confidence; isReferable(i) = result.isReferable;
@@ -56,6 +57,7 @@ function summaryTable = batchProcess(folderPath, outputCsvPath, varargin)
                     referableHeadProbability(i) = result.referableHeadProbability;
                     headDisagreement(i) = result.headDisagreement;
                     triageAction(i) = result.triageAction;
+                    inputWarning(i) = result.inputWarning;
                 else
                     errorMessage(i) = string(result.qualityFeedback);
                     triageAction(i) = result.triageAction;
@@ -84,11 +86,11 @@ function summaryTable = batchProcess(folderPath, outputCsvPath, varargin)
     summaryTable = table(filename,status,errorMessage,iqs,grade,confidence,isReferable, ...
         continuousScore,referableHeadProbability,headDisagreement,triageAction, ...
         probabilities(:,1),probabilities(:,2),probabilities(:,3), ...
-        probabilities(:,4),probabilities(:,5),processingSeconds, ...
+        probabilities(:,4),probabilities(:,5),fundusScore,inputWarning,processingSeconds, ...
         'VariableNames', {'filename','status','error','iqs','grade','confidence','is_referable', ...
         'continuous_score','referable_head_probability','head_disagreement','triage_action', ...
         'prob_grade_0','prob_grade_1','prob_grade_2','prob_grade_3', ...
-        'prob_grade_4','processing_seconds'});
+        'prob_grade_4','fundus_guard_score','input_warning','processing_seconds'});
     writetable(summaryTable, outputCsvPath);
     fprintf('Saved %d rows to %s (%d success, %d rejected, %d errors).\n', n, ...
         outputCsvPath, nnz(status=="success"), nnz(status=="rejected"), nnz(status=="error"));

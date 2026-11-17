@@ -1,0 +1,281 @@
+{
+ "tier": "TX (post hoc; lesion masks of two exposed test sets: DDR lesion test 202 primary images, IDRiD segmentation test 27)",
+ "question": "Grad-CAM lesion alignment at the layer both runtimes can compute: each member's last activation (timm bn2: batch norm + SiLU after conv_head). The ONNX export folds batch norm into conv_head, so MATLAB cannot use the pre-batch-norm conv_head output that Python used until 2026-10-31.",
+ "decision_rule": "written before any bn2 number was read (private ledger, 2026-10-31): ship bn2 for E_768 in both runtimes if, on DDR and on IDRiD, the energy-ratio CI lower bound > 1, the pointing hit-minus-chance CI lower bound > 0 and the deletion cam-minus-random CI upper bound < 0; legacy: reported, any change is an owner decision",
+ "decision": "floor met on both data sets for E_768 -> E_768 Grad-CAM taken at bn2 in Python and MATLAB (same map)",
+ "bn2": {
+  "E_768/idrid": {
+   "images_with_lesions": 27,
+   "energy_ratio_mean": 2.96,
+   "energy_ratio_ci95": [
+    1.928,
+    4.657
+   ],
+   "pointing_hit_rate": 0.889,
+   "pointing_chance": 0.348,
+   "pointing_minus_chance_ci95": [
+    0.394,
+    0.663
+   ],
+   "deletion_cam_minus_random": -0.488,
+   "deletion_ci95": [
+    -0.573,
+    -0.403
+   ],
+   "deletion_images_called_referable": 26
+  },
+  "E_768/ddr": {
+   "images_with_lesions": 202,
+   "energy_ratio_mean": 6.125,
+   "energy_ratio_ci95": [
+    5.08,
+    7.372
+   ],
+   "pointing_hit_rate": 0.861,
+   "pointing_chance": 0.17,
+   "pointing_minus_chance_ci95": [
+    0.641,
+    0.741
+   ],
+   "deletion_cam_minus_random": -0.565,
+   "deletion_ci95": [
+    -0.602,
+    -0.527
+   ],
+   "deletion_images_called_referable": 183
+  },
+  "legacy/idrid": {
+   "images_with_lesions": 27,
+   "energy_ratio_mean": 3.72,
+   "energy_ratio_ci95": [
+    2.505,
+    5.555
+   ],
+   "pointing_hit_rate": 0.889,
+   "pointing_chance": 0.356,
+   "pointing_minus_chance_ci95": [
+    0.413,
+    0.639
+   ],
+   "deletion_cam_minus_random": -0.404,
+   "deletion_ci95": [
+    -0.474,
+    -0.337
+   ],
+   "deletion_images_called_referable": 22
+  },
+  "legacy/ddr": {
+   "images_with_lesions": 202,
+   "energy_ratio_mean": 7.205,
+   "energy_ratio_ci95": [
+    5.857,
+    8.926
+   ],
+   "pointing_hit_rate": 0.733,
+   "pointing_chance": 0.175,
+   "pointing_minus_chance_ci95": [
+    0.498,
+    0.616
+   ],
+   "deletion_cam_minus_random": -0.45,
+   "deletion_ci95": [
+    -0.491,
+    -0.407
+   ],
+   "deletion_images_called_referable": 91
+  }
+ },
+ "conv_head_history": {
+  "E_768/idrid": {
+   "images_with_lesions": 27,
+   "energy_ratio_mean": 3.499,
+   "energy_ratio_ci95": [
+    2.544,
+    4.959
+   ],
+   "pointing_hit_rate": 0.926,
+   "pointing_chance": 0.348,
+   "pointing_minus_chance_ci95": [
+    0.454,
+    0.677
+   ],
+   "deletion_cam_minus_random": -0.511,
+   "deletion_ci95": [
+    -0.6,
+    -0.418
+   ],
+   "deletion_images_called_referable": 26
+  },
+  "E_768/ddr": {
+   "images_with_lesions": 202,
+   "energy_ratio_mean": 6.812,
+   "energy_ratio_ci95": [
+    6.042,
+    7.669
+   ],
+   "pointing_hit_rate": 0.906,
+   "pointing_chance": 0.17,
+   "pointing_minus_chance_ci95": [
+    0.689,
+    0.779
+   ],
+   "deletion_cam_minus_random": -0.581,
+   "deletion_ci95": [
+    -0.618,
+    -0.539
+   ],
+   "deletion_images_called_referable": 183
+  },
+  "legacy/idrid": {
+   "images_with_lesions": 27,
+   "energy_ratio_mean": 2.41,
+   "energy_ratio_ci95": [
+    2.177,
+    2.641
+   ],
+   "pointing_hit_rate": 0.926,
+   "pointing_chance": 0.356,
+   "pointing_minus_chance_ci95": [
+    0.466,
+    0.656
+   ],
+   "deletion_cam_minus_random": -0.425,
+   "deletion_ci95": [
+    -0.491,
+    -0.361
+   ],
+   "deletion_images_called_referable": 22
+  },
+  "legacy/ddr": {
+   "images_with_lesions": 202,
+   "energy_ratio_mean": 3.291,
+   "energy_ratio_ci95": [
+    2.922,
+    3.709
+   ],
+   "pointing_hit_rate": 0.644,
+   "pointing_chance": 0.175,
+   "pointing_minus_chance_ci95": [
+    0.41,
+    0.529
+   ],
+   "deletion_cam_minus_random": -0.462,
+   "deletion_ci95": [
+    -0.503,
+    -0.418
+   ],
+   "deletion_images_called_referable": 91
+  }
+ },
+ "paired_bn2_minus_conv_head": {
+  "E_768/idrid": {
+   "images": 27,
+   "random_draws_paired": true,
+   "referral_p_equal": true,
+   "energy_ratio_bn2_minus_conv": -0.5389516842609601,
+   "energy_ci95": [
+    -0.8733076352614279,
+    -0.11100798798660191
+   ],
+   "pointing_bn2_minus_conv": -0.037037037037037035,
+   "pointing_ci95": [
+    -0.1111111111111111,
+    0.0
+   ],
+   "deletion_auc_bn2_minus_conv": 0.02258070380641864,
+   "deletion_ci95": [
+    -0.011158468832906622,
+    0.059933461872054825
+   ],
+   "deletion_images": 26
+  },
+  "E_768/ddr": {
+   "images": 202,
+   "random_draws_paired": true,
+   "referral_p_equal": true,
+   "energy_ratio_bn2_minus_conv": -0.6864579941770368,
+   "energy_ci95": [
+    -1.4377811200850508,
+    0.23266243865191705
+   ],
+   "pointing_bn2_minus_conv": -0.04455445544554455,
+   "pointing_ci95": [
+    -0.08415841584158416,
+    -0.0049504950495049506
+   ],
+   "deletion_auc_bn2_minus_conv": 0.015858321024239813,
+   "deletion_ci95": [
+    0.00035754149316878875,
+    0.030416632552793074
+   ],
+   "deletion_images": 183
+  },
+  "legacy/idrid": {
+   "images": 27,
+   "random_draws_paired": true,
+   "referral_p_equal": true,
+   "energy_ratio_bn2_minus_conv": 1.3102706089434706,
+   "energy_ci95": [
+    0.15486218399749416,
+    3.2226147403851964
+   ],
+   "pointing_bn2_minus_conv": -0.037037037037037035,
+   "pointing_ci95": [
+    -0.14814814814814814,
+    0.07407407407407407
+   ],
+   "deletion_auc_bn2_minus_conv": 0.020657800291453213,
+   "deletion_ci95": [
+    -0.005233634113868601,
+    0.04801600724770898
+   ],
+   "deletion_images": 22
+  },
+  "legacy/ddr": {
+   "images": 202,
+   "random_draws_paired": true,
+   "referral_p_equal": true,
+   "energy_ratio_bn2_minus_conv": 3.9141414361498685,
+   "energy_ci95": [
+    2.6030217530454856,
+    5.553740488016304
+   ],
+   "pointing_bn2_minus_conv": 0.0891089108910891,
+   "pointing_ci95": [
+    0.04950495049504951,
+    0.13366336633663367
+   ],
+   "deletion_auc_bn2_minus_conv": 0.011419814587701846,
+   "deletion_ci95": [
+    0.0025876239218320823,
+    0.020909691074690206
+   ],
+   "deletion_images": 91
+  }
+ },
+ "cross_runtime": {
+  "E_768_matlab_vs_python_bn2_three_images": "correlation 1.0000, max |difference| < 5e-4",
+  "E_768_matlab_previous_builtin_gradcam": "explained one member (correlation 0.995 with member 1); about 45 s per image",
+  "conv_head_vs_bn2_correlation_three_images": {
+   "E_768": [
+    0.13,
+    0.28
+   ],
+   "legacy": [
+    -0.02,
+    0.22
+   ]
+  },
+  "legacy_matlab_builtin_vs_python_bn2": [
+   0.991,
+   0.995
+  ],
+  "fixture": "matlab/tests/fixtures/e768_gradcam_patient_sample_96.f32 (checked by both test suites)",
+  "legacy_matlab_vs_python_bn2_patient_sample": "correlation 1.0000, max |difference| < 1e-4 (MATLAB referralGradCAM)",
+  "fixture_legacy": "matlab/tests/fixtures/legacy_gradcam_patient_sample_64.f32 (checked by both test suites)"
+ },
+ "note": "Alignment with annotated lesions; not proof that the model uses them.",
+ "decision_legacy": "owner decision 2026-10-31, made after these numbers were read (post hoc): the legacy model also takes Grad-CAM at bn2 in Python and MATLAB, so each model has one map in both runtimes; legacy bn2 meets the same floor on both data sets",
+ "runtime_method": "Python differentiates only the head (modules/explainability.py head_gradcam; bit-identical to pytorch_grad_cam at bn2), MATLAB computes the same gradient in closed form (referralGradCAM); neither backpropagates through the backbone",
+ "shortcut_qc": "results/benchmarks/explanation_qc/gradcam_qc_layers.json"
+}
